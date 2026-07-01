@@ -62,8 +62,8 @@
   }
 
   .btn-shutter-primary:hover {
-    color: #120C2E !important; /* text remains dark navy on hover */
-    border-color: rgba(18, 12, 46, 0.1) !important;
+    color: #5B21B6 !important; /* text becomes theme brand purple/blue on hover */
+    border-color: rgba(91, 33, 182, 0.1) !important;
   }
 
   .btn-shutter-primary:hover::before {
@@ -79,8 +79,8 @@
     position: relative;
     overflow: hidden;
     background-color: #F97316 !important; /* underlay background is orange */
-    color: #120C2E !important; /* normal text is dark navy */
-    border: 1px solid rgba(18, 12, 46, 0.1) !important;
+    color: #5B21B6 !important; /* normal text is theme brand purple/blue */
+    border: 1px solid rgba(91, 33, 182, 0.1) !important;
     z-index: 1;
     transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
   }
