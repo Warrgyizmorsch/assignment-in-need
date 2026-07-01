@@ -34,7 +34,7 @@
     position: relative;
     overflow: hidden;
     background-color: #F97316 !important; /* normal state orange background */
-    color: #120C2E !important; /* normal state primary dark text color */
+    color: #ffffff !important; /* normal state white text color */
     border: 1px solid #F97316 !important;
     z-index: 1;
     transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
