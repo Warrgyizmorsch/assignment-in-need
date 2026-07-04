@@ -283,7 +283,7 @@ export const SERVICES: Service[] = [
     description: "Get custom-tailored academic assignments written by subject matter experts matching your university standards.",
     price: 12,
     orderCount: "12,500+",
-    image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Assignment-Help.webp"
   },
   {
     slug: "essay-writing",
@@ -292,7 +292,7 @@ export const SERVICES: Service[] = [
     description: "Persuasive, narrative, and critical essays structured accurately with comprehensive scholarly citations.",
     price: 12,
     orderCount: "18,400+",
-    image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Essay-Writing.webp"
   },
   {
     slug: "dissertation-help",
@@ -301,7 +301,7 @@ export const SERVICES: Service[] = [
     description: "Deep academic research, literature reviews, methodology design, and statistical data analyses for PhD/Master's.",
     price: 25,
     orderCount: "8,900+",
-    image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Disseratation-Help.webp"
   },
   {
     slug: "case-study-help",
@@ -310,7 +310,7 @@ export const SERVICES: Service[] = [
     description: "Rigorous diagnostic business or clinical case study analysis mapping operational issues to academic theory.",
     price: 15,
     orderCount: "6,200+",
-    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Case-Study-Help.webp"
   },
   {
     slug: "report-writing",
@@ -319,7 +319,7 @@ export const SERVICES: Service[] = [
     description: "Professional business reports, engineering designs, research findings, and executive summaries.",
     price: 15,
     orderCount: "5,800+",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Report-Writing.webp"
   },
   {
     slug: "coursework-help",
@@ -328,7 +328,7 @@ export const SERVICES: Service[] = [
     description: "Continuous assessment writing assistance to secure top marks across all modules in a semester.",
     price: 12,
     orderCount: "9,100+",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Coursework-Help.webp"
   },
   {
     slug: "proofreading-editing",
@@ -337,7 +337,7 @@ export const SERVICES: Service[] = [
     description: "Grammar verification, stylistic smoothing, structural refinement, and alignment with academic layout conventions.",
     price: 8,
     orderCount: "11,300+",
-    image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Proofreading.webp"
   },
   {
     slug: "editing-formatting",
@@ -346,7 +346,7 @@ export const SERVICES: Service[] = [
     description: "Align your citations and structural headings with APA, Harvard, OSCOLA, or MLA layout standards.",
     price: 10,
     orderCount: "5,800+",
-    image: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=500&auto=format&fit=crop&q=60"
+    image: "/new-home-page-images/Editing.webp"
   }
 ];
 
@@ -425,42 +425,74 @@ export const SUBJECTS: Subject[] = [
   }
 ];
 
+export interface BlogPost {
+  title: string;
+  excerpt: string;
+  date: string;
+  image: string;
+  href: string;
+}
+
 export const SAMPLES: Sample[] = [
   {
     title: "Comparative Corporate Governance Structures in FTSE 100 Companies",
     subject: "Business Report",
-    image: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=400&auto=format&fit=crop&q=60",
+    image: "/new-home-page-images/Business-Report.webp",
     href: "/samples"
   },
   {
     title: "Evaluating Patient Outcomes in ICU Transitional Nursing Protocols",
     subject: "Nursing Essay",
-    image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=400&auto=format&fit=crop&q=60",
+    image: "/new-home-page-images/Nursing-Essay.webp",
     href: "/samples"
   },
   {
     title: "Statutory Analysis of Property Rights under the Land Registration Act 2002",
     subject: "Law Case Study",
-    image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&auto=format&fit=crop&q=60",
+    image: "/new-home-page-images/Law-Case-Study.webp",
     href: "/samples"
   },
   {
     title: "Impact of Micro-Influencer Campaigns on Gen-Z Brand Engagement",
     subject: "Marketing Plan",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&auto=format&fit=crop&q=60",
+    image: "/new-home-page-images/Essay-Writing.webp",
     href: "/samples"
   },
   {
     title: "Optimized Pathfinding Algorithms in High-Density Logistics Simulations",
     subject: "Computer Science",
-    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&auto=format&fit=crop&q=60",
+    image: "/new-home-page-images/Report-Writing.webp",
     href: "/samples"
   },
   {
     title: "Socio-Economic Repercussions of Public Health Mandates in Urban Centers",
     subject: "Research Proposal",
-    image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400&auto=format&fit=crop&q=60",
+    image: "/new-home-page-images/Reseacrh-Proposal.webp",
     href: "/samples"
+  }
+];
+
+export const BLOG_POSTS: BlogPost[] = [
+  {
+    title: "How to Write an Academic Essay That Earns Top Marks",
+    excerpt: "Discover the structure, research sources, and writing tips UK students need to craft essays that impress instructors and secure high grades.",
+    date: "12 Jul 2025",
+    image: "/new-blog-images/65fc013af2f56_Essay-Writing-Service-UK-960x512.jpg",
+    href: "/blog/how-to-write-an-academic-essay"
+  },
+  {
+    title: "Inquiry-Based Learning: Boost Your Critical Thinking",
+    excerpt: "Explore how inquiry-led research assignments can elevate your academic work, from questions to evidence and argument development.",
+    date: "09 Jun 2025",
+    image: "/new-blog-images/65fc05c672519_Inquiry-Based-Learning-Blog-Pic-1200x480.png",
+    href: "/blog/inquiry-based-learning-guide"
+  },
+  {
+    title: "Harvard Referencing Made Simple for UK Students",
+    excerpt: "A practical guide to referencing styles, in-text citations, and bibliography formatting for essays, reports, and dissertations.",
+    date: "02 May 2025",
+    image: "/new-blog-images/65fbf5eea1f06_blog9484-1195x480.jpg",
+    href: "/blog/harvard-referencing-guide"
   }
 ];
 

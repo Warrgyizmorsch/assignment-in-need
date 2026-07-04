@@ -16,30 +16,7 @@ export interface QuoteFormProps {
   title?: string;
 }
 
-const ACADEMIC_LEVELS = [
-  { label: "High School", value: "high-school" },
-  { label: "College", value: "college" },
-  { label: "Undergraduate", value: "undergraduate" },
-  { label: "Graduate", value: "graduate" },
-  { label: "Postgraduate", value: "postgraduate" },
-  { label: "Ph.D.", value: "phd" },
-];
-
-const SUBJECTS = [
-  { label: "Accounting", value: "accounting" },
-  { label: "Business Management", value: "business" },
-  { label: "Law", value: "law" },
-  { label: "Nursing", value: "nursing" },
-  { label: "Psychology", value: "psychology" },
-  { label: "Engineering", value: "engineering" },
-  { label: "Computer Science", value: "computer-science" },
-  { label: "Economics", value: "economics" },
-  { label: "Marketing", value: "marketing" },
-  { label: "History", value: "history" },
-  { label: "Other", value: "other" },
-];
-
-const ASSIGNMENT_TYPES = [
+const PROJECT_TYPES = [
   { label: "Assignment Writing", value: "assignment" },
   { label: "Essay Writing", value: "essay" },
   { label: "Dissertation Writing", value: "dissertation" },
@@ -50,7 +27,7 @@ const ASSIGNMENT_TYPES = [
   { label: "Editing & Formatting", value: "editing" },
 ];
 
-const DEADLINES = [
+const TIME_PERIODS = [
   { label: "6 Hours", value: "6h" },
   { label: "12 Hours", value: "12h" },
   { label: "24 Hours", value: "24h" },
@@ -79,29 +56,30 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
   onSuccess,
   title = "Get Instant Quote",
 }) => {
-  const [level, setLevel] = useState("");
-  const [subject, setSubject] = useState(prefilledSubject || "");
-  const [type, setType] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [wordCount, setWordCount] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
+  const [projectType, setProjectType] = useState("");
+  const [wordCount, setWordCount] = useState("");
+  const [timePeriod, setTimePeriod] = useState("");
   const [requirements, setRequirements] = useState("");
+  const [subject, setSubject] = useState(prefilledSubject || "");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!level) newErrors.level = "Academic level is required";
-    if (!subject) newErrors.subject = "Subject area is required";
-    if (!type) newErrors.type = "Assignment type is required";
-    if (!deadline) newErrors.deadline = "Deadline is required";
-    if (!wordCount) newErrors.wordCount = "Word count is required";
+    if (!name.trim()) newErrors.name = "Name is required";
     if (!email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Invalid email format";
     }
+    if (!mobileNo.trim()) newErrors.mobileNo = "Mobile number is required";
+    if (!projectType) newErrors.projectType = "Project type is required";
+    if (!wordCount) newErrors.wordCount = "Word count is required";
+    if (!timePeriod) newErrors.timePeriod = "Time period is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -116,7 +94,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
       setIsLoading(false);
       setIsSubmitted(true);
       if (onSuccess) {
-        onSuccess({ level, subject, type, deadline, wordCount, email, requirements });
+        onSuccess({ name, email, mobileNo, projectType, wordCount, timePeriod, requirements, subject });
       }
     }, 1500);
   };
@@ -137,12 +115,12 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
           className="mt-4"
           onClick={() => {
             setIsSubmitted(false);
-            setLevel("");
-            setSubject(prefilledSubject || "");
-            setType("");
-            setDeadline("");
-            setWordCount("");
+            setName("");
             setEmail("");
+            setMobileNo("");
+            setProjectType("");
+            setWordCount("");
+            setTimePeriod("");
             setRequirements("");
             setErrors({});
           }}
@@ -164,57 +142,58 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Select
-          label="Academic Level *"
-          placeholder="Select Level"
-          options={ACADEMIC_LEVELS}
-          value={level}
-          onValueChange={(val) => {
-            setLevel(val);
-            if (errors.level) setErrors((prev) => ({ ...prev, level: "" }));
-          }}
-          error={errors.level}
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            label="Full Name *"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
+            }}
+            error={errors.name}
+          />
+          <Input
+            type="email"
+            label="Email Address *"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+            }}
+            error={errors.email}
+          />
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Select
-            label="Subject *"
-            placeholder="Select Subject"
-            options={SUBJECTS}
-            value={subject}
-            onValueChange={(val) => {
-              setSubject(val);
-              if (errors.subject) setErrors((prev) => ({ ...prev, subject: "" }));
+          <Input
+            type="tel"
+            label="Mobile No *"
+            placeholder="Enter mobile number"
+            value={mobileNo}
+            onChange={(e) => {
+              setMobileNo(e.target.value);
+              if (errors.mobileNo) setErrors((prev) => ({ ...prev, mobileNo: "" }));
             }}
-            error={errors.subject}
+            error={errors.mobileNo}
           />
           <Select
-            label="Assignment Type *"
-            placeholder="Select Type"
-            options={ASSIGNMENT_TYPES}
-            value={type}
+            label="Project Type *"
+            placeholder="Select Project Type"
+            options={PROJECT_TYPES}
+            value={projectType}
             onValueChange={(val) => {
-              setType(val);
-              if (errors.type) setErrors((prev) => ({ ...prev, type: "" }));
+              setProjectType(val);
+              if (errors.projectType) setErrors((prev) => ({ ...prev, projectType: "" }));
             }}
-            error={errors.type}
+            error={errors.projectType}
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
-            label="Deadline *"
-            placeholder="Select Deadline"
-            options={DEADLINES}
-            value={deadline}
-            onValueChange={(val) => {
-              setDeadline(val);
-              if (errors.deadline) setErrors((prev) => ({ ...prev, deadline: "" }));
-            }}
-            error={errors.deadline}
-          />
-          <Select
-            label="Word Count / Pages *"
+            label="Word Count *"
             placeholder="Select Word Count"
             options={WORD_COUNTS}
             value={wordCount}
@@ -224,19 +203,18 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
             }}
             error={errors.wordCount}
           />
+          <Select
+            label="Time Period *"
+            placeholder="Select Time Period"
+            options={TIME_PERIODS}
+            value={timePeriod}
+            onValueChange={(val) => {
+              setTimePeriod(val);
+              if (errors.timePeriod) setErrors((prev) => ({ ...prev, timePeriod: "" }));
+            }}
+            error={errors.timePeriod}
+          />
         </div>
-
-        <Input
-          type="email"
-          label="Email Address *"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
-          }}
-          error={errors.email}
-        />
 
         {variant === "extended" && (
           <TextArea
@@ -259,6 +237,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
           {variant === "extended" ? "Get Instant Quote" : "Get Price Now"}
         </Button>
       </form>
+
 
       {/* Trust row */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-primary-100/50 pt-4 mt-2">

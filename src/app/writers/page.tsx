@@ -49,11 +49,6 @@ export default function WritersDirectory() {
   const [selectedSort, setSelectedSort] = useState("rating-desc");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset pagination to page 1 when filters change
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedSubject, selectedQual, selectedExp]);
-
   // Filter and sort logic
   const filteredWriters = useMemo(() => {
     let result = [...WRITERS];

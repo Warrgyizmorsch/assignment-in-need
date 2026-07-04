@@ -1,0 +1,721 @@
+"use client";
+import React, { useState, useEffect } from 'react';
+import './Header.css';
+
+export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const header = document.querySelector(".main-header.header-style-three") as HTMLElement;
+    if (!header) return;
+
+    let headerHeight = header.offsetHeight;
+    const refreshHeight = () => (headerHeight = header.offsetHeight);
+    window.addEventListener("resize", refreshHeight);
+
+    const onScroll = () => {
+        if (window.innerWidth < 768) return;
+        if (header.classList.contains("fixed-header")) {
+            document.body.style.paddingTop = headerHeight + "px";
+        } else {
+            document.body.style.paddingTop = "";
+        }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+        window.removeEventListener("resize", refreshHeight);
+        window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  return (
+    <>
+      <header className="main-header header-style-three fixed-header">
+    <div className="top-bar">
+        <div className="content-wrapper">
+            <div className="contact-item">
+                <a href="https://wa.me/+447917481696?text=Hi%20Dear,%20I%20need%20assignment%20help.%20I%20got%20your%20number%20from%20the%20website."
+                    target="_blank" className="contact-link">
+                    <i className="fa fa-whatsapp"></i>
+                    <span className="contact-text">+44 7917481696</span>
+                </a>
+                <span className="divider">|</span>
+                <a href="mailto:order@assignnmentinneed.com" target="_blank" className="contact-link">
+                    <i className="fa fa-envelope"></i>
+                    <span className="contact-text">order@assignnmentinneed.com</span>
+                </a>
+            </div>
+
+            {/*  <div className="offer-section">
+                <div className="offers">
+                    <a href="Offers" className="offer-button">Offer</a>
+                </div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}><a href="/upload-your-assignment" style={{ color: 'white' }}>40%
+                        Off On Your Every Order</a></div>
+            </div>  */}
+            <div className="top-offer-bar">
+                <div className="offer-badge">OFFER</div>
+
+                <div className="offer-marquee">
+                    <div className="offer-marquee-track">
+                        🎁 Special Offer 🎁 40% Off On Every Order
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    {/*  Header Lower  */}
+    <div className="header-lower ">
+        <div className="lower-inner">
+            <div className="outer-container">
+                <div className="inner-container" style={{ display: 'flex', alignItems: 'center' }}>
+
+                    <div className="logo-box">
+                        <div className="logo"><a href="/"><img src="/images/icons/Assignment-in-need.png"
+                                    alt="assignment help services assignnmentinneed.com" title="" width="80px" /></a>
+                        </div>
+                    </div>
+
+
+                    <div className="nav-outer" style={{ marginTop: 0 }}>
+                        {/*  Mobile Navigation Toggler  */}
+                        <div className="mobile-nav-toggler" style={{ marginTop: '6px' }}><span className="icon flaticon-menu-2"></span></div>
+                        {/*  Main Menu  */}
+                        <nav className="main-menu show navbar-expand-md">
+
+                            <div className="navbar-collapse collapse clearfix" id="navbarSupportedContent">
+                                <ul className="navigation clearfix">
+                                    <li><a href="/">Home</a></li>
+
+                                    <li className="current dropdown assignment-dropdown">
+                                        <a>Services</a>
+                                        <ul>
+
+                                            <li className="dropdown"><a href="assignment-writing-uk">Assignment</a>
+                                                <ul>
+                                                    <li>
+                                                        <a href="/english-assignment-writing-help">English</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/economic-assignment-writing-help">Economics</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/chemistry-assignment-writing-help">Chemistry</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/history-assignment-writing-help">History</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/law-assignment-writing-help">Law</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/linguistic-assignment-writing-help">Linguistic</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/nursing-assignment-writing-help">Nursing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/physics-assignment-writing-help">Physics</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/sociology-assignment-writing-help">Sociology </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/philosophy-assignment-writing-help">Philosophy</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/statistics-assignment-writing-help">Statistics</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/accounting-assignment-writing-help">Accounting</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/marketing-assignment-writing-help">Marketing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/computer-science-assignment-writing-help">Computer Science</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/engineering-assignment-writing-help">Engineering</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/finance-assignment-writing-help">Finance</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/programming-assignment-writing-help">Programming</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/management-assignment-writing-help">Management</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/business-assignment-writing-help">Business</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/math-assignment-help">Maths</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/geography-assignment-writing-help">Geography</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/psychology-assignment-help-uk">Psychology </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/biology-assignment-help-uk">Biology</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/entrepreneurship-assignment-help-uk">Entrepreneurship</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/artificial-intelligence-assignment-help-uk">Artificial Intelligence</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/machine-learning-assignment-help-uk">Machine Learning</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/cybersecurity-assignment-help-uk">Cybersecurity</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/humanities-assignment-help-uk">Humanities</a>
+                                                    </li>
+                                                    {/*  <li><a href="assignment-writing-help-services">Assignment
+                                                            Writing</a></li>
+                                                    <li><a href="cheap-assignment-writing-help">Cheap Assignment Writing
+                                                            help</a></li>
+                                                    <li><a href="help-with-assignment-online">Help With Assignment
+                                                            Online</a></li>
+                                                    <li><a href="assignment-helper">Assignment Helper</a></li>
+                                                    <li><a href="pay-for-assignment-help">Pay For Assignment Help</a>
+                                                    </li>
+                                                    <li><a href="best-online-assignment-writing-service">Best Online
+                                                            Assignment Writing Service</a></li>
+                                                    <li><a href="do-my-assignment-for-me">Do my Assignment for me</a>
+                                                    </li>
+                                                    <li><a href="academic-assignment-writing-help-service">Academic
+                                                            Assignment Writing Help Service</a></li>
+                                                    <li><a href="top-assignment-writing-help-service">Top Assignment
+                                                            Writing Help Service</a></li>  */}
+                                                </ul>
+                                            </li>
+
+                                            <li className="dropdown"><a href="dissertation-writing-help-services">Dissertation</a>
+                                                <ul>
+                                                    <li>
+                                                        <a href="/dissertation-literature-review-help-uk">Literature Review Dissertation Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/dissertation-findings-help-uk">Findings Dissertation Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/dissertation-results-help-uk">Results Dissertation Writing </a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/dissertation-topic-selection-service-help-uk">Topic Selection Dissertation Service</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/masters-dissertation-help-uk">Masters Dissertation Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/case-study-dissertation-help-uk">Case Study Dissertation Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/dissertation-editing-and-proofreading-help-uk">Editing & Proofreading Dissertation Writing</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li className="dropdown"><a href="essay-writing-help-services">Essay Writing</a>
+                                                <ul>
+                                                    <li>
+                                                        <a href="/argumentative-essay-help-uk">Argumentative Essay Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/analytical-essay-help-uk">Analytical Essay Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/reflective-essay-help-uk">Reflective Essay Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/literature-review-essay-help-uk">Literature Review Essay Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/descriptive-essay-help-uk">Descriptive Essay Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/personal-statement-essay-help-uk">Personal Statement Essay Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/extended-essay-help-uk">Extended Essay Writing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/essay-proofreading-and-editing-help-uk">Essay Proofreading And Editing</a>
+                                                    </li>
+
+                                                    <li>
+                                                        <a href="/persuasive-essay-help-uk">Persuasive Essay Writing</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li className="dropdown"><a href="research-paper-writing-services">Research Paper Writing</a>
+                                                <ul>
+                                                    <li>
+                                                        <a href="/custom-research-paper-help-uk">Custom Research Paper Writing</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/masters-research-paper-help-uk">Masters Research Paper Writing</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/phd-research-paper-help-uk">Phd Research Paper Writing</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+
+                                            <li>
+                                                <a href="homework-writing-help-services">Homework Writing</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/thesis-writing-help">Thesis Writing</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/summary-writing-help">Summary Writing</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/personal-statement-writing-help">Personal Statement Writing</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/coursework-writing-help">Coursework Writing</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/term-paper-writing-help">Term Paper Writing</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li className="current dropdown subject-dropdown">
+                                        <a>Subjects</a>
+                                        <ul>
+                                            <li>
+                                                <a href="/math-assignment-help">Maths</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/english-assignment-writing-help">English </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/economic-assignment-writing-help">Eco</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/chemistry-assignment-writing-help">Chemistry</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/history-assignment-writing-help">History </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/law-assignment-writing-help">Law</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/linguistic-assignment-writing-help">Linguistic</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/nursing-assignment-writing-help">Nursing</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/physics-assignment-writing-help">Physics</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/sociology-assignment-writing-help">Sociology </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/philosophy-assignment-writing-help">Philosophy</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/statistics-assignment-writing-help">Statistics</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/accounting-assignment-writing-help">Accounting</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/programming-assignment-writing-help">Programming</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/marketing-assignment-writing-help">Marketing</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/computer-science-assignment-writing-help">Computer Science</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/engineering-assignment-writing-help">Engineering </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/finance-assignment-writing-help">Finance </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/management-assignment-writing-help">Management</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/business-assignment-writing-help">Business</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/geography-assignment-writing-help">Geography</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/psychology-assignment-help-uk">Psychology </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/biology-assignment-help-uk">Biology</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/entrepreneurship-assignment-help-uk">Entrepreneurship</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/artificial-intelligence-assignment-help-uk">Artificial Intelligence</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/machine-learning-assignment-help-uk">Machine Learning</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/cybersecurity-assignment-help-uk">Cybersecurity</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/humanities-assignment-help-uk">Humanities</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+
+                                    <li className="current dropdown city-dropdown">
+                                        <a>city</a>
+                                        <ul>
+                                            <li>
+                                                <a href="/uk/london">London</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/manchester/assignment-help">Manchester</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/birmingham/assignment-help">Birmingham</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-leeds">Leeds</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-glasgow">Glasgow</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-edinburgh">Edinburgh</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-liverpool">Liverpool</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-nottingham">Nottingham</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-bristol">Bristol</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-sheffield">Sheffield</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-newcastle">Newcastle</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-coventry">Coventry</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-cardiff">Cardiff</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-oxford">Oxford</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-cambridge">Cambridge</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-belfast">Belfast</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="/uk/assignment-help-perth">Perth</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+
+                                    <li className="current dropdown">
+                                        <a>Resources </a>
+                                        <ul>
+                                            <li>
+                                                <a href="free-samples">Samples</a>
+                                            </li>
+
+                                            <li>
+                                                <a href="blog">Blog</a>
+
+                                            </li>
+                                        </ul>
+                                    </li>
+
+                                    <li><a href="pricing">Pricing</a></li>
+                                    <li><a href="review">Reviews</a></li>
+                                    <li><a href="writers">Writer</a></li>
+
+                                    <li><a href="what-we-are">About Us</a></li>
+
+                                    <li><a href="contact-us">Contact Us</a></li>
+
+                                    <li className="header-order">
+                                        <a href="upload-your-assignment">Order Now</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                        {/*  Main Menu End */}
+
+                        <div className="outer-box" style={{ padding: '10px 0' }}>
+                            <div className="cart-box" style={{ marginTop: 0, marginLeft: 0, border: 'none' }}>
+                                <div className="dropdown user-dropdown">
+                                    <button className="cart-box-btn dropdown-toggle" type="button" id="dropdownMenu2"
+                                        data-toggle="dropdown">
+                                        <i className="fas fa-user-alt" style={{ fontSize: '26px' }}></i>
+                                    </button>
+
+                                    <div className="dropdown-menu cart-panel" aria-labelledby="dropdownMenu2">
+                                        {isLoggedIn ? (
+                                            <>
+                                                <div className="cart-product">
+                                                    <div className="inner">
+                                                        <div className="image">
+                                                            <img
+                                                                src="/assets/media/avatars/blank.png"
+                                                                alt="User Profile"
+                                                            />
+                                                        </div>
+                                                        <h3>John Doe</h3>
+                                                        <div className="quantity-text">john@example.com</div>
+                                                        <div className="quantity-text">+1234567890</div>
+                                                    </div>
+
+                                                    <ul className="btns-boxed">
+                                                        <li>
+                                                            <a href="/myProfile">View Profile</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="/MyOrders">My Orders</a>
+                                                        </li>
+                                                        {/*  👇 Wallet sirf login hone par hi dikhega  */}
+                                                        <li>
+                                                            <a href="/wallet">Wallet</a>
+                                                        </li>
+
+                                                        <li>
+                                                            <a
+                                                                href="#"
+                                                                onClick={(event) => {
+                                                                    event.preventDefault();
+                                                                    const logoutForm = document.getElementById('logout-form');
+                                                                    if (logoutForm instanceof HTMLFormElement) logoutForm.submit();
+                                                                }}
+                                                            >
+                                                                Sign Out
+                                                            </a>
+                                                            <form id="logout-form" action="#" method="POST" className="d-none">
+                                                            </form>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="login-panel">
+                                                    <h4>Welcome!</h4>
+                                                    <p>Please login or sign up to continue.</p>
+                                                    <div className="auth-buttons">
+                                                        <a href="/login" className="btn-login">Login</a>
+                                                        <a href="/register" className="btn-signup">Sign Up</a>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+        {/* End Header Upper */}
+
+        {/*  Mobile Menu   */}
+        <div className="mobile-menu">
+            <div className="menu-backdrop"></div>
+            <div className="close-btn"><span className="icon flaticon-multiply"></span></div>
+
+            <nav className="menu-box mCustomScrollbar _mCS_1 mCS_no_scrollbar">
+                <div id="mCSB_1" className="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" tabIndex={0}
+                    style={{ maxHeight: '1013px' }}>
+                    <div id="mCSB_1_container" className="mCSB_container mCS_y_hidden mCS_no_scrollbar_y"
+                        style={{ position: 'relative', top: 0, left: 0 }} dir="ltr">
+                        <div className="nav-logo" style={{ height: '50px', textAlign: 'center' }}><a href="/"><img
+                                    src="/images/icons/Assignment-in-need.png"
+                                    alt="assingment help assignnmentinneed.com" title="" className="mCS_img_loaded" width="60" /></a></div>
+                        <div className="menu-outer">
+                            {/* Here Menu Will Come Automatically Via Javascript / Same Menu as in Header */}
+
+                            <div className="navbar-header">
+                                <button className="navbar-toggler" type="button" data-toggle="collapse"
+                                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                    aria-expanded="false" aria-label="Toggle navigation">
+                                    <span className="icon-bar"></span>
+                                    <span className="icon-bar"></span>
+                                    <span className="icon-bar"></span>
+                                </button>
+                            </div>
+
+                            <div className="navbar-collapse collapse clearfix" id="navbarSupportedContent">
+                                <ul className="navigation clearfix">
+                                    {isLoggedIn ? (<>
+                                    <li className="mobile-auth-user" style={{ padding: '12px 15px' }}>
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            <img style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+                                                src="{{ Auth::user()- />photo ? asset(Auth::user()->photo) : asset('assets/media/avatars/blank.png') }}"
+                                                alt="User Profile" />
+                                            <div>
+                                                <div style={{ fontWeight: 600, fontSize: '14px', lineHeight: 1.2 }}>
+                                                    John Doe
+                                                </div>
+                                                <div style={{ fontSize: '12px', opacity: 0.8 }}>john@example.com</div>
+                                                <div style={{ fontSize: '12px', opacity: 0.8 }}>+1234567890</div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li><a href="/myProfile">View Profile</a></li>
+                                    <li><a href="/MyOrders">My Orders</a></li>
+                                    <li><a href="/wallet">Wallet</a></li>
+
+                                    <li>
+                                        <a href="#"
+                                            onClick={(e) => { e.preventDefault(); const f = document.getElementById('logout-form-mobile') as HTMLFormElement; if(f) f.submit(); }}>
+                                            Sign Out
+                                        </a>
+                                        <form id="logout-form-mobile" action="#" method="POST" className="d-none">
+                                            
+                                        </form>
+                                    </li>
+                                    </>) : (<>
+                                    <li><a href="/login">Login</a></li>
+                                    <li><a href="/register">Sign Up</a></li>
+                                    </>)}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="mCSB_1_scrollbar_vertical"
+                        className="mCSB_scrollTools mCSB_1_scrollbar mCS-light mCSB_scrollTools_vertical"
+                        style={{ display: 'none' }}>
+                        <div className="mCSB_draggerContainer">
+                            <div id="mCSB_1_dragger_vertical" className="mCSB_dragger"
+                                style={{ position: 'absolute', minHeight: '30px', height: '0px', top: '0px' }}
+                                onContextMenu={(e) => e.preventDefault()}>
+                                <div className="mCSB_dragger_bar" style={{ lineHeight: '30px' }}></div>
+                            </div>
+                            <div className="mCSB_draggerRail"></div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div> {/*  End Mobile Menu  */}
+        
+</header>
+    </>
+  );
+}
