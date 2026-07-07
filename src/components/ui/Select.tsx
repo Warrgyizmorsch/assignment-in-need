@@ -41,17 +41,17 @@ export const Select: React.FC<SelectProps> = ({
           {label}
         </span>
       )}
-      <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
+      <SelectPrimitive.Root value={value || undefined} onValueChange={onValueChange}>
         <SelectPrimitive.Trigger
           className={cn(
-            "flex h-12 w-full items-center justify-between rounded-btn border border-primary-100/50 bg-white px-4 py-3 text-base text-text-body placeholder:text-text-muted/60 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-left outline-none transition-all duration-200",
-            error && "border-red-500 focus-visible:ring-red-500",
+            "flex h-10 w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none focus:border-gray-200 focus-visible:border-gray-200 focus:ring-transparent focus-visible:ring-transparent focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 text-left transition-all duration-200",
+            error && "border-red-400",
             className
           )}
         >
           <SelectPrimitive.Value placeholder={placeholder} />
           <SelectPrimitive.Icon asChild>
-            <ChevronDown className="h-4 w-4 opacity-55 text-text-muted" />
+            <ChevronDown className="h-4 w-4 opacity-40 text-gray-500" />
           </SelectPrimitive.Icon>
         </SelectPrimitive.Trigger>
         <SelectPrimitive.Portal>
@@ -64,7 +64,7 @@ export const Select: React.FC<SelectProps> = ({
                 <SelectPrimitive.Item
                   key={opt.value}
                   value={opt.value}
-                  className="relative flex w-full cursor-default select-none items-center rounded-sm py-2.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-primary-50 data-[highlighted]:text-primary-700 data-[disabled]:opacity-50 transition-colors duration-150"
+                  className="relative flex w-full cursor-default select-none items-center rounded-sm py-2.5 pl-8 pr-2 text-sm outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 border-0 border-transparent data-[disabled]:pointer-events-none data-[highlighted]:bg-primary-50 data-[highlighted]:text-primary-700 data-[highlighted]:outline-none data-[disabled]:opacity-50 transition-colors duration-150"
                 >
                   <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
                     <SelectPrimitive.ItemIndicator>

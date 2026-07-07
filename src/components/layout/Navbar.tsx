@@ -2,16 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Phone, Mail, User, Menu, X, ChevronDown } from "lucide-react";
+import { Phone, Mail, User, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getBaseUrl } from "@/lib/api";
 
-const SERVICES = [
-  { name: "Assignment Help", path: "/services/assignment-writing" },
-  { name: "Essay Writing", path: "/services/essay-writing" },
-  { name: "Dissertation Help", path: "/services/dissertation-help" },
-  { name: "Case Study Help", path: "/services/case-study-help" },
-  { name: "Report Writing", path: "/services/report-writing" },
-];
+
 
 const SUBJECTS = [
   { name: "Accounting", path: "/subjects/accounting" },
@@ -39,6 +34,69 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulate auth state
+  const [dynamicServices, setDynamicServices] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const baseUrl = getBaseUrl();
+        const res = await fetch(`${baseUrl}/api/service-pages`);
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success && Array.isArray(result.data)) {
+            setDynamicServices(result.data);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching header services list:", err);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  const menuCategoriesMap = new Map<string, { name: string; path?: string; subItems: { name: string; path: string }[] }>();
+
+  dynamicServices.forEach(ds => {
+    const slug = ds.slug || "";
+    if (slug.includes("/")) {
+      const parts = slug.split("/");
+      const parentSlug = parts[0];
+      const childName = ds.hero_heading || ds.meta_title || parts[1].replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+      const path = `/services/${slug}`;
+
+      if (!menuCategoriesMap.has(parentSlug)) {
+        const parentName = parentSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+        menuCategoriesMap.set(parentSlug, {
+          name: parentName,
+          path: `/services/${parentSlug}`,
+          subItems: []
+        });
+      }
+      menuCategoriesMap.get(parentSlug)!.subItems.push({
+        name: childName,
+        path: path
+      });
+    } else {
+      const path = `/services/${slug}`;
+      const name = ds.hero_heading || ds.meta_title || slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+      
+      if (!menuCategoriesMap.has(slug)) {
+        menuCategoriesMap.set(slug, {
+          name: name,
+          path: path,
+          subItems: []
+        });
+      } else {
+        const cat = menuCategoriesMap.get(slug)!;
+        cat.name = name;
+        cat.path = path;
+      }
+    }
+  });
+
+  const menuItems = Array.from(menuCategoriesMap.values());
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -114,10 +172,29 @@ export const Navbar = () => {
                 Services <ChevronDown className="w-4 h-4 opacity-70" />
               </button>
               <div className="absolute top-full left-0 mt-0 w-64 bg-white border border-gray-100 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-2 flex flex-col gap-1 z-50">
-                {SERVICES.map((s) => (
-                  <Link key={s.path} href={s.path} className="text-[13px] font-medium text-gray-700 hover:text-[#3F159A] hover:bg-gray-50 px-3 py-2 rounded-md transition-colors">
-                    {s.name}
-                  </Link>
+                {menuItems.map((cat) => (
+                  <div key={cat.path || cat.name} className="relative group/cat">
+                    <Link
+                      href={cat.path || "#"}
+                      className="flex items-center justify-between text-[13px] font-medium text-gray-700 hover:text-[#3F159A] hover:bg-gray-50 px-3 py-2 rounded-md transition-colors"
+                    >
+                      <span>{cat.name}</span>
+                      {cat.subItems.length > 0 && <ChevronRight className="w-4 h-4 opacity-70 shrink-0 ml-2" />}
+                    </Link>
+                    {cat.subItems.length > 0 && (
+                      <div className="absolute left-full top-0 ml-1 w-64 bg-white border border-gray-100 rounded-lg shadow-xl opacity-0 invisible group-hover/cat:opacity-100 group-hover/cat:visible transition-all duration-200 p-2 flex flex-col gap-1 z-50">
+                        {cat.subItems.map((sub) => (
+                          <Link
+                            key={sub.path}
+                            href={sub.path}
+                            className="text-[13px] font-medium text-gray-700 hover:text-[#3F159A] hover:bg-gray-50 px-3 py-2 rounded-md transition-colors"
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -233,12 +310,33 @@ export const Navbar = () => {
         )}>
           <div className="p-4 flex flex-col gap-4">
             <Link href="/" className="font-semibold text-gray-800 py-2 border-b">Home</Link>
-            <div className="flex flex-col border-b py-2">
-              <span className="font-semibold text-gray-800 mb-2">Services</span>
-              <div className="pl-4 flex flex-col gap-2">
-                {SERVICES.map(s => <Link key={s.path} href={s.path} className="text-sm text-gray-600">{s.name}</Link>)}
-              </div>
-            </div>
+             <div className="flex flex-col border-b py-2">
+               <span className="font-semibold text-gray-800 mb-2">Services</span>
+               <div className="pl-2 flex flex-col gap-2">
+                 {menuItems.map(cat => (
+                   <div key={cat.path || cat.name} className="flex flex-col gap-1">
+                     {cat.subItems.length > 0 ? (
+                       <>
+                         <div className="flex items-center justify-between text-sm font-semibold text-gray-800 py-1 px-2 bg-gray-50/50 rounded-md">
+                           <span>{cat.name}</span>
+                         </div>
+                         <div className="pl-4 flex flex-col gap-1.5 border-l border-gray-150 ml-3 mt-1">
+                           {cat.subItems.map(sub => (
+                             <Link key={sub.path} href={sub.path} className="text-sm text-gray-600 py-0.5">
+                               {sub.name}
+                             </Link>
+                           ))}
+                         </div>
+                       </>
+                     ) : (
+                       <Link href={cat.path || "#"} className="text-sm text-gray-600 py-1 px-2 hover:bg-gray-50 rounded-md">
+                         {cat.name}
+                       </Link>
+                     )}
+                   </div>
+                 ))}
+               </div>
+             </div>
             <div className="flex flex-col border-b py-2">
               <span className="font-semibold text-gray-800 mb-2">Subjects</span>
               <div className="pl-4 flex flex-col gap-2">

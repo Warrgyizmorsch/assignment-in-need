@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { 
   Star, 
@@ -30,7 +30,8 @@ import { Input, TextArea } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Badge } from "@/components/ui/Badge";
-import { SUBJECTS, SERVICES } from "@/lib/data";
+import { SUBJECTS } from "@/lib/data";
+import { getBaseUrl } from "@/lib/api";
 
 const ACADEMIC_LEVELS = [
   { label: "Undergraduate", value: "undergraduate" },
@@ -85,9 +86,31 @@ export default function OrderPage() {
 
   // Step 2: Assignment Details
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedService, setSelectedService] = useState("assignment-writing");
+  const [selectedService, setSelectedService] = useState("");
   const [selectedWorkType, setSelectedWorkType] = useState("writing");
   const [academicLevel, setAcademicLevel] = useState("undergraduate");
+  const [dynamicServices, setDynamicServices] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const baseUrl = getBaseUrl();
+        const res = await fetch(`${baseUrl}/api/service-pages`);
+        if (res.ok) {
+          const result = await res.json();
+          if (result.success && Array.isArray(result.data)) {
+            setDynamicServices(result.data);
+            if (result.data.length > 0) {
+              setSelectedService(result.data[0].slug);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching services for order form:", err);
+      }
+    };
+    fetchServices();
+  }, []);
 
   // Step 3: Delivery Details
   const [selectedDeadline, setSelectedDeadline] = useState("3d");
@@ -107,8 +130,8 @@ export default function OrderPage() {
   );
 
   const serviceOptions = useMemo(() => 
-    SERVICES.map((s) => ({ label: s.title, value: s.slug })),
-    []
+    dynamicServices.map((s) => ({ label: s.hero_heading || s.meta_title || "Service", value: s.slug })),
+    [dynamicServices]
   );
 
   // File Upload Handlers
@@ -166,9 +189,9 @@ export default function OrderPage() {
   }, [selectedWordCount]);
 
   const activeServiceLabel = useMemo(() => {
-    const match = SERVICES.find(s => s.slug === selectedService);
-    return match ? match.shortTitle : "Academic Writing";
-  }, [selectedService]);
+    const match = dynamicServices.find(s => s.slug === selectedService);
+    return match ? (match.hero_heading || "Service") : "Academic Writing";
+  }, [selectedService, dynamicServices]);
 
   const activeDeadlineLabel = useMemo(() => {
     const match = DEADLINES.find(d => d.value === selectedDeadline);

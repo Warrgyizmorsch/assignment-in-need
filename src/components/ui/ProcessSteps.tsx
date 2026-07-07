@@ -1,7 +1,5 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Heading } from "./Heading";
-import { Text } from "./Text";
 
 export interface ProcessStep {
   number: number;
@@ -21,79 +19,89 @@ export const ProcessSteps: React.FC<ProcessStepsProps> = ({
   steps,
   className,
   title = "How It Works",
-  subtitle = "Our simple process to get your assignment done",
+  subtitle,
 }) => {
   return (
-    <div className={cn("flex flex-col items-center gap-10", className)}>
+    <div className={cn("flex flex-col items-center gap-12 w-full max-w-[1250px] mx-auto text-center px-4", className)}>
       {title && (
-        <div className="text-center max-w-2xl">
-          <Heading level={2} className="text-2xl md:text-3xl mb-3">
-            {title}
-          </Heading>
+        <div className="text-center max-w-2xl flex flex-col gap-2">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#0f1b3d]">
+            {title.includes("5-Step") ? (
+              <>
+                Our Simple <span className="text-[#3f159a]">5-Step Process</span>
+              </>
+            ) : (
+              title
+            )}
+          </h2>
           {subtitle && (
-            <Text variant="muted" className="text-sm md:text-base">{subtitle}</Text>
+            <p className="text-gray-500 text-sm md:text-base font-semibold leading-relaxed">
+              {subtitle}
+            </p>
           )}
         </div>
       )}
 
-      {/* Desktop: horizontal flow */}
-      <div className="hidden md:flex items-start justify-center gap-0 w-full">
+      {/* Desktop View: Horizontal columns with absolute positioned centered arrows */}
+      <div className="hidden md:grid grid-cols-5 gap-6 w-full relative mt-4">
         {steps.map((step, index) => (
-          <React.Fragment key={step.number}>
-            <div className="flex flex-col items-center text-center gap-3 max-w-[180px]">
-              {/* Numbered circle */}
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-primary-50 border-2 border-primary-100 flex items-center justify-center">
-                  <div className="text-primary-700">{step.icon}</div>
-                </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary-700 text-white text-xs font-bold flex items-center justify-center">
-                  {step.number}
-                </div>
-              </div>
-              <Heading level={4} className="text-sm leading-tight">
-                {step.title}
-              </Heading>
-              <Text variant="muted" className="text-xs leading-relaxed">
-                {step.description}
-              </Text>
+          <div key={step.number} className="flex flex-col items-center text-center relative px-2">
+            
+            {/* 1. Icon Circle Container */}
+            <div className="w-[56px] h-[56px] rounded-full bg-[#f3f0ff] flex items-center justify-center text-[#3f159a] mb-2 shrink-0">
+              {step.icon}
             </div>
 
-            {/* Arrow connector */}
+            {/* 2. Step Number Badge */}
+            <div className="w-5 h-5 rounded-full bg-[#3f159a] text-white text-[11px] font-extrabold flex items-center justify-center mb-3">
+              {step.number}
+            </div>
+
+            {/* 3. Title */}
+            <h3 className="font-extrabold text-[#0f1b3d] text-[15px] sm:text-[16px] leading-tight mb-2 tracking-tight">
+              {step.title}
+            </h3>
+
+            {/* 4. Description */}
+            <p className="text-[12.5px] text-gray-500 leading-relaxed font-medium max-w-[170px]">
+              {step.description}
+            </p>
+
+            {/* 5. Horizontal Connector Arrow between icon circles */}
             {index < steps.length - 1 && (
-              <div className="flex items-center pt-8 px-2 shrink-0">
-                <div className="w-12 border-t-2 border-dashed border-primary-200" />
-                <svg className="w-3 h-3 text-primary-300 -ml-1 shrink-0" fill="currentColor" viewBox="0 0 12 12">
-                  <path d="M4 1l5 5-5 5V1z" />
+              <div className="absolute right-[-24px] top-[18px] w-12 text-[#94a3b8] flex justify-center z-10 select-none">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </div>
             )}
-          </React.Fragment>
+          </div>
         ))}
       </div>
 
-      {/* Mobile: vertical list */}
-      <div className="flex md:hidden flex-col gap-6 w-full">
+      {/* Mobile View: Vertical list with clean spacing */}
+      <div className="flex md:hidden flex-col gap-8 w-full max-w-sm mx-auto text-left">
         {steps.map((step, index) => (
-          <div key={step.number} className="flex items-start gap-4">
-            <div className="relative shrink-0">
-              <div className="w-14 h-14 rounded-full bg-primary-50 border-2 border-primary-100 flex items-center justify-center">
-                <div className="text-primary-700">{step.icon}</div>
+          <div key={step.number} className="flex items-start gap-4 relative">
+            <div className="flex flex-col items-center shrink-0">
+              <div className="w-[52px] h-[52px] rounded-full bg-[#f3f0ff] flex items-center justify-center text-[#3f159a] relative z-10">
+                {step.icon}
               </div>
-              <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary-700 text-white text-[10px] font-bold flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-[#3f159a] text-white text-[10px] font-extrabold flex items-center justify-center mt-2 relative z-10">
                 {step.number}
               </div>
-              {/* Vertical connector */}
+              {/* Vertical connector line */}
               {index < steps.length - 1 && (
-                <div className="absolute left-1/2 top-full w-0.5 h-6 bg-primary-100 -translate-x-1/2" />
+                <div className="absolute left-1/2 top-[52px] w-[2px] h-[64px] bg-slate-100 -translate-x-1/2 z-0" />
               )}
             </div>
             <div className="flex flex-col gap-1 pt-1">
-              <Heading level={4} className="text-sm">
+              <h3 className="font-extrabold text-[#0f1b3d] text-[15px] leading-tight">
                 {step.title}
-              </Heading>
-              <Text variant="muted" className="text-xs leading-relaxed">
+              </h3>
+              <p className="text-[12.5px] text-gray-500 leading-relaxed font-medium">
                 {step.description}
-              </Text>
+              </p>
             </div>
           </div>
         ))}

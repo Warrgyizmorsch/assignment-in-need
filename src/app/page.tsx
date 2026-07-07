@@ -33,7 +33,7 @@ import {
   Users
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { WRITERS, SERVICES, SUBJECTS, BLOG_POSTS, TESTIMONIALS, FAQS } from "@/lib/data";
+import { WRITERS, SUBJECTS, BLOG_POSTS, TESTIMONIALS, FAQS } from "@/lib/data";
 import { BlogSection } from "@/components/ui/BlogSection";
 import { SampleSection } from "@/components/ui/SampleSection";
 import HeroSection from "@/components/home/HeroSection";

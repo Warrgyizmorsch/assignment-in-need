@@ -35,9 +35,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             type={type}
             className={cn(
-              "w-full bg-white text-text-body border border-primary-100/50 rounded-btn py-3 px-4 text-base focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 transition-all duration-200 placeholder:text-text-muted/60",
+              "w-full bg-white text-gray-700 border border-gray-200 rounded-md py-2 px-3 text-sm focus-visible:ring-2 focus-visible:ring-[#6A2FD6]/30 focus-visible:border-[#6A2FD6] transition-all duration-200 placeholder:text-gray-400 h-10",
               icon && "pl-11",
-              error && "border-red-500 focus-visible:ring-red-500",
+              error && "border-red-400 focus-visible:ring-red-400/30",
               className
             )}
             {...props}

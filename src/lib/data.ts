@@ -283,80 +283,7 @@ export const WRITERS: Writer[] = [
   }
 ];
 
-export const SERVICES: Service[] = [
-  {
-    slug: "assignment-writing",
-    title: "Assignment Help",
-    shortTitle: "Assignment Help",
-    description: "Get custom-tailored academic assignments written by subject matter experts matching your university standards.",
-    price: 12,
-    orderCount: "12,500+",
-    image: "/new-home-page-images/Assignment-Help.webp"
-  },
-  {
-    slug: "essay-writing",
-    title: "Essay Writing Help",
-    shortTitle: "Essay Writing",
-    description: "Persuasive, narrative, and critical essays structured accurately with comprehensive scholarly citations.",
-    price: 12,
-    orderCount: "18,400+",
-    image: "/new-home-page-images/Essay-Writing.webp"
-  },
-  {
-    slug: "dissertation-help",
-    title: "Dissertation Writing Help",
-    shortTitle: "Dissertation Help",
-    description: "Deep academic research, literature reviews, methodology design, and statistical data analyses for PhD/Master's.",
-    price: 25,
-    orderCount: "8,900+",
-    image: "/new-home-page-images/Disseratation-Help.webp"
-  },
-  {
-    slug: "case-study-help",
-    title: "Case Study Analysis Help",
-    shortTitle: "Case Study Help",
-    description: "Rigorous diagnostic business or clinical case study analysis mapping operational issues to academic theory.",
-    price: 15,
-    orderCount: "6,200+",
-    image: "/new-home-page-images/Case-Study-Help.webp"
-  },
-  {
-    slug: "report-writing",
-    title: "Technical Report Writing",
-    shortTitle: "Report Writing",
-    description: "Professional business reports, engineering designs, research findings, and executive summaries.",
-    price: 15,
-    orderCount: "5,800+",
-    image: "/new-home-page-images/Report-Writing.webp"
-  },
-  {
-    slug: "coursework-help",
-    title: "Complete Coursework Help",
-    shortTitle: "Coursework Help",
-    description: "Continuous assessment writing assistance to secure top marks across all modules in a semester.",
-    price: 12,
-    orderCount: "9,100+",
-    image: "/new-home-page-images/Coursework-Help.webp"
-  },
-  {
-    slug: "proofreading-editing",
-    title: "Academic Proofreading Service",
-    shortTitle: "Proofreading",
-    description: "Grammar verification, stylistic smoothing, structural refinement, and alignment with academic layout conventions.",
-    price: 8,
-    orderCount: "11,300+",
-    image: "/new-home-page-images/Proofreading.webp"
-  },
-  {
-    slug: "editing-formatting",
-    title: "Academic Editing & Formatting",
-    shortTitle: "Editing & Formatting",
-    description: "Align your citations and structural headings with APA, Harvard, OSCOLA, or MLA layout standards.",
-    price: 10,
-    orderCount: "5,800+",
-    image: "/new-home-page-images/Editing.webp"
-  }
-];
+export const SERVICES: Service[] = [];
 
 export const SUBJECTS: Subject[] = [
   {
@@ -572,30 +499,23 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     name: "Emily R.",
     institution: "University of Leeds",
-    quote: "Amazing experience! The expert understood my accounting assignment requirements perfectly and delivered a distinction-level paper ahead of schedule.",
+    quote: "The assignment was well-structured and perfectly written. It helped me understand the topic better and I scored 85%. Highly recommended!",
     rating: 5,
-    avatar: "ER"
+    avatar: "/assets/media/avatars/150-5.jpg"
   },
   {
-    name: "Daniel K.",
+    name: "James L.",
     institution: "University of Manchester",
-    quote: "High-quality work and excellent communication. The dissertation editing was precise, correctly formatted with OSCOLA, and helped me secure a top mark.",
+    quote: "Excellent experience! The writer understood my requirements perfectly. Delivered before the deadline and the quality was outstanding.",
     rating: 5,
-    avatar: "DK"
+    avatar: "/assets/media/avatars/150-2.jpg"
   },
   {
-    name: "Sophie L.",
+    name: "Sophie M.",
     institution: "King's College London",
-    quote: "Very professional and reliable service. I was struggling with my nursing case study, but they provided an original, AI-free analysis that scored 82%!",
+    quote: "Great communication and quick responses. The assignment was original and followed all the guidelines. Will definitely order again!",
     rating: 5,
-    avatar: "SL"
-  },
-  {
-    name: "James T.",
-    institution: "University of Manchester",
-    quote: "Outstanding support from start to finish. The platform matches you with the best writer. My marketing business plan was structured beautifully.",
-    rating: 5,
-    avatar: "JT"
+    avatar: "/assets/media/avatars/150-3.jpg"
   }
 ];
 
