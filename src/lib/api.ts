@@ -2,7 +2,7 @@ import { Writer } from "./data";
 
 export const getBaseUrl = () => {
   if (typeof window === "undefined") {
-    return process.env.BACKEND_INTERNAL_URL || "https://admin.assignnmentinneed.com";
+    return process.env.BACKEND_INTERNAL_URL || "";
   }
   return ""; // client-side uses relative path for proxying to avoid CORS errors
 };
@@ -10,7 +10,7 @@ export const getBaseUrl = () => {
 export const getImageUrl = (imagePath: string) => {
   if (!imagePath) return "/assets/bg/blog-bg.png";
   if (imagePath.startsWith("http")) return imagePath;
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://admin.assignnmentinneed.com";
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "";
   const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
   return `${baseUrl}${cleanPath}`;
 };

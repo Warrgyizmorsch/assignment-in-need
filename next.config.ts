@@ -1,5 +1,19 @@
 import type { NextConfig } from "next";
 
+const backendUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
+
+let backendHostname = "";
+let backendProtocol: "http" | "https" = "https";
+if (backendUrl) {
+  try {
+    const parsed = new URL(backendUrl);
+    backendHostname = parsed.hostname;
+    backendProtocol = parsed.protocol.replace(":", "") as "http" | "https";
+  } catch (e) {
+    // fallback
+  }
+}
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -10,8 +24,8 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "https",
-        hostname: "admin.assignnmentinneed.com",
+        protocol: backendProtocol,
+        hostname: backendHostname,
         pathname: "/**",
       },
       {
@@ -22,7 +36,6 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    const backendUrl = process.env.BACKEND_INTERNAL_URL || "https://admin.assignnmentinneed.com";
     return [
       {
         source: "/api/:path*",
