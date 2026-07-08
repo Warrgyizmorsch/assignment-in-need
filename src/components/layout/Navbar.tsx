@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Phone, Mail, User, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Phone, Mail, User, LogOut, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getBaseUrl } from "@/lib/api";
 
@@ -31,13 +32,17 @@ const RESOURCES = [
 ];
 
 export const Navbar = () => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulate auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userProfile, setUserProfile] = useState<{ name: string; email: string } | null>(null);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [dynamicServices, setDynamicServices] = useState<any[]>([]);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileSubjectsOpen, setMobileSubjectsOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
+  const accountDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -57,6 +62,52 @@ export const Navbar = () => {
     fetchServices();
   }, []);
 
+  useEffect(() => {
+    const loadAuthState = () => {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("ain_auth_token") : null;
+      const storedEmail = typeof window !== "undefined" ? window.localStorage.getItem("ain_user_email") : null;
+      const storedName = typeof window !== "undefined" ? window.localStorage.getItem("ain_user_name") : null;
+      const storedUserData = typeof window !== "undefined" ? window.localStorage.getItem("ain_user_data") : null;
+
+      let parsedUserData: { name?: string; email?: string } | null = null;
+      if (storedUserData) {
+        try {
+          parsedUserData = JSON.parse(storedUserData);
+        } catch (error) {
+          console.warn("Failed to parse stored user data:", error);
+        }
+      }
+
+      const loggedIn = Boolean(token);
+      setIsLoggedIn(loggedIn);
+      if (loggedIn) {
+        setUserProfile({
+          name: parsedUserData?.name || storedName || "Student",
+          email: parsedUserData?.email || storedEmail || "",
+        });
+      } else {
+        setUserProfile(null);
+      }
+    };
+
+    loadAuthState();
+    const handleStorage = () => loadAuthState();
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  const handleLogout = () => {
+    if (typeof window === "undefined") return;
+    window.localStorage.removeItem("ain_auth_token");
+    window.localStorage.removeItem("ain_user_email");
+    window.localStorage.removeItem("ain_user_name");
+    window.localStorage.removeItem("ain_user_data");
+    setIsLoggedIn(false);
+    setUserProfile(null);
+    setIsAccountOpen(false);
+    router.push("/login");
+  };
+
   const menuCategoriesMap = new Map<string, { name: string; path?: string; subItems: { name: string; path: string }[] }>();
 
   dynamicServices.forEach(ds => {
@@ -71,7 +122,7 @@ export const Navbar = () => {
         const parentName = parentSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
         menuCategoriesMap.set(parentSlug, {
           name: parentName,
-          path: `/services/${parentSlug}`,
+          path: path,
           subItems: []
         });
       }
@@ -109,10 +160,25 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!accountDropdownRef.current) return;
+      const target = event.target as Node;
+      if (!accountDropdownRef.current.contains(target)) {
+        setIsAccountOpen(false);
+      }
+    };
+
+    if (isAccountOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [isAccountOpen]);
+
   return (
     <>
       {/* Top Bar - Matches Laravel Design Exactly */}
-      <div className="bg-[#3F159A] text-white text-sm py-1 shadow-sm relative z-50">
+      <div className={cn("bg-[#3F159A] text-white text-sm py-1 shadow-sm relative z-50", isOpen && "hidden")}>
         <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-1 md:gap-0">
           <div className="flex items-center gap-3 md:gap-4 flex-wrap justify-center">
             <a href="https://wa.me/+447917481696?text=Hi%20Dear,%20I%20need%20assignment%20help." target="_blank" rel="noreferrer" className="flex items-center gap-1.5 font-medium hover:text-[#ffcc00] transition-colors">
@@ -268,6 +334,59 @@ export const Navbar = () => {
               Get Free Quote
             </Link>
 
+            {/* User Account Icon */}
+            <div ref={accountDropdownRef} className="relative hidden lg:block">
+              <button
+                type="button"
+                onClick={() => setIsAccountOpen((prev) => !prev)}
+                className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white p-2 text-gray-700 shadow-sm transition hover:bg-gray-50"
+                aria-label="Account"
+              >
+                <User className="w-5 h-5" />
+                <span className="sr-only">Account</span>
+              </button>
+              {isAccountOpen && (
+                <div className="absolute right-0 mt-2 min-w-[20rem] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+                  <div className="bg-[#f8f4ff] px-4 py-4">
+                    {isLoggedIn ? (
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ede9fe] text-[#5b21b6]">
+                          <User className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900">{userProfile?.name || "Student"}</div>
+                          <div className="text-xs text-gray-500 break-words">{userProfile?.email || "No email available"}</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="text-sm font-semibold text-gray-900">Welcome back</div>
+                        <p className="text-sm text-gray-500">Login to access your orders, profile, and faster checkout.</p>
+                        <Link
+                          href="/login"
+                          className="inline-flex w-full items-center justify-center rounded-xl bg-[#7c3aed] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#6828d8]"
+                          onClick={() => setIsAccountOpen(false)}
+                        >
+                          Login
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+
+                  {isLoggedIn && (
+                    <div className="border-t border-gray-100 px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full rounded-2xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button 
@@ -286,15 +405,14 @@ export const Navbar = () => {
             isOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-full pointer-events-none"
           )}
         >
-          {/* Top Close Row */}
-          <div className="flex items-center justify-end w-full">
-            <button 
-              onClick={() => setIsOpen(false)}
-              className="p-2 text-white hover:opacity-85 transition-opacity"
-            >
-              <X className="w-8 h-8" />
-            </button>
-          </div>
+          {/* Top Close Button */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute right-6 top-6 z-60 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition hover:bg-white/20"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
           {/* Navigation Links */}
           <div className="flex flex-col flex-1 mt-4">
@@ -442,7 +560,7 @@ export const Navbar = () => {
           </div>
 
           {/* Bottom Orange Button */}
-          <div className="mt-8 pb-4">
+          <div className="mt-6 pb-2">
             <Link 
               href="/order" 
               onClick={() => setIsOpen(false)}
@@ -450,6 +568,53 @@ export const Navbar = () => {
             >
               Get Free Quote
             </Link>
+          </div>
+
+          {/* Mobile Account Panel */}
+          <div className="mt-6 border-t border-white/15 pt-6">
+            <div className="mb-4">
+              <div className="text-sm font-semibold text-white">Profile</div>
+              <p className="mt-1 text-xs text-white/70">Open the profile panel for login, account details, and logout.</p>
+            </div>
+
+            {isLoggedIn ? (
+              <div className="space-y-4 rounded-[28px] border border-white/10 bg-white/5 p-4 text-white">
+                <div className="flex items-center gap-3 rounded-3xl bg-white/10 p-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-white">{userProfile?.name || "Student"}</div>
+                    <div className="text-xs text-white/70 break-words">{userProfile?.email || "No email available"}</div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4 rounded-[28px] border border-white/10 bg-white/5 p-4 text-white">
+                <div className="rounded-3xl bg-white/10 p-4 text-sm text-white/80">
+                  Login for faster ordering, saved profiles, and order tracking.
+                </div>
+                <Link
+                  href="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="inline-flex w-full items-center justify-center rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[#3f159a] transition hover:bg-gray-100"
+                >
+                  Login
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </header>

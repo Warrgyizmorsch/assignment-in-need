@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getImageUrl } from '@/lib/api';
 
 interface Review {
+  id: number | string;
   name: string;
   meta: string;
   text: string;
   image: string;
+  rating: number;
 }
 
 interface FaqItem {
@@ -14,35 +17,78 @@ interface FaqItem {
   answer: string;
 }
 
+type ApiRecord = Record<string, unknown>;
+
+const FALLBACK_REVIEWS: Review[] = [
+  {
+    id: 'emily-r',
+    name: 'Emily R.',
+    meta: 'University of Leeds',
+    text: 'Amazing experience! The expert understood my requirements perfectly and delivered on time.',
+    image: '/assets/media/layout/testimonial/testimonial1.webp',
+    rating: 5
+  },
+  {
+    id: 'daniel-k',
+    name: 'Daniel K.',
+    meta: 'University of Manchester',
+    text: 'High-quality work and excellent communication. Helped me secure a top grade.',
+    image: '/assets/media/layout/testimonial/testimonial2.webp',
+    rating: 5
+  },
+  {
+    id: 'sophia-l',
+    name: 'Sophia L.',
+    meta: 'King\'s College London',
+    text: 'Very professional and reliable service. Highly recommended for every student.',
+    image: '/assets/media/layout/testimonial/testimonial3.webp',
+    rating: 5
+  },
+  {
+    id: 'james-t',
+    name: 'James T.',
+    meta: 'University of Birmingham',
+    text: 'Got my assignment before the deadline and it was beyond my expectations.',
+    image: '/assets/media/layout/testimonial/testimonial4.webp',
+    rating: 5
+  }
+];
+
+const isApiRecord = (value: unknown): value is ApiRecord =>
+  value !== null && typeof value === "object";
+
+const asString = (value: unknown) =>
+  typeof value === "string" || typeof value === "number" ? String(value) : "";
+
+function mapReview(raw: ApiRecord, index: number): Review {
+  const name = asString(raw.name) || asString(raw.student_name) || 'Student';
+  const rawImage = asString(raw.image);
+  const image = rawImage
+    ? getImageUrl(rawImage)
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=f3e8ff&color=6b21a8&size=80`;
+
+  return {
+    id: asString(raw.id) || `${name}-${index}`,
+    name,
+    meta: asString(raw.meta) || asString(raw.university) || asString(raw.location) || 'UK University',
+    text: asString(raw.description) || asString(raw.review) || asString(raw.text) || asString(raw.message) || asString(raw.content),
+    image,
+    rating: parseFloat(asString(raw.customer_rating) || asString(raw.rating)) || 5,
+  };
+}
+
+function Stars({ rating }: { rating: number }) {
+  const full = Math.min(5, Math.max(0, Math.round(rating)));
+  return (
+    <span className="text-amber-400 text-[1rem] tracking-widest">
+      {'★'.repeat(full)}{'☆'.repeat(5 - full)}
+    </span>
+  );
+}
+
 export default function ReviewsAndFaq() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-
-  const reviews: Review[] = [
-    {
-      name: 'Emily R.',
-      meta: 'University of Leeds',
-      text: 'Amazing experience! The expert understood my requirements perfectly and delivered on time.',
-      image: '/assets/media/layout/testimonial/testimonial1.webp'
-    },
-    {
-      name: 'Daniel K.',
-      meta: 'University of Manchester',
-      text: 'High-quality work and excellent communication. Helped me secure a top grade.',
-      image: '/assets/media/layout/testimonial/testimonial2.webp'
-    },
-    {
-      name: 'Sophia L.',
-      meta: 'King\'s College London',
-      text: 'Very professional and reliable service. Highly recommended for every student.',
-      image: '/assets/media/layout/testimonial/testimonial3.webp'
-    },
-    {
-      name: 'James T.',
-      meta: 'University of Birmingham',
-      text: 'Got my assignment before the deadline and it was beyond my expectations.',
-      image: '/assets/media/layout/testimonial/testimonial4.webp'
-    }
-  ];
+  const [reviews, setReviews] = useState<Review[]>(FALLBACK_REVIEWS);
 
   const faqs: FaqItem[] = [
     {
@@ -71,6 +117,25 @@ export default function ReviewsAndFaq() {
     setActiveFaq(activeFaq === index ? null : index);
   };
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('/api/reviews');
+        if (!response.ok) throw new Error('Failed to load homepage reviews');
+
+        const json = await response.json();
+        const raw = json?.data?.data ?? json?.data ?? json?.reviews ?? [];
+        if (Array.isArray(raw) && raw.length > 0) {
+          setReviews(raw.filter(isApiRecord).slice(0, 4).map(mapReview));
+        }
+      } catch (err) {
+        console.error('Error fetching homepage reviews:', err);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
   return (
     <section className="py-12 px-8 max-md:py-8 max-md:px-4 bg-[#fafaff] font-sans flex justify-center border-t border-gray-100">
       <div className="max-w-[1200px] w-full grid grid-cols-[1.3fr_0.9fr] max-lg:grid-cols-1 gap-12">
@@ -82,18 +147,24 @@ export default function ReviewsAndFaq() {
           </div>
 
           <div className="grid grid-cols-2 max-md:grid-cols-1 gap-4">
-            {reviews.map((r, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-[1.25rem_1rem] shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col gap-2.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.06)]">
+            {reviews.map((r) => (
+              <div key={r.id} className="bg-white rounded-2xl p-[1.25rem_1rem] shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col gap-2.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center gap-3">
-                  <img src={r.image} alt={r.name} className="w-10 h-10 rounded-full bg-gray-100 object-cover border-2 border-gray-200" />
+                  <img
+                    src={r.image}
+                    alt={r.name}
+                    className="w-10 h-10 rounded-full bg-gray-100 object-cover border-2 border-gray-200"
+                    onError={(event) => {
+                      event.currentTarget.src =
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=f3e8ff&color=6b21a8&size=80`;
+                    }}
+                  />
                   <div className="flex flex-col">
                     <strong className="text-[0.85rem] text-gray-900 leading-tight">{r.name}</strong>
                     <span className="text-[0.75rem] text-gray-500">{r.meta}</span>
                   </div>
                 </div>
-                <div className="text-amber-400 text-[1rem] tracking-widest">
-                  ★★★★★
-                </div>
+                <Stars rating={r.rating} />
                 <p className="text-[0.82rem] text-gray-600 leading-relaxed m-0">{r.text}</p>
               </div>
             ))}

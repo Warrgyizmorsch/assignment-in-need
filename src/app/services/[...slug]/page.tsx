@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -43,9 +43,11 @@ export default function ServiceLanding() {
 
   const [pageData, setPageData] = useState<any>(null);
   const [experts, setExperts] = useState<any[]>([]);
+  const [allServicePages, setAllServicePages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchServicePage = async () => {
@@ -53,15 +55,27 @@ export default function ServiceLanding() {
       try {
         setLoading(true);
         const baseUrl = getBaseUrl();
-        const res = await fetch(`${baseUrl}/api/service-pages/${fullSlug}`);
-        if (res.ok) {
-          const result = await res.json();
-          if (result.success && result.data && result.data.page) {
-            setPageData(result.data.page);
-            if (Array.isArray(result.data.experts)) {
+        const pageRes = await fetch(`${baseUrl}/api/service-pages/${fullSlug}`);
+        let pageResult: any = null;
+
+        if (pageRes.ok) {
+          pageResult = await pageRes.json();
+          if (pageResult.success && pageResult.data && pageResult.data.page) {
+            setPageData(pageResult.data.page);
+            if (Array.isArray(pageResult.data.experts)) {
               setExperts(
-                result.data.experts.map((item: any) => mapExpertToWriter(item)),
+                pageResult.data.experts.map((item: any) => mapExpertToWriter(item)),
               );
+            }
+          }
+        }
+
+        if (!pageResult || !pageResult.success || !pageResult.data || !pageResult.data.page) {
+          const listRes = await fetch(`${baseUrl}/api/service-pages`);
+          if (listRes.ok) {
+            const listResult = await listRes.json();
+            if (listResult.success && Array.isArray(listResult.data)) {
+              setAllServicePages(listResult.data);
             }
           }
         }
@@ -74,17 +88,69 @@ export default function ServiceLanding() {
     fetchServicePage();
   }, [fullSlug]);
 
+  const childServicePages = allServicePages.filter((service) => {
+    const slug = service?.slug || "";
+    return slug.startsWith(`${fullSlug}/`);
+  });
+
   useEffect(() => {
     if (pageData && pageData.meta_title) {
       document.title = pageData.meta_title;
     }
   }, [pageData]);
 
+  useEffect(() => {
+    if (!loading && !pageData && childServicePages.length === 1) {
+      router.replace(`/services/${childServicePages[0].slug}`);
+    }
+  }, [loading, pageData, childServicePages, router]);
+
   if (loading) {
     return <ServicePageLoading />;
   }
 
+  if (!pageData && !loading && childServicePages.length === 1) {
+    return <ServicePageLoading />;
+  }
+
   if (!pageData) {
+    if (childServicePages.length > 1) {
+      return (
+        <div className="bg-white min-h-[60vh] px-4 py-16 mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-extrabold text-gray-900 capitalize">
+              {fullSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+            </h1>
+            <p className="mt-4 text-gray-500 max-w-2xl mx-auto">
+              This category contains several related service pages. Select one below to continue.
+            </p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {childServicePages.map((service) => (
+              <Link
+                key={service.slug}
+                href={`/services/${service.slug}`}
+                className="group block rounded-3xl border border-gray-200 p-6 hover:border-primary-500 hover:bg-primary-50 transition-all duration-200"
+              >
+                <h2 className="text-xl font-semibold text-gray-900 group-hover:text-primary-700">
+                  {service.hero_heading || service.meta_title || service.slug}
+                </h2>
+                {service.hero_content ? (
+                  <p className="mt-3 text-sm text-gray-600 line-clamp-4">
+                    {service.hero_content}
+                  </p>
+                ) : null}
+                <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary-700">
+                  View Service
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="bg-white min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center px-4">
         <h1 className="text-3xl font-extrabold text-gray-800">

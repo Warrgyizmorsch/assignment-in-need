@@ -136,29 +136,6 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
       className={`w-full max-w-[390px] bg-white rounded-2xl p-[1rem] md:p-[1.2rem_1.4rem] border border-slate-200 shadow-[0_20px_40px_rgba(0,0,0,0.08)] relative flex flex-col gap-3 font-sans ${className || ""}`}
       id="quote-form-card"
     >
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        #quote-form-card input:focus,
-        #quote-form-card select:focus,
-        #quote-form-card textarea:focus,
-        #quote-form-card button:focus,
-        #quote-form-card input:focus-visible,
-        #quote-form-card select:focus-visible,
-        #quote-form-card textarea:focus-visible,
-        #quote-form-card button:focus-visible {
-          outline: none !important;
-          outline-style: none !important;
-          box-shadow: none !important;
-          border-color: transparent !important;
-          border-width: 0px !important;
-          --tw-ring-color: transparent !important;
-          --tw-ring-width: 0px !important;
-          --tw-ring-offset-width: 0px !important;
-        }
-      `,
-        }}
-      />
       {/* Sparkle Header with Colored Sparkles */}
       <div className="flex items-center justify-center gap-2 mb-0.5">
         <svg

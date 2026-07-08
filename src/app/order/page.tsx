@@ -239,7 +239,7 @@ export default function OrderPage() {
   return (
     <div className="bg-[#f8fafc] min-h-screen pb-8">
       {/* 1. Hero Title Header Block */}
-      <section className="relative w-full bg-gradient-to-r from-white via-purple-50/20 to-purple-50/40 py-3 md:py-5 pb-2 md:pb-3 overflow-hidden">
+      <section className="relative w-full bg-gradient-to-r from-white via-purple-50/20 to-purple-50/40 py-2 overflow-hidden">
         {/* Soft background shape */}
         <div 
           className="absolute inset-y-0 right-0 w-1/2 z-0 opacity-10 pointer-events-none" 
@@ -333,7 +333,7 @@ export default function OrderPage() {
       </section>
 
       {/* 2. Order Form Main Section */}
-      <SectionContainer className="pt-8 pb-16 md:pt-8 md:pb-20 lg:pt-8 lg:pb-24">
+      <SectionContainer className="!py-10 !pb-2">
         <form onSubmit={handleOrderSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* LEFT COLUMN: Input details (65%) */}
           <div className="lg:col-span-8 flex flex-col gap-6">

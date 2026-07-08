@@ -7,6 +7,10 @@ export const getBaseUrl = () => {
   return ""; // client-side uses relative path for proxying to avoid CORS errors
 };
 
+export const getClientBaseUrl = () => {
+  return process.env.NEXT_PUBLIC_BACKEND_URL || "";
+};
+
 export const getImageUrl = (imagePath: string) => {
   if (!imagePath) return "/assets/bg/blog-bg.png";
   if (imagePath.startsWith("http")) return imagePath;
