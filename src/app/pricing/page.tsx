@@ -3,6 +3,21 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { CustomDropdown } from "@/components/ui/CustomDropdown";
+
+const COUNTRY_CODES = [
+  { label: "UK (+44)", value: "+44" },
+  { label: "US (+1)", value: "+1" },
+  { label: "IN (+91)", value: "+91" },
+  { label: "AU (+61)", value: "+61" },
+  { label: "CA (+1)", value: "+1" },
+  { label: "AE (+971)", value: "+971" },
+  { label: "SA (+966)", value: "+966" },
+  { label: "IE (+353)", value: "+353" },
+  { label: "NZ (+64)", value: "+64" },
+  { label: "SG (+65)", value: "+65" },
+  { label: "MY (+60)", value: "+60" },
+];
 import {
   Award,
   Clock,
@@ -408,24 +423,13 @@ export default function PricingPage() {
                     Phone Number
                   </label>
                   <div className="flex gap-2">
-                    <div className="relative shrink-0">
-                      <select
+                    <div className="relative shrink-0 w-[100px] border border-gray-200 bg-gray-50 rounded-xl px-2 flex items-center h-11">
+                      <CustomDropdown
+                        options={COUNTRY_CODES}
                         value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        className="h-11 px-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#3f159a] outline-none text-xs text-gray-800 transition-colors font-medium focus:ring-0 cursor-pointer appearance-none"
-                      >
-                        <option value="+44">UK (+44)</option>
-                        <option value="+1">US (+1)</option>
-                        <option value="+91">IN (+91)</option>
-                        <option value="+61">AU (+61)</option>
-                        <option value="+1">CA (+1)</option>
-                        <option value="+971">AE (+971)</option>
-                        <option value="+966">SA (+966)</option>
-                        <option value="+353">IE (+353)</option>
-                        <option value="+64">NZ (+64)</option>
-                        <option value="+65">SG (+65)</option>
-                        <option value="+60">MY (+60)</option>
-                      </select>
+                        onChange={setCountryCode}
+                        align="left"
+                      />
                     </div>
                     <input
                       type="tel"
@@ -445,23 +449,16 @@ export default function PricingPage() {
                       Subject <span className="text-red-500">*</span>
                     </label>
                     <div className="hero-select-box relative w-full h-11 bg-gray-50 border border-gray-200 rounded-xl px-3.5 flex items-center shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus-within:bg-white focus-within:border-[#3f159a] transition-colors">
-                      <select
-                        required
+                      <CustomDropdown
+                        options={SUBJECT_OPTIONS}
                         value={subject}
-                        onChange={(e) => {
-                          setSubject(e.target.value);
+                        onChange={(val) => {
+                          setSubject(val);
                           if (errors.subject)
                             setErrors((prev) => ({ ...prev, subject: "" }));
                         }}
-                        className="w-full border-none bg-transparent outline-none text-xs text-slate-800 py-2 cursor-pointer appearance-none font-medium focus:outline-none focus:ring-0 focus-visible:ring-0"
-                      >
-                        <option value="">Select a subject</option>
-                        {SUBJECT_OPTIONS.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                        placeholder="Select a subject"
+                      />
                     </div>
                     {errors.subject && (
                       <span className="text-red-500 text-[10px] font-bold mt-0.5">
@@ -476,23 +473,16 @@ export default function PricingPage() {
                       Inquiry Type <span className="text-red-500">*</span>
                     </label>
                     <div className="hero-select-box relative w-full h-11 bg-gray-50 border border-gray-200 rounded-xl px-3.5 flex items-center shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus-within:bg-white focus-within:border-[#3f159a] transition-colors">
-                      <select
-                        required
+                      <CustomDropdown
+                        options={INQUIRY_OPTIONS}
                         value={inquiryType}
-                        onChange={(e) => {
-                          setInquiryType(e.target.value);
+                        onChange={(val) => {
+                          setInquiryType(val);
                           if (errors.inquiryType)
                             setErrors((prev) => ({ ...prev, inquiryType: "" }));
                         }}
-                        className="w-full border-none bg-transparent outline-none text-xs text-slate-800 py-2 cursor-pointer appearance-none font-medium focus:outline-none focus:ring-0 focus-visible:ring-0"
-                      >
-                        <option value="">Select inquiry type</option>
-                        {INQUIRY_OPTIONS.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                        placeholder="Select inquiry type"
+                      />
                     </div>
                     {errors.inquiryType && (
                       <span className="text-red-500 text-[10px] font-bold mt-0.5">

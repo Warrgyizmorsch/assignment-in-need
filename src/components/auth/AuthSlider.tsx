@@ -4,6 +4,21 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { CustomDropdown } from "../ui/CustomDropdown";
+
+const COUNTRY_CODES = [
+  { label: "UK (+44)", value: "+44" },
+  { label: "US (+1)", value: "+1" },
+  { label: "IN (+91)", value: "+91" },
+  { label: "AU (+61)", value: "+61" },
+  { label: "CA (+1)", value: "+1" },
+  { label: "AE (+971)", value: "+971" },
+  { label: "SA (+966)", value: "+966" },
+  { label: "IE (+353)", value: "+353" },
+  { label: "NZ (+64)", value: "+64" },
+  { label: "SG (+65)", value: "+65" },
+  { label: "MY (+60)", value: "+60" },
+];
 import {
   ArrowRight,
   Award,
@@ -327,25 +342,14 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                   Phone Number
                 </label>
                 <div className="flex gap-2">
-                  <div className="relative w-[100px] shrink-0">
+                  <div className="relative w-[100px] shrink-0 border border-[#e1c0b1] bg-white rounded-lg pl-9 pr-2 flex items-center h-[50px]">
                     <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#594136]" />
-                    <select
+                    <CustomDropdown
+                      options={COUNTRY_CODES}
                       value={registerCountryCode}
-                      onChange={(e) => setRegisterCountryCode(e.target.value)}
-                      className="w-full rounded-lg border border-[#e1c0b1] bg-white py-3 pl-9 pr-2 text-[14px] text-[#191c1e] outline-none cursor-pointer focus:border-[#6935db] focus:ring-1 focus:ring-[#6935db] appearance-none"
-                    >
-                      <option value="+44">UK (+44)</option>
-                      <option value="+1">US (+1)</option>
-                      <option value="+91">IN (+91)</option>
-                      <option value="+61">AU (+61)</option>
-                      <option value="+1">CA (+1)</option>
-                      <option value="+971">AE (+971)</option>
-                      <option value="+966">SA (+966)</option>
-                      <option value="+353">IE (+353)</option>
-                      <option value="+64">NZ (+64)</option>
-                      <option value="+65">SG (+65)</option>
-                      <option value="+60">MY (+60)</option>
-                    </select>
+                      onChange={setRegisterCountryCode}
+                      align="left"
+                    />
                   </div>
                   <div className="group relative flex-1">
                     <input

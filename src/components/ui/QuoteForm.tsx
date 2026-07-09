@@ -2,6 +2,21 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CustomDropdown } from "./CustomDropdown";
+
+const COUNTRY_CODES = [
+  { label: "UK (+44)", value: "+44" },
+  { label: "US (+1)", value: "+1" },
+  { label: "IN (+91)", value: "+91" },
+  { label: "AU (+61)", value: "+61" },
+  { label: "CA (+1)", value: "+1" },
+  { label: "AE (+971)", value: "+971" },
+  { label: "SA (+966)", value: "+966" },
+  { label: "IE (+353)", value: "+353" },
+  { label: "NZ (+64)", value: "+64" },
+  { label: "SG (+65)", value: "+65" },
+  { label: "MY (+60)", value: "+60" },
+];
 
 export interface QuoteFormProps {
   title?: string;
@@ -204,23 +219,12 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
           </label>
           <div className="flex-1 flex gap-1.5">
             <div className="w-[75px] bg-white border border-gray-200 rounded-lg py-1 px-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus-within:border-gray-300 flex items-center">
-              <select
+              <CustomDropdown
+                options={COUNTRY_CODES}
                 value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                className="w-full bg-transparent border-none outline-none text-[0.72rem] text-slate-800 font-medium py-0.5 cursor-pointer focus:ring-0 appearance-none"
-              >
-                <option value="+44">UK (+44)</option>
-                <option value="+1">US (+1)</option>
-                <option value="+91">IN (+91)</option>
-                <option value="+61">AU (+61)</option>
-                <option value="+1">CA (+1)</option>
-                <option value="+971">AE (+971)</option>
-                <option value="+966">SA (+966)</option>
-                <option value="+353">IE (+353)</option>
-                <option value="+64">NZ (+64)</option>
-                <option value="+65">SG (+65)</option>
-                <option value="+60">MY (+60)</option>
-              </select>
+                onChange={setCountryCode}
+                align="left"
+              />
             </div>
             <div className="flex-1 bg-white border border-gray-200 rounded-lg py-1 px-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus-within:border-gray-300">
               <input
@@ -241,32 +245,12 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
             Project Type
           </label>
           <div className="flex-1 bg-white border border-gray-200 rounded-lg py-1 px-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)] relative flex items-center h-[30px] focus-within:border-gray-300">
-            <select
-              required
+            <CustomDropdown
+              options={projectTypeOptions}
               value={projectType}
-              onChange={(e) => setProjectType(e.target.value)}
-              className="w-full border-none bg-transparent text-[0.72rem] text-slate-800 outline-none cursor-pointer font-medium py-0.5 appearance-none focus:outline-none focus:ring-0 focus:border-none focus:shadow-none focus-visible:ring-0 focus-visible:outline-none max-md:text-ellipsis max-md:overflow-hidden max-md:whitespace-nowrap pr-5"
-            >
-              <option value="" disabled hidden>
-                Select Project Type
-              </option>
-              {projectTypeOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="2.5"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </div>
+              onChange={setProjectType}
+              placeholder="Select Project Type"
+            />
           </div>
         </div>
 
@@ -278,32 +262,12 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
               Time Period
             </label>
             <div className="bg-white border border-gray-200 rounded-lg py-1 px-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)] relative flex items-center h-[34px] focus-within:border-gray-300">
-              <select
-                required
+              <CustomDropdown
+                options={timePeriodOptions}
                 value={timePeriod}
-                onChange={(e) => setTimePeriod(e.target.value)}
-                className="w-full border-none bg-transparent text-[0.72rem] text-slate-800 outline-none cursor-pointer font-medium appearance-none focus:outline-none focus:ring-0 focus:border-none focus:shadow-none focus-visible:ring-0 focus-visible:outline-none pr-4"
-              >
-                <option value="" disabled hidden>
-                  Select Deadline
-                </option>
-                {timePeriodOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2.5"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
+                onChange={setTimePeriod}
+                placeholder="Select Deadline"
+              />
             </div>
           </div>
 

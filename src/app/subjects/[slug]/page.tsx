@@ -4,6 +4,49 @@ import React, { useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { CustomDropdown } from "@/components/ui/CustomDropdown";
+
+const COUNTRY_CODES = [
+  { label: "UK (+44)", value: "+44" },
+  { label: "US (+1)", value: "+1" },
+  { label: "IN (+91)", value: "+91" },
+  { label: "AU (+61)", value: "+61" },
+  { label: "CA (+1)", value: "+1" },
+  { label: "AE (+971)", value: "+971" },
+  { label: "SA (+966)", value: "+966" },
+  { label: "IE (+353)", value: "+353" },
+  { label: "NZ (+64)", value: "+64" },
+  { label: "SG (+65)", value: "+65" },
+  { label: "MY (+60)", value: "+60" },
+];
+
+const PROJECT_TYPE_OPTIONS = [
+  { label: "Assignment", value: "Assignment" },
+  { label: "Dissertation", value: "Dissertation" },
+  { label: "Thesis", value: "Thesis" },
+  { label: "Research Project", value: "Research Project" },
+];
+
+const WORD_COUNT_OPTIONS = [
+  { label: "250 Words / 1 Page", value: "250" },
+  { label: "500 Words / 2 Pages", value: "500" },
+  { label: "1000 Words / 4 Pages", value: "1000" },
+  { label: "1500 Words / 6 Pages", value: "1500" },
+  { label: "2000 Words / 8 Pages", value: "2000" },
+  { label: "2500 Words / 10 Pages", value: "2500" },
+  { label: "3000 Words / 12 Pages", value: "3000" },
+  { label: "4000 Words / 16 Pages", value: "4000" },
+  { label: "5000+ Words", value: "5000" },
+];
+
+const TIME_PERIOD_OPTIONS = [
+  ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((d) => ({
+    label: `${d} Day${d > 1 ? "s" : ""}`,
+    value: String(d),
+  })),
+  { label: "16-20 Days", value: "16 to 20" },
+  { label: "21+ Days", value: "21+" },
+];
 import { SUBJECTS } from "@/lib/data";
 import {
   Star,
@@ -533,23 +576,12 @@ export default function SubjectLanding() {
                     </div>
                     <div className="flex-grow flex-1 max-w-[170px] flex gap-1">
                       <div className="w-[65px] bg-white border border-gray-200 rounded-lg py-1 px-1 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-                        <select
+                        <CustomDropdown
+                          options={COUNTRY_CODES}
                           value={countryCode}
-                          onChange={(e) => setCountryCode(e.target.value)}
-                          className="w-full bg-transparent border-none outline-none text-[0.7rem] text-slate-800 font-medium py-0.5 cursor-pointer focus:ring-0 appearance-none"
-                        >
-                          <option value="+44">UK (+44)</option>
-                          <option value="+1">US (+1)</option>
-                          <option value="+91">IN (+91)</option>
-                          <option value="+61">AU (+61)</option>
-                          <option value="+1">CA (+1)</option>
-                          <option value="+971">AE (+971)</option>
-                          <option value="+966">SA (+966)</option>
-                          <option value="+353">IE (+353)</option>
-                          <option value="+64">NZ (+64)</option>
-                          <option value="+65">SG (+65)</option>
-                          <option value="+60">MY (+60)</option>
-                        </select>
+                          onChange={setCountryCode}
+                          align="left"
+                        />
                       </div>
                       <div className="flex-grow bg-white border border-gray-200 rounded-lg py-1 px-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                         <input
@@ -575,20 +607,12 @@ export default function SubjectLanding() {
                       </label>
                     </div>
                     <div className="hero-select-box flex-1 max-w-[170px] bg-white border border-gray-200 rounded-lg py-1 px-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-                      <select
-                        required
+                      <CustomDropdown
+                        options={PROJECT_TYPE_OPTIONS}
                         value={projectType}
-                        onChange={(e) => setProjectType(e.target.value)}
-                        className="w-full border-none bg-transparent outline-none text-[0.75rem] text-slate-800 py-[0.2rem] cursor-pointer appearance-none font-medium whitespace-nowrap focus:outline-none focus:border-none focus:shadow-none"
-                      >
-                        <option value="">Select Level</option>
-                        <option value="Assignment">Assignment</option>
-                        <option value="Dissertation">Dissertation</option>
-                        <option value="Thesis">Thesis</option>
-                        <option value="Research Project">
-                          Research Project
-                        </option>
-                      </select>
+                        onChange={setProjectType}
+                        placeholder="Select Level"
+                      />
                     </div>
                   </div>
 
@@ -603,23 +627,12 @@ export default function SubjectLanding() {
                       </label>
                     </div>
                     <div className="hero-select-box flex-1 max-w-[170px] bg-white border border-gray-200 rounded-lg py-1 px-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-                      <select
-                        required
+                      <CustomDropdown
+                        options={WORD_COUNT_OPTIONS}
                         value={wordCount}
-                        onChange={(e) => setWordCount(e.target.value)}
-                        className="w-full border-none bg-transparent outline-none text-[0.75rem] text-slate-800 py-[0.2rem] cursor-pointer appearance-none font-medium whitespace-nowrap focus:outline-none focus:border-none focus:shadow-none"
-                      >
-                        <option value="">Select Word Count</option>
-                        <option value="250">250 Words / 1 Page</option>
-                        <option value="500">500 Words / 2 Pages</option>
-                        <option value="1000">1000 Words / 4 Pages</option>
-                        <option value="1500">1500 Words / 6 Pages</option>
-                        <option value="2000">2000 Words / 8 Pages</option>
-                        <option value="2500">2500 Words / 10 Pages</option>
-                        <option value="3000">3000 Words / 12 Pages</option>
-                        <option value="4000">4000 Words / 16 Pages</option>
-                        <option value="5000">5000+ Words</option>
-                      </select>
+                        onChange={setWordCount}
+                        placeholder="Select Word Count"
+                      />
                     </div>
                   </div>
 
@@ -634,23 +647,12 @@ export default function SubjectLanding() {
                       </label>
                     </div>
                     <div className="hero-select-box flex-1 max-w-[170px] bg-white border border-gray-200 rounded-lg py-1 px-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-                      <select
-                        required
+                      <CustomDropdown
+                        options={TIME_PERIOD_OPTIONS}
                         value={timePeriod}
-                        onChange={(e) => setTimePeriod(e.target.value)}
-                        className="w-full border-none bg-transparent outline-none text-[0.75rem] text-slate-800 py-[0.2rem] cursor-pointer appearance-none font-medium whitespace-nowrap focus:outline-none focus:border-none focus:shadow-none"
-                      >
-                        <option value="">Select Deadline</option>
-                        {[
-                          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                        ].map((d) => (
-                          <option key={d} value={d}>
-                            {d} Day{d > 1 ? "s" : ""}
-                          </option>
-                        ))}
-                        <option value="16 to 20">16-20 Days</option>
-                        <option value="21+">21+ Days</option>
-                      </select>
+                        onChange={setTimePeriod}
+                        placeholder="Select Deadline"
+                      />
                     </div>
                   </div>
 

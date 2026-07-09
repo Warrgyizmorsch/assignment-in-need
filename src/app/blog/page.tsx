@@ -5,6 +5,41 @@ import Image from "next/image";
 import Link from "next/link";
 import { BlogCard } from "@/components/ui/BlogCard";
 import { SectionContainer } from "@/components/ui/SectionContainer";
+import { CustomDropdown } from "@/components/ui/CustomDropdown";
+
+const COUNTRY_CODES = [
+  { label: "UK (+44)", value: "+44" },
+  { label: "US (+1)", value: "+1" },
+  { label: "IN (+91)", value: "+91" },
+  { label: "AU (+61)", value: "+61" },
+  { label: "CA (+1)", value: "+1" },
+  { label: "AE (+971)", value: "+971" },
+  { label: "SA (+966)", value: "+966" },
+  { label: "IE (+353)", value: "+353" },
+  { label: "NZ (+64)", value: "+64" },
+  { label: "SG (+65)", value: "+65" },
+  { label: "MY (+60)", value: "+60" },
+];
+
+const DEADLINE_OPTIONS = [
+  { label: "6 Hours", value: "6h" },
+  { label: "12 Hours", value: "12h" },
+  { label: "24 Hours", value: "24h" },
+  { label: "2 Days", value: "2d" },
+  { label: "3 Days", value: "3d" },
+  { label: "5 Days", value: "5d" },
+  { label: "7 Days", value: "7d" },
+  { label: "10+ Days", value: "10d" },
+];
+
+const SERVICE_OPTIONS = [
+  { label: "Assignment Writing", value: "assignment" },
+  { label: "Essay Writing", value: "essay" },
+  { label: "Dissertation Writing", value: "dissertation" },
+  { label: "Coursework Writing", value: "coursework" },
+  { label: "Case Study Writing", value: "case-study" },
+  { label: "Report Writing", value: "report" },
+];
 import {
   CheckCircle2,
   User,
@@ -411,36 +446,14 @@ export default function BlogPage() {
                           Deadline
                         </label>
                         <div className="relative">
-                          <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                          <select
-                            value={deadline}
-                            onChange={(e) => setDeadline(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-8 text-xs text-text-heading outline-none focus:border-primary-500 focus:bg-white transition-all appearance-none cursor-pointer placeholder:text-slate-400"
-                          >
-                            <option value="">Select deadline</option>
-                            <option value="6h">6 Hours</option>
-                            <option value="12h">12 Hours</option>
-                            <option value="24h">24 Hours</option>
-                            <option value="2d">2 Days</option>
-                            <option value="3d">3 Days</option>
-                            <option value="5d">5 Days</option>
-                            <option value="7d">7 Days</option>
-                            <option value="10d">10+ Days</option>
-                          </select>
-                          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                            <svg
-                              className="w-3 h-3 text-slate-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
+                          <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+                          <div className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-10 pr-4 text-xs text-text-heading focus-within:border-primary-500 focus-within:bg-white transition-all h-[38px] flex items-center">
+                            <CustomDropdown
+                              options={DEADLINE_OPTIONS}
+                              value={deadline}
+                              onChange={setDeadline}
+                              placeholder="Select deadline"
+                            />
                           </div>
                         </div>
                         {errors.deadline && (
@@ -456,16 +469,14 @@ export default function BlogPage() {
                           Phone number
                         </label>
                         <div className="flex gap-2">
-                          <select
-                            value={countryCode}
-                            onChange={(e) => setCountryCode(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-[11px] font-semibold text-text-heading outline-none cursor-pointer"
-                          >
-                            <option value="+44">GB +44</option>
-                            <option value="+61">AU +61</option>
-                            <option value="+1">US +1</option>
-                            <option value="+91">IN +91</option>
-                          </select>
+                          <div className="relative shrink-0 w-[95px] bg-slate-50 border border-slate-200 rounded-xl px-2 flex items-center h-[38px]">
+                            <CustomDropdown
+                              options={COUNTRY_CODES}
+                              value={countryCode}
+                              onChange={setCountryCode}
+                              align="left"
+                            />
+                          </div>
                           <div className="relative flex-1">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                             <input
@@ -492,42 +503,14 @@ export default function BlogPage() {
                           Service
                         </label>
                         <div className="relative">
-                          <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                          <select
-                            value={service}
-                            onChange={(e) => setService(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-8 text-xs text-text-heading outline-none focus:border-primary-500 focus:bg-white transition-all appearance-none cursor-pointer"
-                          >
-                            <option value="">Select service</option>
-                            <option value="assignment">
-                              Assignment Writing
-                            </option>
-                            <option value="essay">Essay Writing</option>
-                            <option value="dissertation">
-                              Dissertation Writing
-                            </option>
-                            <option value="coursework">
-                              Coursework Writing
-                            </option>
-                            <option value="case-study">
-                              Case Study Writing
-                            </option>
-                            <option value="report">Report Writing</option>
-                          </select>
-                          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                            <svg
-                              className="w-3 h-3 text-slate-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
+                          <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+                          <div className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-10 pr-4 text-xs text-text-heading focus-within:border-primary-500 focus-within:bg-white transition-all h-[38px] flex items-center">
+                            <CustomDropdown
+                              options={SERVICE_OPTIONS}
+                              value={service}
+                              onChange={setService}
+                              placeholder="Select service"
+                            />
                           </div>
                         </div>
                         {errors.service && (
