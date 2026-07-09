@@ -158,9 +158,9 @@ export default function ContactPage() {
                     </div>
                     <Link href="https://wa.me/447300640066" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto mt-2 sm:mt-0 shrink-0">
                       <Button
-                        variant="outline"
+                        variant="blueClose"
                         size="sm"
-                        className="border-[#25d366] text-[#25d366] hover:bg-[#e6fbf0] text-[10px] font-extrabold uppercase tracking-wider h-[38px] w-full sm:w-auto whitespace-nowrap shrink-0"
+                        className="text-[10px] font-extrabold uppercase tracking-wider h-[38px] w-full sm:w-auto whitespace-nowrap shrink-0"
                         icon={whatsappSvg}
                       >
                         Chat Now

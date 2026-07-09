@@ -357,9 +357,9 @@ export default function WritersDirectory() {
                           onClick={() => {
                             window.location.href = `/writers/${writer.id}`;
                           }}
-                          className="znw-hire-btn"
+                          className="btn-shutter-blue-close flex items-center justify-center gap-2 w-full py-3 px-4 font-semibold text-[0.95rem] rounded-lg cursor-pointer"
                         >
-                          Hire Now <span className="znw-btn-arrow">→</span>
+                          Hire Now <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                         </button>
                       </div>
                     </div>
@@ -416,7 +416,7 @@ export default function WritersDirectory() {
                   setSelectedSort("rating-desc");
                   setCurrentPage(1);
                 }}
-                className="text-xs text-[#4b23b3] font-bold underline mt-2 hover:text-[#6d28d9]"
+                className="btn-shutter-blue-close text-xs font-bold mt-2 px-4 py-2 rounded-lg cursor-pointer"
               >
                 Clear all filters
               </button>
@@ -438,7 +438,7 @@ export default function WritersDirectory() {
               Our professional academic writers are here to deliver high-quality, plagiarism-free assignments
               tailored to your requirements.
             </p>
-            <a href="#" className="znw-quote-btn">
+            <a href="/order" className="btn-shutter-orange-open inline-flex items-center gap-2 font-semibold text-base py-3.5 px-7 rounded-lg cursor-pointer shadow-[0_4px_15px_rgba(255,107,0,0.4)]">
               Get Free Quote Now &rarr;
             </a>
           </div>

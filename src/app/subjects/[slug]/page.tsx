@@ -322,13 +322,13 @@ export default function SubjectLanding() {
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 <Link
                   href="#quote-form"
-                  className="bg-[#3f159a] hover:bg-[#2b0c61] text-white font-extrabold py-3.5 px-6 rounded-lg text-[11px] tracking-wider transition uppercase shadow-md flex items-center justify-center gap-2 w-full sm:w-auto text-center shrink-0"
+                  className="btn-shutter-blue-open text-white font-extrabold py-3.5 px-6 rounded-lg text-[11px] tracking-wider transition uppercase shadow-md flex items-center justify-center gap-2 w-full sm:w-auto text-center shrink-0 cursor-pointer border-none"
                 >
                   Talk To An Expert <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
                 <Link
                   href="/samples"
-                  className="bg-white hover:bg-gray-50 text-[#3f159a] border border-[#3f159a] font-extrabold py-3.5 px-6 rounded-lg text-[11px] tracking-wider transition uppercase shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto text-center shrink-0"
+                  className="btn-shutter-blue-close font-extrabold py-3.5 px-6 rounded-lg text-[11px] tracking-wider transition uppercase shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto text-center shrink-0 cursor-pointer"
                 >
                   View Samples <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
@@ -526,7 +526,7 @@ export default function SubjectLanding() {
 
                   <button 
                     type="submit" 
-                    className="bg-orange-500 text-white border-none py-[9px] px-3 rounded-lg text-[0.78rem] font-semibold cursor-pointer transition-all duration-300 w-full mt-3 shadow-[0_4px_14px_rgba(249,115,22,0.3)] hover:bg-orange-600 hover:text-white hover:-translate-y-px hover:shadow-[0_6px_18px_rgba(249,115,22,0.4)] whitespace-nowrap"
+                    className="btn-shutter-orange-open border-none py-[9px] px-3 rounded-lg text-[0.78rem] font-semibold cursor-pointer w-full mt-3 shadow-[0_4px_14px_rgba(249,115,22,0.3)] whitespace-nowrap"
                   >
                     Get Price Now &rarr;
                   </button>
@@ -653,7 +653,7 @@ export default function SubjectLanding() {
                       </div>
                       <Link
                         href="#quote-form"
-                        className="block w-full py-2 border border-[#cabbed] text-[#3f159a] hover:bg-[#3f159a] hover:text-white rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-center transition-colors duration-250"
+                        className="btn-shutter-blue-close block w-full py-2 rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-center transition-colors duration-250 cursor-pointer"
                       >
                         Hire Expert
                       </Link>
@@ -858,12 +858,12 @@ export default function SubjectLanding() {
                 </p>
               </div>
             </div>
-            <Link
-              href="#quote-form"
-              className="bg-[#3f159a] hover:bg-[#2e0e75] text-white font-extrabold py-3.5 px-6 rounded-lg text-[11px] uppercase tracking-wider shadow-md transition duration-200 whitespace-nowrap w-full md:w-auto text-center"
-            >
-              Get Free Quote Now &rarr;
-            </Link>
+              <Link
+                href="#quote-form"
+                className="btn-shutter-blue-open text-white font-extrabold py-3.5 px-6 rounded-lg text-[11px] uppercase tracking-wider shadow-md transition duration-200 whitespace-nowrap w-full md:w-auto text-center cursor-pointer border-none"
+              >
+                Order Now &rarr;
+              </Link>
           </div>
         </div>
       </section>

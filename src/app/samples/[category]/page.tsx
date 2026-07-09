@@ -284,7 +284,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
               <a 
                 href="/order" 
-                className="bg-yellow-400 text-purple-950 font-extrabold py-3.5 rounded-xl hover:bg-yellow-300 transition-colors shadow-md text-center block text-sm"
+                className="btn-shutter-orange-open font-extrabold py-3.5 rounded-xl shadow-md text-center block text-sm"
               >
                 Order Now &rarr;
               </a>

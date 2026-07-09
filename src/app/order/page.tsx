@@ -226,9 +226,9 @@ export default function OrderPage() {
             </Text>
             <div className="flex gap-4 w-full mt-4">
               <Link href="/" className="w-full">
-                <Button variant="outline" className="w-full">Return Home</Button>
+                <Button variant="blueClose" className="w-full">Return Home</Button>
               </Link>
-              <Button variant="cta" className="w-full" onClick={() => setIsSuccess(false)}>New Order</Button>
+              <Button variant="orangeOpen" className="w-full" onClick={() => setIsSuccess(false)}>New Order</Button>
             </div>
           </Card>
         </SectionContainer>

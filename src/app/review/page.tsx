@@ -536,10 +536,10 @@ export default function ReviewsAndFaq() {
                   </div>
 
                   <div className="ts-actions">
-                    <Link href="/order" className="ts-btn ts-btnPrimary">
+                    <Link href="/order" className="btn-shutter-orange-open flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
                       Hire Writer
                     </Link>
-                    <Link href={`/writers/${expert.slug}`} className="ts-btn ts-btnOutline">
+                    <Link href={`/writers/${expert.slug}`} className="btn-shutter-blue-close flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
                       About Writer
                     </Link>
                   </div>
@@ -871,7 +871,7 @@ export default function ReviewsAndFaq() {
             <div className="ts-card ts-cta">
               <h3 className="ts-ctaTitle">Original. Confidential.<br />On-time.</h3>
               <p className="ts-ctaText">Professional assignment help you can trust.</p>
-              <Link href="/order" className="ts-ctaBtn">
+              <Link href="/order" className="btn-shutter-orange-open flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-bold text-sm cursor-pointer w-full mt-auto">
                 <Zap className="w-4.5 h-4.5 shrink-0" /> Order Now
               </Link>
             </div>
@@ -980,7 +980,7 @@ export default function ReviewsAndFaq() {
                     }
                   }, 50);
                 }}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl border border-[#6d28d9] text-[#6d28d9] text-[0.85rem] font-bold hover:bg-[#6d28d9] hover:text-white transition"
+                className="btn-shutter-blue-close inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-[0.85rem] font-bold cursor-pointer"
               >
                 Load More Reviews
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
@@ -1006,7 +1006,7 @@ export default function ReviewsAndFaq() {
             <p className="text-gray-500 text-sm leading-relaxed mb-6">
               Find answers to the most common questions regarding security, payments, deadline changes, and quality.
             </p>
-            <Link href="/faq" className="inline-flex items-center justify-center bg-white border border-gray-200 text-purple-700 font-bold px-6 py-3 rounded-lg hover:bg-purple-50 transition shadow-sm text-sm">
+            <Link href="/faq" className="btn-shutter-blue-close inline-flex items-center justify-center font-bold px-6 py-3 rounded-lg text-sm cursor-pointer">
               View All FAQs &rarr;
             </Link>
           </div>

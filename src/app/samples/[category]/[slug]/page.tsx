@@ -304,7 +304,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
                 <button 
                   type="submit" 
                   disabled={formSubmitted}
-                  className="bg-purple-700 text-white font-extrabold py-3 rounded-xl hover:bg-purple-800 transition-colors shadow-md text-center block text-sm disabled:bg-purple-400 mt-2"
+                  className="btn-shutter-blue-open font-extrabold py-3 rounded-xl shadow-md text-center block text-sm disabled:opacity-50 disabled:pointer-events-none mt-2 w-full"
                 >
                   {formSubmitted ? "Redirecting to Whatsapp..." : "Submit & Chat with Experts"}
                 </button>

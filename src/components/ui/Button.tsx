@@ -8,11 +8,6 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "btn-shutter-primary shadow-md shadow-primary-700/10 hover:shadow-lg hover:shadow-primary-700/20",
-        cta: "btn-shutter-secondary shadow-md shadow-accent-600/10 hover:shadow-lg hover:shadow-accent-600/20",
-        outline: "bg-white border border-primary-700 text-primary-700 hover:bg-primary-50",
-        ghost: "text-primary-700 hover:bg-primary-50",
-        gradient: "bg-gradient-primary text-white hover:opacity-95 shadow-md shadow-primary-900/10 hover:shadow-lg hover:shadow-primary-900/20",
         orangeOpen: "btn-shutter-orange-open shadow-md shadow-orange-500/10 hover:shadow-lg",
         orangeClose: "btn-shutter-orange-close shadow-sm hover:shadow-md",
         blueOpen: "btn-shutter-blue-open shadow-md shadow-blue-900/10 hover:shadow-lg",
@@ -29,7 +24,7 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "primary",
+      variant: "blueOpen",
       size: "md",
       fullWidth: false,
     },

@@ -218,7 +218,7 @@ export default function HeroSection() {
                 </a>
                 <a
                   href="/writers"
-                  className="bg-white text-gray-900 py-[9px] px-4 rounded-lg no-underline font-semibold inline-flex items-center border border-gray-200 transition-all duration-300 hover:bg-gray-50 hover:text-gray-900 hover:-translate-y-0.5 whitespace-nowrap text-xs sm:text-sm md:text-base"
+                  className="btn-shutter-blue-close text-gray-900 py-[9px] px-4 rounded-lg no-underline font-semibold inline-flex items-center transition-all duration-300 whitespace-nowrap text-xs sm:text-sm md:text-base"
                 >
                   View Our Experts &rarr;
                 </a>

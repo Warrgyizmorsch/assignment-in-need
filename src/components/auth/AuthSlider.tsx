@@ -261,7 +261,7 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
               </div>
 
               <button
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ff7012] py-4 text-base font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#ff7012]/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+                className="btn-shutter-orange-open mt-2 flex w-full items-center justify-center gap-2 rounded-lg py-4 text-base font-bold text-white disabled:cursor-not-allowed disabled:opacity-70 border-none cursor-pointer"
                 disabled={loading === "login"}
                 type="submit"
               >
@@ -412,7 +412,7 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
               </div>
 
               <button
-                className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ff7012] py-4 text-base font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-[#ff7012]/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+                className="btn-shutter-orange-open mt-2 flex w-full items-center justify-center gap-2 rounded-lg py-4 text-base font-bold text-white disabled:cursor-not-allowed disabled:opacity-70 border-none cursor-pointer"
                 disabled={loading === "register"}
                 type="submit"
               >

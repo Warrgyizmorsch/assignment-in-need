@@ -493,7 +493,7 @@ export default function ServiceLanding() {
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
                   <a
                     href="#quote-form"
-                    className="bg-[#3f159a] hover:bg-[#2b0c61] text-white font-bold py-3.5 px-6 rounded-lg text-[13px] transition shadow-md flex items-center justify-center gap-2.5 w-full sm:w-auto text-center shrink-0"
+                    className="btn-shutter-blue-open text-white font-bold py-3.5 px-6 rounded-lg text-[13px] transition shadow-md flex items-center justify-center gap-2.5 w-full sm:w-auto text-center shrink-0 cursor-pointer border-none"
                   >
                     Get Free Quote
                     <svg
@@ -512,7 +512,7 @@ export default function ServiceLanding() {
                   </a>
                   <a
                     href="/samples"
-                    className="bg-white hover:bg-gray-50 text-[#3f159a] border border-[#3f159a] font-bold py-3.5 px-6 rounded-lg text-[13px] transition shadow-sm flex items-center justify-center gap-2.5 w-full sm:w-auto text-center shrink-0"
+                    className="btn-shutter-blue-close font-bold py-3.5 px-6 rounded-lg text-[13px] transition shadow-sm flex items-center justify-center gap-2.5 w-full sm:w-auto text-center shrink-0 cursor-pointer"
                   >
                     View Samples
                     <svg
@@ -720,7 +720,7 @@ export default function ServiceLanding() {
                     {/* Hire Button */}
                     <a
                       href="#quote-form"
-                      className="border border-[#3f159a] hover:bg-[#3f159a] text-[#3f159a] hover:text-white font-extrabold text-[13px] py-2.5 px-4 rounded-xl w-full text-center transition-all duration-300 block select-none"
+                      className="btn-shutter-blue-close font-extrabold text-[13px] py-2.5 px-4 rounded-xl w-full text-center block select-none cursor-pointer"
                     >
                       Hire {firstName}
                     </a>

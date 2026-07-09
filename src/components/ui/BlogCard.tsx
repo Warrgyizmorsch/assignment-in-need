@@ -51,7 +51,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ title, excerpt, date, image,
 
         {/* Action Button */}
         <div>
-          <Link href={href} className="inline-flex items-center justify-center bg-primary-700 hover:bg-primary-800 text-white font-bold rounded-full px-6 py-2.5 text-sm transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5">
+          <Link href={href} className="btn-shutter-blue-open font-bold rounded-full px-6 py-2.5 text-sm cursor-pointer inline-flex items-center justify-center">
             Learn More
           </Link>
         </div>

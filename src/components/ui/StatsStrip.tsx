@@ -97,9 +97,9 @@ export const StatsStrip: React.FC<StatsStripProps> = ({
               </Text>
               <Link href="/pricing" className="mt-2 w-fit">
                 <Button
-                  variant="primary"
+                  variant="orangeOpen"
                   size="sm"
-                  className="bg-accent-600 hover:bg-accent-500 text-white font-heading font-semibold rounded-btn transition-colors shadow-md border-none flex items-center gap-2"
+                  className="font-heading font-semibold rounded-btn transition-colors flex items-center gap-2"
                 >
                   Get Free Quote Now
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

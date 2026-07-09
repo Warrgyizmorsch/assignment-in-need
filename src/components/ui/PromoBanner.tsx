@@ -127,11 +127,11 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
           
           <div className="flex-shrink-0 w-full md:w-auto z-10">
             <Button
-              variant="cta"
+              variant="orangeClose"
               size="lg"
               fullWidth={true}
               onClick={onCtaClick}
-              className="bg-white text-primary-900 hover:bg-primary-50 shadow-xl shadow-black/10 hover:shadow-black/25 active:scale-95 text-base py-4 px-8 border-none"
+              className="shadow-xl shadow-black/10 hover:shadow-black/25 active:scale-95 text-base py-4 px-8"
             >
               {ctaLabel}
             </Button>

@@ -232,7 +232,7 @@ export default function BlogPage() {
 
                       {/* Featured Learn More Button */}
                       <div>
-                        <Link href={`/blog/${latestPost.slug}`} className="inline-flex items-center justify-center bg-primary-700 hover:bg-primary-800 text-white font-bold rounded-full px-8 py-3.5 transition duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5">
+                        <Link href={`/blog/${latestPost.slug}`} className="btn-shutter-blue-open font-bold rounded-full px-8 py-3.5 cursor-pointer inline-flex items-center justify-center">
                           Learn More
                         </Link>
                       </div>
@@ -262,7 +262,7 @@ export default function BlogPage() {
                       <button
                         onClick={handleShowMore}
                         disabled={loadingMore}
-                        className="inline-flex items-center justify-center border-2 border-primary-100 text-primary-700 hover:border-primary-600 hover:bg-primary-50 font-bold rounded-full px-8 py-3 transition duration-300 disabled:opacity-50 gap-2"
+                        className="btn-shutter-blue-close inline-flex items-center justify-center font-bold rounded-full px-8 py-3 transition duration-300 disabled:opacity-50 gap-2 cursor-pointer"
                       >
                         {loadingMore && <Loader2 className="w-4 h-4 animate-spin" />}
                         Show More
@@ -298,7 +298,7 @@ export default function BlogPage() {
                       </p>
                       <button
                         onClick={handleResetForm}
-                        className="mt-4 bg-primary-700 hover:bg-primary-800 text-white font-semibold text-xs px-5 py-2.5 rounded-full transition-all"
+                        className="btn-shutter-blue-open mt-4 font-semibold text-xs px-5 py-2.5 rounded-full cursor-pointer"
                       >
                         Request Another Quote
                       </button>
@@ -488,7 +488,7 @@ export default function BlogPage() {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-primary-700 hover:bg-primary-800 text-white font-bold rounded-xl py-3 text-xs transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                        className="btn-shutter-orange-open w-full text-white font-bold rounded-xl py-3 text-xs transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer border-none"
                       >
                         {isLoading ? (
                           <>

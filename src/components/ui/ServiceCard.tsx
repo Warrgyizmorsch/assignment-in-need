@@ -65,9 +65,9 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           </div>
           <Link href={`/${slug}`}>
             <Button
-              variant="ghost"
+              variant="orangeClose"
               size="sm"
-              className="px-2 py-1 text-xs font-bold gap-1 text-primary-700 hover:text-accent-600 hover:bg-transparent group-hover/card:text-accent-600 bg-transparent link-slide-hover"
+              className="px-2 py-1 text-xs font-bold gap-1"
               icon={<ArrowRight className="w-3.5 h-3.5 text-current transition-transform duration-200 group-hover/card:translate-x-1" />}
             >
               Order Now

@@ -134,29 +134,28 @@ export default function StyleGuide() {
             <div className="flex flex-col gap-2">
               <span className="text-sm font-bold text-text-heading">Button Variants</span>
               <div className="flex flex-wrap gap-4 items-center">
-                <Button variant="primary">Primary (Orange)</Button>
-                <Button variant="cta">Secondary (White)</Button>
-                <Button variant="gradient">Primary Gradient</Button>
-                <Button variant="outline">Outline</Button>
-                <Button variant="ghost">Ghost Link</Button>
+                <Button variant="orangeOpen">Orange Open</Button>
+                <Button variant="orangeClose">Orange Close</Button>
+                <Button variant="blueOpen">Blue Open</Button>
+                <Button variant="blueClose">Blue Close</Button>
               </div>
             </div>
             <hr className="border-slate-100" />
             <div className="flex flex-col gap-2">
               <span className="text-sm font-bold text-text-heading">Button Sizing</span>
               <div className="flex flex-wrap gap-4 items-center">
-                <Button size="sm" variant="primary">Small Button</Button>
-                <Button size="md" variant="primary">Medium Button</Button>
-                <Button size="lg" variant="primary">Large Button</Button>
+                <Button size="sm" variant="blueOpen">Small Button</Button>
+                <Button size="md" variant="blueOpen">Medium Button</Button>
+                <Button size="lg" variant="blueOpen">Large Button</Button>
               </div>
             </div>
             <hr className="border-slate-100" />
             <div className="flex flex-col gap-2">
               <span className="text-sm font-bold text-text-heading">Icon Support & Full Width</span>
               <div className="flex flex-col sm:flex-row gap-4 items-center max-w-xl">
-                <Button variant="primary" icon={true}>Next Step</Button>
-                <Button variant="cta" icon={<Zap className="w-4 h-4 fill-white" />}>Boost Grade</Button>
-                <Button variant="outline" fullWidth={true}>Full Width Trigger</Button>
+                <Button variant="blueOpen" icon={true}>Next Step</Button>
+                <Button variant="orangeOpen" icon={<Zap className="w-4 h-4 fill-white" />}>Boost Grade</Button>
+                <Button variant="blueClose" fullWidth={true}>Full Width Trigger</Button>
               </div>
             </div>
           </Card>
@@ -254,7 +253,7 @@ export default function StyleGuide() {
                 labelIcon={<ShieldCheck />}
                 placeholder="List topics, formatting style, referencing rules, and rubrics details..."
               />
-              <Button variant="cta" size="lg" className="w-full">Submit Request</Button>
+              <Button variant="orangeOpen" size="lg" className="w-full">Submit Request</Button>
             </form>
           </Card>
         </SectionContainer>

@@ -902,7 +902,7 @@ export const Navbar = () => {
               </li>
 
               <li className="znh-mobile-only mt-4">
-                <Link href="/order" className="znh-btn-quote w-full" onClick={closeMobileMenu}>
+                <Link href="/order" className="btn-shutter-orange-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full" onClick={closeMobileMenu}>
                   Get Free Quote
                 </Link>
               </li>
@@ -932,7 +932,7 @@ export const Navbar = () => {
                     </button>
                   </div>
                 ) : (
-                  <Link href="/login" className="znh-btn-quote w-full" onClick={closeMobileMenu}>
+                  <Link href="/login" className="btn-shutter-blue-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full" onClick={closeMobileMenu}>
                     Login
                   </Link>
                 )}
@@ -951,7 +951,7 @@ export const Navbar = () => {
               </div>
             </a>
 
-            <Link href="/order" className="znh-btn-quote desktop-only">
+            <Link href="/order" className="btn-shutter-orange-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center desktop-only">
               Get Free Quote
             </Link>
 
@@ -984,7 +984,7 @@ export const Navbar = () => {
                         <p className="text-sm text-gray-500">Login to access your orders, profile, and faster checkout.</p>
                         <Link
                           href="/login"
-                          className="inline-flex w-full items-center justify-center rounded-lg bg-[#4a17a3] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#3f159a]"
+                          className="btn-shutter-blue-open inline-flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white"
                           onClick={() => setIsAccountOpen(false)}
                         >
                           Login
@@ -998,7 +998,7 @@ export const Navbar = () => {
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
+                        className="btn-shutter-orange-close flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
                       >
                         <LogOut className="h-4 w-4" />
                         Logout

@@ -282,7 +282,7 @@ export default function SamplesPage() {
               </span>
               <Link 
                 href={`/samples/${sub.category}`} 
-                className="mt-6 pt-4 border-t border-purple-200 flex items-center justify-between font-bold text-purple-700 hover:text-purple-800 w-full"
+                className="mt-6 pt-4 border-t border-purple-200 flex items-center justify-between font-bold btn-shutter-blue-close py-2 px-3 rounded-lg w-full text-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 View Samples <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
@@ -292,7 +292,7 @@ export default function SamplesPage() {
         </div>
 
         <div className="text-center mt-10">
-          <Link href="#browse-samples" className="inline-flex items-center font-bold text-purple-700 hover:text-purple-900">
+          <Link href="#browse-samples" className="btn-shutter-blue-close inline-flex items-center font-bold py-2.5 px-6 rounded-lg">
             View All Subjects <span className="ml-2">&rarr;</span>
           </Link>
         </div>
@@ -385,7 +385,7 @@ export default function SamplesPage() {
             <p className="text-gray-500 text-sm leading-relaxed mb-6">
               If you have any other questions, feel free to contact our support team.
             </p>
-            <a href="#" className="inline-flex items-center justify-center bg-white border-2 border-purple-200 text-purple-700 font-bold px-6 py-3 rounded-lg hover:bg-purple-50 transition">
+            <a href="/contact" className="btn-shutter-blue-close inline-flex items-center justify-center font-bold px-6 py-3 rounded-lg">
               Contact Us &rarr;
             </a>
           </div>

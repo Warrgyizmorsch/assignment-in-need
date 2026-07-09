@@ -49,7 +49,7 @@ export const ReadMoreSection: React.FC = () => {
           </div>
 
           <div className="flex justify-end">
-            <Button variant="outline" size="lg" onClick={() => setOpen(!open)}>
+            <Button variant="blueClose" size="lg" onClick={() => setOpen(!open)}>
               {open ? "Show Less" : "Read More"}
             </Button>
           </div>

@@ -279,7 +279,7 @@ export default function PopularServices() {
 
         <Link
           href="/services"
-          className="flex md:hidden justify-center items-center w-full p-2.5 mt-6 bg-white border border-gray-200 rounded-lg text-indigo-600 font-semibold text-[0.8rem] transition-all duration-300 hover:bg-gray-50 hover:text-indigo-800"
+          className="flex md:hidden justify-center items-center w-full p-2.5 mt-6 btn-shutter-blue-close rounded-lg font-semibold text-[0.8rem] transition-all duration-300"
         >
           View All Services &rarr;
         </Link>

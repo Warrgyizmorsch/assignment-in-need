@@ -647,7 +647,7 @@ export default function PricingPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center bg-white border-2 border-purple-200 text-purple-700 font-bold px-6 py-3 rounded-lg hover:bg-purple-50 transition"
+              className="btn-shutter-blue-close inline-flex items-center justify-center font-bold px-6 py-3 rounded-lg text-sm cursor-pointer"
             >
               Contact Us &rarr;
             </Link>
@@ -713,7 +713,7 @@ export default function PricingPage() {
           <div className="mt-6 md:mt-0 flex-shrink-0">
             <a
               href="#quote-form"
-              className="bg-[#ff6b00] hover:bg-[#e66000] text-white font-bold py-2.5 px-6 rounded text-sm inline-flex items-center gap-2 transition-colors shadow-md"
+              className="btn-shutter-orange-open text-white font-bold py-2.5 px-6 rounded text-sm inline-flex items-center gap-2 transition-colors shadow-md cursor-pointer border-none"
             >
               Get Instant Quote &rarr;
             </a>

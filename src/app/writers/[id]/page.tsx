@@ -332,7 +332,7 @@ export default function WriterProfile() {
                 ))}
               </ul>
               <Button
-                variant="primary"
+                variant="blueOpen"
                 size="md"
                 fullWidth
                 onClick={() => {
