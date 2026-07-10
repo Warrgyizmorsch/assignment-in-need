@@ -47,7 +47,7 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
           const isFeatured = position === "center";
           return (
             <div
-              key={`desktop-testimonial-${index}`}
+              key={`desktop-testimonial-${position}-${index}`}
               className={cn(
                 "transition-all duration-500 flex flex-col justify-stretch",
                 isFeatured ? "scale-100 z-10 opacity-100" : "scale-95 opacity-60 hover:opacity-80"

@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { mapExpertToWriter } from "@/lib/api";
 import {
   GraduationCap,
   Users,
@@ -105,7 +106,38 @@ export default function AboutPage() {
     },
   ];
 
-  const experts = [
+  const [dynamicExperts, setDynamicExperts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchExperts = async () => {
+      try {
+        const res = await fetch("/api/experts");
+        if (res.ok) {
+          const payload = await res.json();
+          if (payload.success && Array.isArray(payload.data)) {
+            const mapped = payload.data.slice(0, 4).map((item: any) => {
+              const writer = mapExpertToWriter(item);
+              const hasRealImage = writer.avatar && !writer.avatar.includes("blank.png") && !writer.avatar.includes("ui-avatars.com");
+              return {
+                name: writer.name,
+                role: writer.role,
+                rating: writer.rating,
+                img: hasRealImage ? writer.avatar : "/assets/media/avatars/blank.png",
+                orders: writer.ordersCompleted || 1200,
+                success: writer.successRate || 98
+              };
+            });
+            setDynamicExperts(mapped);
+          }
+        }
+      } catch (e) {
+        // fallback
+      }
+    };
+    fetchExperts();
+  }, []);
+
+  const experts = dynamicExperts.length > 0 ? dynamicExperts : [
     {
       name: "Sophia Adams",
       role: "Marketing Expert",
@@ -563,64 +595,67 @@ export default function AboutPage() {
 
           {/* Experts cards: row on desktop, stacked list on mobile */}
           <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {experts.map((expert, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col justify-between hover:translate-y-[-5px] duration-300 w-full"
-              >
-                {/* Mobile View layout (row format) */}
-                <div className="flex flex-row items-center p-4 gap-4 md:hidden">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 relative shrink-0">
-                    <Image
-                      src={expert.img}
-                      alt={expert.name}
-                      fill
-                      className="object-cover object-top"
-                    />
-                  </div>
-                  <div className="flex flex-col text-left justify-center min-w-0 flex-1">
-                    <p className="font-extrabold text-[#0f1b3d] text-[13px] mb-0.5 leading-snug">
-                      {expert.name}
-                    </p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-1">
-                      {expert.role}
-                    </p>
-                    <div className="flex items-center gap-0.5 text-yellow-400 text-[10px]">
-                      ★★★★★{" "}
-                      <span className="text-[#0f1b3d] font-bold ml-1">
-                        {expert.rating}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+            {experts.map((expert, i) => {
+              const firstLetter = (expert.name || "A").charAt(0).toUpperCase();
+              const bgGradients = [
+                "bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700 shadow-indigo-200",
+                "bg-gradient-to-br from-rose-400 via-pink-500 to-rose-600 shadow-rose-200",
+                "bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 shadow-emerald-200",
+                "bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 shadow-amber-200",
+              ];
+              const activeGradient = bgGradients[i % bgGradients.length];
 
-                {/* Desktop View layout (top image format) */}
-                <div className="hidden md:flex flex-col">
-                  <div className="h-44 bg-gray-100 relative w-full">
-                    <Image
-                      src={expert.img}
+              return (
+                <div
+                  key={i}
+                  className="bg-white rounded-3xl border border-gray-100 flex flex-col items-center p-6 text-center shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_15px_40px_rgba(63,21,154,0.06)] hover:-translate-y-1.5 duration-300 w-full relative"
+                >
+                  {/* Decorative top colored block */}
+                  <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-t-3xl" />
+
+                  {/* Avatar Section */}
+                  <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shrink-0 mb-4 ring-4 ring-white shadow-md overflow-hidden mt-3 bg-gray-150">
+                    <img
+                      src={expert.img || "/assets/media/avatars/blank.png"}
                       alt={expert.name}
-                      fill
-                      className="object-cover object-top"
+                      className="w-full h-full object-cover object-center bg-gray-100"
                     />
                   </div>
-                  <div className="p-4 flex flex-col text-left">
-                    <p className="font-extrabold text-[#0f1b3d] text-[13px] mb-0.5">
+
+                  {/* Name and Role */}
+                  <div className="flex flex-col items-center flex-1 min-w-0 w-full text-center">
+                    <h3 className="font-extrabold text-[#0f1b3d] text-[15px] sm:text-base mb-1 tracking-tight truncate w-full">
                       {expert.name}
-                    </p>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-2">
+                    </h3>
+                    <span className="text-[10px] font-extrabold text-indigo-600 bg-indigo-50/70 px-3 py-1 rounded-full uppercase tracking-wider mb-3">
                       {expert.role}
-                    </p>
-                    <div className="flex items-center gap-0.5 text-yellow-400 text-xs">
-                      ★★★★★{" "}
-                      <span className="text-[#0f1b3d] font-bold ml-1">
-                        {expert.rating}
+                    </span>
+
+                    {/* Rating stars */}
+                    <div className="flex items-center gap-1.5 justify-center mb-4">
+                      <div className="flex text-yellow-400 text-xs">
+                        ★★★★★
+                      </div>
+                      <span className="text-[#0f1b3d] text-[11px] font-extrabold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">
+                        {expert.rating || 4.8}
                       </span>
+                    </div>
+
+                    {/* Mini stats row */}
+                    <div className="grid grid-cols-2 gap-2 w-full pt-4 border-t border-gray-100 mt-auto text-left">
+                      <div>
+                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wide m-0">Orders</p>
+                        <p className="text-xs font-black text-slate-800 m-0">{expert.orders || "1,200+"}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wide m-0">Success Rate</p>
+                        <p className="text-xs font-black text-emerald-600 m-0">{expert.success || "99"}%</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Mobile view only "View All Experts" button */}

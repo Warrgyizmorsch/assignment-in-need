@@ -5,6 +5,25 @@ import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 export const Footer = () => {
+  const [subjects, setSubjects] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await fetch("/api/admin/subjects");
+        if (res.ok) {
+          const payload = await res.json();
+          if ((payload.success || payload.status === "success") && Array.isArray(payload.data)) {
+            setSubjects(payload.data.slice(0, 6));
+          }
+        }
+      } catch (e) {
+        // fallback
+      }
+    };
+    fetchSubjects();
+  }, []);
+
   return (
     <footer className="bg-[#0b1129] text-[#d1d5db] pt-16 px-8 pb-0 border-t border-[#1f2937] flex flex-col items-center">
       <div className="max-w-[1400px] w-full mx-auto pb-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[2.2fr_2.5fr_2.5fr_1.5fr] gap-8">
@@ -106,12 +125,30 @@ export const Footer = () => {
           <div className="flex flex-col">
             <p className="text-white text-[1.05rem] font-bold mb-6 mt-0">Subjects</p>
             <ul className="list-none p-0 m-0 flex flex-col gap-3.5">
-              <li><Link href="/subjects/business" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Business</Link></li>
-              <li><Link href="/subjects/nursing" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Nursing</Link></li>
-              <li><Link href="/subjects/law" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Law</Link></li>
-              <li><Link href="/subjects/economics" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Economics</Link></li>
-              <li><Link href="/subjects/marketing" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Marketing</Link></li>
-              <li><Link href="/subjects/psychology" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Psychology</Link></li>
+              {subjects.length > 0 ? (
+                subjects.map((sub: any) => {
+                  const cleanSlug = (sub.slug || "").replace(/^\/+/, "");
+                  const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
+                  const humanized = finalSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+                  const name = sub.title?.split(" Help")[0]?.split(" Assignment")[0] || humanized.split(" ")[0];
+                  return (
+                    <li key={sub.id}>
+                      <Link href={`/subjects/${finalSlug}`} className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">
+                        {name}
+                      </Link>
+                    </li>
+                  );
+                })
+              ) : (
+                <>
+                  <li><Link href="/subjects/business" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Business</Link></li>
+                  <li><Link href="/subjects/nursing" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Nursing</Link></li>
+                  <li><Link href="/subjects/law" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Law</Link></li>
+                  <li><Link href="/subjects/economics" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Economics</Link></li>
+                  <li><Link href="/subjects/marketing" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Marketing</Link></li>
+                  <li><Link href="/subjects/psychology" className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">Psychology</Link></li>
+                </>
+              )}
               <li className="font-semibold"><Link href="/subjects/business" className="text-[#3b82f6] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">View All Subjects</Link></li>
             </ul>
           </div>

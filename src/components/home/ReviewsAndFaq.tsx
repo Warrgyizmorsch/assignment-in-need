@@ -97,11 +97,168 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
+interface ReviewDetail {
+  id: number | string;
+  name: string;
+  meta: string;
+  text: string;
+  image: string;
+  rating: number;
+  service?: string | null;
+  deadline?: string | null;
+  submission_date?: string | null;
+  review_reply?: string | null;
+}
+
+function ReviewDetailModal({
+  id,
+  onClose,
+}: {
+  id: number | string;
+  onClose: () => void;
+}) {
+  const [detail, setDetail] = useState<ReviewDetail | null>(null);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const res = await fetch(`/api/reviews/${id}`);
+        if (!res.ok) throw new Error("Not found");
+        const json = await res.json();
+        const raw = json?.data ?? json;
+        
+        const mappedBase = mapReview(raw, 0);
+        setDetail({
+          ...mappedBase,
+          service: raw.services_type || raw.service_type || raw.service || null,
+          deadline: raw.deadline || null,
+          submission_date: raw.submission_date || null,
+          review_reply: raw.review_reply || null,
+        });
+      } catch {
+        setDetail(null);
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchDetail();
+  }, [id]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 flex flex-col gap-5 animate-[fadeSlideUp_0.25s_ease] text-left"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition border-none cursor-pointer"
+          aria-label="Close"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        {fetching ? (
+          <div className="flex flex-col gap-4 animate-pulse">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-gray-200" />
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                <div className="h-3 bg-gray-100 rounded w-1/2" />
+              </div>
+            </div>
+            <div className="h-3 bg-gray-100 rounded w-32" />
+            <div className="space-y-2">
+              <div className="h-3 bg-gray-100 rounded w-full" />
+              <div className="h-3 bg-gray-100 rounded w-5/6" />
+            </div>
+          </div>
+        ) : !detail ? (
+          <div className="text-center py-6 text-gray-500 text-sm">Could not load review details.</div>
+        ) : (
+          <>
+            <div className="flex items-center gap-4">
+              <img
+                src={detail.image}
+                alt={detail.name}
+                className="w-14 h-14 rounded-full object-cover border-2 border-purple-100 bg-gray-100"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(detail.name)}&background=f3e8ff&color=6b21a8&size=80`;
+                }}
+              />
+              <div className="flex flex-col gap-0.5">
+                <strong className="text-gray-900 text-[0.95rem] leading-snug">{detail.name}</strong>
+                <span className="text-[0.78rem] text-gray-500">{detail.meta}</span>
+              </div>
+            </div>
+
+            <Stars rating={detail.rating} />
+
+            <div className="flex flex-wrap gap-2">
+              {detail.service && (
+                <span className="bg-purple-50 text-purple-700 text-[0.72rem] font-semibold px-2.5 py-1 rounded-full">
+                  📋 {detail.service}
+                </span>
+              )}
+              {detail.deadline && (
+                <span className="bg-amber-50 text-amber-700 text-[0.72rem] font-semibold px-2.5 py-1 rounded-full">
+                  ⏱ {detail.deadline}
+                </span>
+              )}
+              {detail.submission_date && (
+                <span className="bg-gray-100 text-gray-600 text-[0.72rem] font-semibold px-2.5 py-1 rounded-full">
+                  📅 {new Date(detail.submission_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+              )}
+            </div>
+
+            <p className="text-[0.88rem] text-gray-700 leading-relaxed border-t border-gray-100 pt-4 m-0">
+              {detail.text}
+            </p>
+
+            {detail.review_reply && (
+              <div className="bg-purple-50 border-l-4 border-[#6d28d9] rounded-r-xl px-4 py-3 flex flex-col gap-1">
+                <span className="text-[0.7rem] font-bold text-[#6d28d9] uppercase tracking-wide">Reply from Assignment In Need</span>
+                <p className="text-[0.82rem] text-gray-700 m-0 leading-relaxed">{detail.review_reply}</p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeSlideUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}} />
+    </div>
+  );
+}
+
 export default function ReviewsAndFaq() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [reviews, setReviews] = useState<Review[]>(FALLBACK_REVIEWS);
+  const [faqsList, setFaqsList] = useState<FaqItem[]>([]);
+  const [selectedReviewId, setSelectedReviewId] = useState<string | number | null>(null);
 
-  const faqs: FaqItem[] = [
+  const fallbackFaqs: FaqItem[] = [
     {
       question: "Is assignment help legal in the UK?",
       answer:
@@ -149,8 +306,30 @@ export default function ReviewsAndFaq() {
       }
     };
 
+    const fetchFaqs = async () => {
+      try {
+        const response = await fetch("/api/faqs");
+        if (response.ok) {
+          const json = await response.json();
+          const raw = json?.data ?? json?.faqs ?? [];
+          if (Array.isArray(raw) && raw.length > 0) {
+            const mapped = raw.map((item: any) => ({
+              question: item.question || item.title || "FAQ Question",
+              answer: item.answer || item.content || "FAQ Answer"
+            }));
+            setFaqsList(mapped);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load dynamic FAQs:", err);
+      }
+    };
+
     fetchReviews();
+    fetchFaqs();
   }, []);
+
+  const faqsToRender = faqsList.length > 0 ? faqsList : fallbackFaqs;
 
   return (
     <section className="py-12 px-8 max-md:py-8 max-md:px-4 bg-[#fafaff] font-sans flex justify-center border-t border-gray-100">
@@ -167,7 +346,8 @@ export default function ReviewsAndFaq() {
             {reviews.map((r) => (
               <div
                 key={r.id}
-                className="bg-white rounded-2xl p-[1.25rem_1rem] shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col gap-2.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.06)]"
+                onClick={() => setSelectedReviewId(r.id)}
+                className="bg-white rounded-2xl p-[1.25rem_1rem] shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col gap-2.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.06)] cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <img
@@ -214,7 +394,7 @@ export default function ReviewsAndFaq() {
           </div>
 
           <div className="flex flex-col gap-0 border-t border-gray-100 max-md:gap-3 max-md:border-t-0">
-            {faqs.map((faq, idx) => {
+            {faqsToRender.map((faq, idx) => {
               const isActive = activeFaq === idx;
               return (
                 <div
@@ -254,7 +434,7 @@ export default function ReviewsAndFaq() {
 
           <div className="text-left mt-6">
             <a
-              href="/faq"
+              href="#"
               className="text-[#6d28d9] hover:text-[#4c1d95] text-[0.85rem] font-bold no-underline hover:underline transition-colors duration-300 max-md:block max-md:w-full max-md:text-center max-md:py-3 max-md:mt-2.5 max-md:bg-white max-md:border max-md:border-gray-200 max-md:rounded-lg max-md:no-underline"
             >
               View All FAQs →
@@ -262,6 +442,13 @@ export default function ReviewsAndFaq() {
           </div>
         </div>
       </div>
+
+      {selectedReviewId !== null && (
+        <ReviewDetailModal
+          id={selectedReviewId}
+          onClose={() => setSelectedReviewId(null)}
+        />
+      )}
     </section>
   );
 }

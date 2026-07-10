@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
@@ -39,6 +39,31 @@ export default function ContactPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [subjectsOptions, setSubjectsOptions] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await fetch("/api/admin/subjects");
+        if (res.ok) {
+          const payload = await res.json();
+          if ((payload.success || payload.status === "success") && Array.isArray(payload.data)) {
+            const mapped = payload.data.map((sub: any) => {
+              const cleanSlug = (sub.slug || "").replace(/^\/+/, "");
+              const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
+              const humanized = finalSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+              const label = sub.title?.split(" Help")[0]?.split(" Assignment")[0] || humanized;
+              return { label, value: finalSlug };
+            });
+            setSubjectsOptions(mapped);
+          }
+        }
+      } catch (e) {
+        // fallback
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   const SUBJECT_OPTIONS = [
     { label: "Accounting", value: "accounting" },
@@ -467,7 +492,7 @@ export default function ContactPage() {
                         </label>
                         <div className="hero-select-box relative w-full h-11 bg-gray-50 border border-gray-200 rounded-xl px-3.5 flex items-center shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus-within:bg-white focus-within:border-[#3f159a] transition-colors">
                           <CustomDropdown
-                            options={SUBJECT_OPTIONS}
+                            options={subjectsOptions.length > 0 ? subjectsOptions : SUBJECT_OPTIONS}
                             value={subject}
                             onChange={(val) => {
                               setSubject(val);

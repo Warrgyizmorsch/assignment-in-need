@@ -129,6 +129,10 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         localStorage.setItem("ain_user_data", JSON.stringify(userData));
       }
 
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("ain-auth-change"));
+      }
+
       setMessage({ type: "success", text: readMessage(data, "Login successful.") });
       setTimeout(() => {
         router.push(redirectPath);

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
-const SERVICE_PAGES_API_BASE_URL = `${BACKEND_URL}/api/service-pages`;
+const SUBJECT_PAGES_API_BASE_URL = `${BACKEND_URL}/api/subject-pages`;
 
 // Helper function to recursively clean all "slug" properties by stripping leading slashes
 function cleanSlugs(data: any): any {
@@ -27,10 +27,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get("slug");
 
-  // 1. If slug query param is present, fetch that specific service page detail
+  // 1. If slug query param is present, fetch that specific subject page detail
   if (slug) {
     try {
-      const targetUrl = `${SERVICE_PAGES_API_BASE_URL}/${slug}`;
+      // Ensure we query with the prefix "subject/" if not present
+      const fullSlug = slug.includes("/") ? slug : `subject/${slug}`;
+      const targetUrl = `${SUBJECT_PAGES_API_BASE_URL}/${fullSlug}`;
       const response = await fetch(targetUrl, {
         headers: { Accept: "application/json" },
         cache: "no-store",
@@ -40,7 +42,7 @@ export async function GET(request: Request) {
 
       if (!response.ok) {
         return NextResponse.json(
-          { success: false, message: `Service page API responded with ${response.status}`, debug: { targetUrl } },
+          { success: false, message: `Subject page API responded with ${response.status}`, debug: { targetUrl } },
           { status: response.status },
         );
       }
@@ -49,16 +51,16 @@ export async function GET(request: Request) {
         const parsed = JSON.parse(text);
         return NextResponse.json(cleanSlugs(parsed));
       } catch {
-        return NextResponse.json({ success: false, message: "Service page API returned invalid JSON", debug: { targetUrl } }, { status: 502 });
+        return NextResponse.json({ success: false, message: "Subject page API returned invalid JSON", debug: { targetUrl } }, { status: 502 });
       }
     } catch (err: any) {
-      return NextResponse.json({ success: false, message: "Unable to fetch service page", error: err.message }, { status: 502 });
+      return NextResponse.json({ success: false, message: "Unable to fetch subject page", error: err.message }, { status: 502 });
     }
   }
 
-  // 2. If no slug is specified, fetch the list of all service pages
+  // 2. If no slug is specified, fetch the list of all subject pages
   try {
-    const response = await fetch(SERVICE_PAGES_API_BASE_URL, {
+    const response = await fetch(SUBJECT_PAGES_API_BASE_URL, {
       headers: { Accept: "application/json" },
       cache: "no-store",
     });
@@ -67,7 +69,7 @@ export async function GET(request: Request) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { success: false, message: `Service API responded with ${response.status}` },
+        { success: false, message: `Subject API responded with ${response.status}` },
         { status: response.status },
       );
     }
@@ -76,9 +78,9 @@ export async function GET(request: Request) {
       const parsed = JSON.parse(text);
       return NextResponse.json(cleanSlugs(parsed));
     } catch {
-      return NextResponse.json({ success: false, message: "Service API returned invalid JSON" }, { status: 502 });
+      return NextResponse.json({ success: false, message: "Subject API returned invalid JSON" }, { status: 502 });
     }
   } catch {
-    return NextResponse.json({ success: false, message: "Unable to fetch service pages" }, { status: 502 });
+    return NextResponse.json({ success: false, message: "Unable to fetch subject pages" }, { status: 502 });
   }
 }

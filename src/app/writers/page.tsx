@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { WRITERS, Writer } from "@/lib/data";
 import { getBaseUrl, mapExpertToWriter } from "@/lib/api";
 import { Loader2 } from "lucide-react";
+import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import "./writers.css";
 
 const SUBJECT_OPTIONS = [
@@ -48,6 +49,31 @@ export default function WritersDirectory() {
 
   const [writers, setWriters] = useState<Writer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dynamicSubjects, setDynamicSubjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await fetch("/api/admin/subjects");
+        if (res.ok) {
+          const payload = await res.json();
+          if ((payload.success || payload.status === "success") && Array.isArray(payload.data)) {
+            const mapped = payload.data.map((sub: any) => {
+              const cleanSlug = (sub.slug || "").replace(/^\/+/, "");
+              const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
+              const humanized = finalSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+              const label = sub.title?.split(" Help")[0]?.split(" Assignment")[0] || humanized;
+              return { label, value: finalSlug };
+            });
+            setDynamicSubjects([{ label: "All Subjects", value: "all" }, ...mapped]);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching subjects for writers filter:", err);
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   useEffect(() => {
     const fetchWriters = async () => {
@@ -183,18 +209,16 @@ export default function WritersDirectory() {
             <div className="znw-filter-group">
               <div className="znw-filter-content">
                 <label className="znw-filter-label">Subject</label>
-                <select 
-                  className="znw-filter-select"
+                <CustomDropdown
+                  options={dynamicSubjects.length > 0 ? dynamicSubjects : SUBJECT_OPTIONS}
                   value={selectedSubject}
-                  onChange={(e) => {
-                    setSelectedSubject(e.target.value);
+                  onChange={(val) => {
+                    setSelectedSubject(val);
                     setCurrentPage(1);
                   }}
-                >
-                  {SUBJECT_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                  triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
+                  dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
+                />
               </div>
             </div>
 
@@ -203,18 +227,16 @@ export default function WritersDirectory() {
             <div className="znw-filter-group">
               <div className="znw-filter-content">
                 <label className="znw-filter-label">Qualification</label>
-                <select 
-                  className="znw-filter-select"
+                <CustomDropdown
+                  options={QUALIFICATION_OPTIONS}
                   value={selectedQual}
-                  onChange={(e) => {
-                    setSelectedQual(e.target.value);
+                  onChange={(val) => {
+                    setSelectedQual(val);
                     setCurrentPage(1);
                   }}
-                >
-                  {QUALIFICATION_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                  triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
+                  dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
+                />
               </div>
             </div>
 
@@ -223,18 +245,16 @@ export default function WritersDirectory() {
             <div className="znw-filter-group">
               <div className="znw-filter-content">
                 <label className="znw-filter-label">Experience</label>
-                <select 
-                  className="znw-filter-select"
+                <CustomDropdown
+                  options={EXPERIENCE_OPTIONS}
                   value={selectedExp}
-                  onChange={(e) => {
-                    setSelectedExp(e.target.value);
+                  onChange={(val) => {
+                    setSelectedExp(val);
                     setCurrentPage(1);
                   }}
-                >
-                  {EXPERIENCE_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                  triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
+                  dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
+                />
               </div>
             </div>
 
@@ -243,18 +263,16 @@ export default function WritersDirectory() {
             <div className="znw-filter-group">
               <div className="znw-filter-content">
                 <label className="znw-filter-label">Sort By</label>
-                <select 
-                  className="znw-filter-select"
+                <CustomDropdown
+                  options={SORT_OPTIONS}
                   value={selectedSort}
-                  onChange={(e) => {
-                    setSelectedSort(e.target.value);
+                  onChange={(val) => {
+                    setSelectedSort(val);
                     setCurrentPage(1);
                   }}
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+                  triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
+                  dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
+                />
               </div>
             </div>
           </div>

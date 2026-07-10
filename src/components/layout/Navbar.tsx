@@ -3,7 +3,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronRight, LogOut, Menu, Phone, User, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  LogOut,
+  Menu,
+  Phone,
+  User,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type NavLinkItem = {
@@ -16,11 +24,14 @@ type NavLinkItem = {
 type ServicePageApiItem = {
   id?: number;
   slug?: string | null;
+  title?: string | null;
   meta_title?: string | null;
   hero_heading?: string | null;
+  hasSubmenu?: boolean;
+  children?: ServicePageApiItem[];
 };
 
-const serviceHref = (slug: string) => `/${slug}`;
+const serviceHref = (slug: string) => `/${slug.replace(/^\/+/, "")}`;
 
 const SERVICE_PAGES_API_URL = "/api/admin/service-pages";
 
@@ -31,54 +42,33 @@ const humanizeSlug = (slug: string) =>
     .replace(/-/g, " ")
     .replace(/\b\w/g, (character) => character.toUpperCase());
 
-const getServiceLabel = (service: ServicePageApiItem) => {
-  const title = service.hero_heading || service.meta_title || service.slug || "Service";
-  return title.split("|")[0].trim() || humanizeSlug(service.slug || "service");
-};
+const mapServicePagesToMenu = (
+  services: ServicePageApiItem[],
+): NavLinkItem[] => {
+  return services.map((service) => {
+    const parentSlug = service.slug?.trim().replace(/^\/+/, "") || "";
+    const parentPath = `/${parentSlug}`;
+    
+    const parentName = service.title?.trim() || service.hero_heading?.trim() || service.meta_title?.trim() || humanizeSlug(parentSlug || "service");
+    
+    const mappedChildren = Array.isArray(service.children)
+      ? service.children.map((child) => {
+          const childSlug = child.slug?.trim().replace(/^\/+/, "") || "";
+          const childPath = `/${childSlug}`;
+          const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(childSlug || "service");
+          return {
+            name: childName,
+            path: childPath,
+          };
+        }).sort((first, second) => first.name.localeCompare(second.name))
+      : undefined;
 
-const mapServicePagesToMenu = (services: ServicePageApiItem[]): NavLinkItem[] => {
-  const grouped = new Map<string, NavLinkItem>();
-  const standalone: NavLinkItem[] = [];
-
-  services.forEach((service) => {
-    const slug = service.slug?.trim();
-    if (!slug) return;
-
-    const path = serviceHref(slug);
-    const label = getServiceLabel(service);
-
-    if (!slug.includes("/")) {
-      if (grouped.has(slug)) {
-        const existing = grouped.get(slug)!;
-        existing.name = label;
-        existing.path = path;
-      } else {
-        standalone.push({ name: label, path });
-      }
-      return;
-    }
-
-    const [parentSlug] = slug.split("/");
-    if (!grouped.has(parentSlug)) {
-      grouped.set(parentSlug, {
-        name: humanizeSlug(parentSlug),
-        path: serviceHref(parentSlug),
-        children: [],
-      });
-    }
-
-    grouped.get(parentSlug)!.children!.push({ name: label, path });
-  });
-
-  const groupedItems = Array.from(grouped.values()).map((item) => ({
-    ...item,
-    children: item.children?.sort((first, second) => first.name.localeCompare(second.name)),
-  }));
-
-  const groupedSlugs = new Set(groupedItems.map((item) => item.path.replace(/^\//, "")));
-  const filteredStandalone = standalone.filter((item) => !groupedSlugs.has(item.path.replace(/^\//, "")));
-
-  return [...groupedItems, ...filteredStandalone].sort((first, second) => first.name.localeCompare(second.name));
+    return {
+      name: parentName,
+      path: parentPath,
+      children: mappedChildren,
+    };
+  }).sort((first, second) => first.name.localeCompare(second.name));
 };
 
 const SUBJECTS: NavLinkItem[] = [
@@ -132,15 +122,24 @@ const DesktopDropdown = ({
       {label}
       <ChevronDown className="znh-down-icon" />
     </button>
-    <ul className={cn("znh-dropdown-menu", scrollable && "znh-dropdown-scrollable")}>
+    <ul
+      className={cn(
+        "znh-dropdown-menu",
+        scrollable && "znh-dropdown-scrollable",
+      )}
+    >
       {items.map((item) => (
         <li key={item.path} className="znh-dropdown-item">
           {item.disabled ? (
-            <span className="znh-dropdown-link znh-dropdown-link-disabled">{item.name}</span>
+            <span className="znh-dropdown-link znh-dropdown-link-disabled">
+              {item.name}
+            </span>
           ) : (
             <Link href={item.path} className="znh-dropdown-link">
               <span>{item.name}</span>
-              {item.children && item.children.length > 0 && <ChevronRight className="znh-right-icon" />}
+              {item.children && item.children.length > 0 && (
+                <ChevronRight className="znh-right-icon" />
+              )}
             </Link>
           )}
           {item.children && item.children.length > 0 && (
@@ -148,7 +147,9 @@ const DesktopDropdown = ({
               {item.children.map((child) => (
                 <li key={child.path}>
                   {child.disabled ? (
-                    <span className="znh-dropdown-link znh-dropdown-link-disabled">{child.name}</span>
+                    <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                      {child.name}
+                    </span>
                   ) : (
                     <Link href={child.path} className="znh-dropdown-link">
                       {child.name}
@@ -186,7 +187,9 @@ const MobileDropdown = ({
   <li className="znh-nav-item">
     <button type="button" className="znh-nav-link" onClick={() => onToggle(id)}>
       {label}
-      <ChevronDown className={cn("znh-down-icon", openGroups[id] && "rotate-180")} />
+      <ChevronDown
+        className={cn("znh-down-icon", openGroups[id] && "rotate-180")}
+      />
     </button>
     <ul className={cn("znh-dropdown-menu", openGroups[id] && "active")}>
       {items.map((item) => {
@@ -196,16 +199,31 @@ const MobileDropdown = ({
         return (
           <li key={item.path} className="znh-dropdown-item">
             {hasChildren ? (
-              <button type="button" className="znh-dropdown-link" onClick={() => onNestedToggle(nestedKey)}>
+              <button
+                type="button"
+                className="znh-dropdown-link"
+                onClick={() => onNestedToggle(nestedKey)}
+              >
                 <span>{item.name}</span>
-                <ChevronRight className={cn("znh-right-icon", nestedGroups[nestedKey] && "rotate-90")} />
+                <ChevronRight
+                  className={cn(
+                    "znh-right-icon",
+                    nestedGroups[nestedKey] && "rotate-90",
+                  )}
+                />
               </button>
             ) : (
               <>
                 {item.disabled ? (
-                  <span className="znh-dropdown-link znh-dropdown-link-disabled">{item.name}</span>
+                  <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                    {item.name}
+                  </span>
                 ) : (
-                  <Link href={item.path} className="znh-dropdown-link" onClick={onNavigate}>
+                  <Link
+                    href={item.path}
+                    className="znh-dropdown-link"
+                    onClick={onNavigate}
+                  >
                     {item.name}
                   </Link>
                 )}
@@ -213,13 +231,24 @@ const MobileDropdown = ({
             )}
 
             {hasChildren && (
-              <ul className={cn("znh-submenu", nestedGroups[nestedKey] && "active")}>
+              <ul
+                className={cn(
+                  "znh-submenu",
+                  nestedGroups[nestedKey] && "active",
+                )}
+              >
                 {item.children!.map((child) => (
                   <li key={child.path}>
                     {child.disabled ? (
-                      <span className="znh-dropdown-link znh-dropdown-link-disabled">{child.name}</span>
+                      <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                        {child.name}
+                      </span>
                     ) : (
-                      <Link href={child.path} className="znh-dropdown-link" onClick={onNavigate}>
+                      <Link
+                        href={child.path}
+                        className="znh-dropdown-link"
+                        onClick={onNavigate}
+                      >
                         {child.name}
                       </Link>
                     )}
@@ -238,13 +267,17 @@ export const Navbar = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userProfile, setUserProfile] = useState<{ name: string; email: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    email: string;
+  } | null>(null);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [nestedGroups, setNestedGroups] = useState<Record<string, boolean>>({});
   const [serviceMenu, setServiceMenu] = useState<NavLinkItem[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState(false);
+  const [subjects, setSubjects] = useState<NavLinkItem[]>([]);
   const accountDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -274,7 +307,32 @@ export const Navbar = () => {
       }
     };
 
+    const fetchSubjects = async () => {
+      try {
+        const response = await fetch("/api/admin/subjects", {
+          headers: { Accept: "application/json" },
+        });
+        const payload = await response.json();
+        if (response.ok && (payload?.success || payload?.status === "success") && Array.isArray(payload?.data)) {
+          const mapped = payload.data.map((item: any) => {
+            const cleanSlug = (item.slug || "").replace(/^\/+/, "");
+            const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
+            const humanized = finalSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+            const name = item.title?.trim() || humanized;
+            return {
+              name,
+              path: `/subjects/${finalSlug}`
+            };
+          });
+          setSubjects(mapped);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch dynamic subjects list:", err);
+      }
+    };
+
     fetchServiceMenu();
+    fetchSubjects();
   }, []);
 
   useEffect(() => {
@@ -307,7 +365,11 @@ export const Navbar = () => {
 
     loadAuthState();
     window.addEventListener("storage", loadAuthState);
-    return () => window.removeEventListener("storage", loadAuthState);
+    window.addEventListener("ain-auth-change", loadAuthState);
+    return () => {
+      window.removeEventListener("storage", loadAuthState);
+      window.removeEventListener("ain-auth-change", loadAuthState);
+    };
   }, []);
 
   useEffect(() => {
@@ -359,6 +421,8 @@ export const Navbar = () => {
       : serviceMenu.length > 0
         ? serviceMenu
         : [{ name: "No services found", path: "#", disabled: true }];
+
+  const subjectsDropdownItems = subjects.length > 0 ? subjects : SUBJECTS;
 
   return (
     <>
@@ -806,20 +870,39 @@ export const Navbar = () => {
 
       <header className="znh-header-wrapper">
         <div className="znh-header-container">
-          <Link href="/" className="znh-logo" aria-label="Assignment In Need home">
-            <img src="/assets/media/layout/assignment_logo.webp" alt="Assignment In Need Logo" />
+          <Link
+            href="/"
+            className="znh-logo"
+            aria-label="Assignment In Need home"
+          >
+            <img
+              src="/assets/media/layout/assignment_logo.webp"
+              alt="Assignment In Need Logo"
+            />
           </Link>
 
-          <div className={cn("znh-mobile-overlay", isOpen && "active")} onClick={closeMobileMenu} />
+          <div
+            className={cn("znh-mobile-overlay", isOpen && "active")}
+            onClick={closeMobileMenu}
+          />
 
           <ul className={cn("znh-nav", isOpen && "active")}>
-            <button type="button" className="znh-mobile-close" onClick={closeMobileMenu} aria-label="Close menu">
+            <button
+              type="button"
+              className="znh-mobile-close"
+              onClick={closeMobileMenu}
+              aria-label="Close menu"
+            >
               <X className="h-7 w-7" />
             </button>
 
             <div className="hidden min-[1025px]:contents">
               <DesktopDropdown label="Services" items={serviceDropdownItems} />
-              <DesktopDropdown label="Subjects" items={SUBJECTS} scrollable />
+              <DesktopDropdown
+                label="Subjects"
+                items={subjectsDropdownItems}
+                scrollable
+              />
 
               <li className="znh-nav-item">
                 <Link href="/writers" className="znh-nav-link">
@@ -860,7 +943,7 @@ export const Navbar = () => {
               <MobileDropdown
                 label="Subjects"
                 id="subjects"
-                items={SUBJECTS}
+                items={subjectsDropdownItems}
                 openGroups={openGroups}
                 nestedGroups={nestedGroups}
                 onToggle={toggleMobileGroup}
@@ -869,12 +952,20 @@ export const Navbar = () => {
               />
 
               <li className="znh-nav-item">
-                <Link href="/writers" className="znh-nav-link" onClick={closeMobileMenu}>
+                <Link
+                  href="/writers"
+                  className="znh-nav-link"
+                  onClick={closeMobileMenu}
+                >
                   Experts
                 </Link>
               </li>
               <li className="znh-nav-item">
-                <Link href="/samples" className="znh-nav-link" onClick={closeMobileMenu}>
+                <Link
+                  href="/samples"
+                  className="znh-nav-link"
+                  onClick={closeMobileMenu}
+                >
                   Samples
                 </Link>
               </li>
@@ -891,18 +982,30 @@ export const Navbar = () => {
               />
 
               <li className="znh-nav-item">
-                <Link href="/about" className="znh-nav-link" onClick={closeMobileMenu}>
+                <Link
+                  href="/about"
+                  className="znh-nav-link"
+                  onClick={closeMobileMenu}
+                >
                   About Us
                 </Link>
               </li>
               <li className="znh-nav-item">
-                <Link href="/contact" className="znh-nav-link" onClick={closeMobileMenu}>
+                <Link
+                  href="/contact"
+                  className="znh-nav-link"
+                  onClick={closeMobileMenu}
+                >
                   Contact
                 </Link>
               </li>
 
               <li className="znh-mobile-only mt-4">
-                <Link href="/order" className="btn-shutter-orange-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full" onClick={closeMobileMenu}>
+                <Link
+                  href="/order"
+                  className="btn-shutter-orange-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full"
+                  onClick={closeMobileMenu}
+                >
                   Get Free Quote
                 </Link>
               </li>
@@ -915,8 +1018,12 @@ export const Navbar = () => {
                         <User className="h-5 w-5" />
                       </div>
                       <div className="min-w-0">
-                        <div className="truncate text-sm font-semibold">{userProfile?.name || "Student"}</div>
-                        <div className="truncate text-xs text-white/65">{userProfile?.email || "No email available"}</div>
+                        <div className="truncate text-sm font-semibold">
+                          {userProfile?.name || "Student"}
+                        </div>
+                        <div className="truncate text-xs text-white/65">
+                          {userProfile?.email || "No email available"}
+                        </div>
                       </div>
                     </div>
                     <button
@@ -932,7 +1039,11 @@ export const Navbar = () => {
                     </button>
                   </div>
                 ) : (
-                  <Link href="/login" className="btn-shutter-blue-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full" onClick={closeMobileMenu}>
+                  <Link
+                    href="/login"
+                    className="btn-shutter-blue-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full"
+                    onClick={closeMobileMenu}
+                  >
                     Login
                   </Link>
                 )}
@@ -951,7 +1062,10 @@ export const Navbar = () => {
               </div>
             </a>
 
-            <Link href="/order" className="btn-shutter-orange-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center desktop-only">
+            <Link
+              href="/order"
+              className="btn-shutter-orange-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center desktop-only"
+            >
               Get Free Quote
             </Link>
 
@@ -974,14 +1088,23 @@ export const Navbar = () => {
                           <User className="h-5 w-5" />
                         </div>
                         <div className="min-w-0">
-                          <div className="truncate text-sm font-semibold text-gray-900">{userProfile?.name || "Student"}</div>
-                          <div className="truncate text-xs text-gray-500">{userProfile?.email || "No email available"}</div>
+                          <div className="truncate text-sm font-semibold text-gray-900">
+                            {userProfile?.name || "Student"}
+                          </div>
+                          <div className="truncate text-xs text-gray-500">
+                            {userProfile?.email || "No email available"}
+                          </div>
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="text-sm font-semibold text-gray-900">Welcome back</div>
-                        <p className="text-sm text-gray-500">Login to access your orders, profile, and faster checkout.</p>
+                        <div className="text-sm font-semibold text-gray-900">
+                          Welcome back
+                        </div>
+                        <p className="text-sm text-gray-500">
+                          Login to access your orders, profile, and faster
+                          checkout.
+                        </p>
                         <Link
                           href="/login"
                           className="btn-shutter-blue-open inline-flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white"
@@ -1009,7 +1132,12 @@ export const Navbar = () => {
               )}
             </div>
 
-            <button type="button" className="znh-mobile-toggle" onClick={() => setIsOpen(true)} aria-label="Open menu">
+            <button
+              type="button"
+              className="znh-mobile-toggle"
+              onClick={() => setIsOpen(true)}
+              aria-label="Open menu"
+            >
               <Menu className="h-7 w-7" />
             </button>
           </div>

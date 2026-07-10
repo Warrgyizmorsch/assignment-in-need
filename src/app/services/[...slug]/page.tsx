@@ -135,7 +135,17 @@ export default function ServiceLanding() {
           if (listRes.ok) {
             const listResult = await listRes.json();
             if (listResult.success && Array.isArray(listResult.data)) {
-              setAllServicePages(listResult.data);
+              const flatPages: any[] = [];
+              const extractPages = (arr: any[]) => {
+                arr.forEach((item) => {
+                  flatPages.push(item);
+                  if (Array.isArray(item.children)) {
+                    extractPages(item.children);
+                  }
+                });
+              };
+              extractPages(listResult.data);
+              setAllServicePages(flatPages);
             }
           }
         }

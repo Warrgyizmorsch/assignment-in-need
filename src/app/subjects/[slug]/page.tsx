@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -87,8 +87,106 @@ export default function SubjectLanding() {
   const [wordCount, setWordCount] = useState("");
   const [timePeriod, setTimePeriod] = useState("");
 
+  // Dynamic States for API data
+  const [pageData, setPageData] = useState<any>(null);
+  const [expertsList, setExpertsList] = useState<any[]>([]);
+  const [reviewsList, setReviewsList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Map backend helper to match Writer model
+  const mapExpertToWriterLocal = (expert: any) => {
+    const writerName = expert.name || "Academic Expert";
+    const isDrOrProf = writerName.includes("Dr.") || writerName.includes("Prof.");
+    const calculatedQualifications = isDrOrProf ? "Ph.D. Qualified" : "Master's Qualified";
+    let calculatedExperience = "5+ Years";
+    const finishOrder = parseInt(expert.finish_order) || 0;
+    if (finishOrder > 2000) calculatedExperience = "8+ Years";
+    else if (finishOrder > 1000) calculatedExperience = "7+ Years";
+    else if (finishOrder > 500) calculatedExperience = "6+ Years";
+
+    let calculatedRating = 4.8;
+    if (expert.customer_review) {
+      try {
+        const reviewsArray = typeof expert.customer_review === "string" 
+          ? JSON.parse(expert.customer_review) 
+          : expert.customer_review;
+        if (Array.isArray(reviewsArray) && reviewsArray.length > 0) {
+          const ratings = reviewsArray.map((r: any) => parseFloat(r.rating) || 5).filter(Boolean);
+          if (ratings.length > 0) {
+            calculatedRating = ratings.reduce((sum: number, r: number) => sum + r, 0) / ratings.length;
+          }
+        }
+      } catch (e) {}
+    }
+    
+    // Get image
+    let avatarUrl = "";
+    if (expert.image) {
+      avatarUrl = expert.image.startsWith("http") ? expert.image : `https://ain.warrgyizmorsch.com/${expert.image.startsWith("/") ? expert.image : `/${expert.image}`}`;
+    } else {
+      avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(writerName)}&background=f3e8ff&color=6b21a8`;
+    }
+
+    const hasRealImage = expert.image && !expert.image.includes("blank.png") && !expert.image.includes("ui-avatars.com");
+    const finalImg = hasRealImage ? avatarUrl : "/assets/media/avatars/blank.png";
+
+    return {
+      name: writerName,
+      role: expert.subject ? `${expert.subject} Expert` : `${subject.name} Expert`,
+      qual: calculatedQualifications,
+      exp: calculatedExperience,
+      rating: parseFloat(calculatedRating.toFixed(1)),
+      orders: `${finishOrder > 0 ? finishOrder : 1200}+`,
+      img: finalImg
+    };
+  };
+
+  useEffect(() => {
+    const fetchSubjectPage = async () => {
+      if (!slug) return;
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/admin/subjects?slug=${slug}`);
+        if (res.ok) {
+          const payload = await res.json();
+          if (payload.success && payload.data && payload.data.page) {
+            setPageData(payload.data.page);
+            if (Array.isArray(payload.data.experts) && payload.data.experts.length > 0) {
+              const mapped = payload.data.experts.map(mapExpertToWriterLocal);
+              setExpertsList(mapped);
+            }
+            if (Array.isArray(payload.data.reviews) && payload.data.reviews.length > 0) {
+              const mapped = payload.data.reviews.map((item: any) => ({
+                name: item.name,
+                uni: item.location || "UK University",
+                text: item.description,
+                img: `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=f3e8ff&color=6b21a8`
+              }));
+              setReviewsList(mapped);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch subject page:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSubjectPage();
+  }, [slug]);
+
+  useEffect(() => {
+    if (pageData && pageData.meta_title) {
+      document.title = pageData.meta_title;
+    }
+  }, [pageData]);
+
+  // Fallbacks if backend data is loading / empty
+  const pageTitle = pageData?.hero_heading || `Expert ${subject.name} Assignment Help`;
+  const pageHighlight = pageData?.hero_highlight || "You Can Rely On";
+
   // Generate subject-specific experts
-  const experts = [
+  const defaultExperts = [
     {
       name: "Emma Taylor",
       role: `${subject.name} Expert`,
@@ -150,7 +248,7 @@ export default function SubjectLanding() {
   ];
 
   // Generate subject-specific reviews
-  const reviews = [
+  const defaultReviews = [
     {
       name: "Liem O'Connor",
       uni: "University of Manchester",
@@ -170,6 +268,9 @@ export default function SubjectLanding() {
       img: "/images/resource/team-2.jpg",
     },
   ];
+
+  const expertsToRender = expertsList.length > 0 ? expertsList : defaultExperts;
+  const reviewsToRender = reviewsList.length > 0 ? reviewsList : defaultReviews;
 
   // Dynamic choice features row
   const choiceFeatures = [
@@ -284,6 +385,15 @@ export default function SubjectLanding() {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="bg-white min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center px-4">
+        <div className="w-10 h-10 border-4 border-[#3f159a] border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-gray-500 font-semibold animate-pulse">Loading subject details...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="font-sans text-[#111827] bg-white overflow-hidden">
       {/* 3.2 HERO SECTION (Incorporates breadcrumbs for seamless backdrop layout) */}
@@ -325,19 +435,26 @@ export default function SubjectLanding() {
 
               {/* Title */}
               <h1 className="text-[34px] sm:text-[40px] lg:text-[42px] font-[900] leading-[1.08] text-[#0f1b3d] tracking-tight mb-3 font-heading">
-                Expert {subject.name} Assignment Help
+                {pageTitle}
                 <br />
                 <span className="text-[#ea580c] block mt-1.5">
-                  You Can Rely On
+                  {pageHighlight}
                 </span>
               </h1>
 
               {/* Description */}
-              <p className="text-gray-500 text-xs md:text-sm font-semibold leading-relaxed mb-6 max-w-[500px]">
-                Get accurate, well-researched and plagiarism-free{" "}
-                {subject.name.toLowerCase()} assignments helped by qualified
-                experts to achieve top grades.
-              </p>
+              {pageData?.hero_content ? (
+                <div 
+                  className="text-gray-500 text-xs md:text-sm font-semibold leading-relaxed mb-6 max-w-[500px] html-desc"
+                  dangerouslySetInnerHTML={{ __html: pageData.hero_content }}
+                />
+              ) : (
+                <p className="text-gray-500 text-xs md:text-sm font-semibold leading-relaxed mb-6 max-w-[500px]">
+                  Get accurate, well-researched and plagiarism-free{" "}
+                  {subject.name.toLowerCase()} assignments helped by qualified
+                  experts to achieve top grades.
+                </p>
+              )}
 
               {/* Mobile Student Image block */}
               <div className="relative w-full max-w-[360px] h-[240px] mx-auto my-4 block lg:hidden z-10">
@@ -765,53 +882,70 @@ export default function SubjectLanding() {
               className="flex overflow-x-auto pb-4 lg:pb-0 -mx-4 px-4 snap-x snap-mandatory lg:grid lg:grid-cols-5 lg:gap-5 lg:overflow-visible lg:mx-0 lg:px-0 gap-4 scroll-smooth"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {experts.map((expert, i) => (
+              {expertsToRender.map((expert, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 flex-none w-[265px] sm:w-[45%] lg:w-auto snap-center flex flex-col justify-between hover:translate-y-[-5px] duration-300"
+                  className="bg-white rounded-3xl border border-gray-100 flex flex-col items-center p-5 text-center shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_15px_40px_rgba(63,21,154,0.06)] hover:-translate-y-1.5 duration-300 flex-none w-[265px] sm:w-[45%] lg:w-auto snap-center relative overflow-hidden"
                 >
-                  <div className="h-44 bg-gray-100 relative">
-                    <Image
-                      src={expert.img}
+                  {/* Decorative top colored block */}
+                  <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-t-3xl" />
+
+                  {/* Avatar Section */}
+                  <div className="relative w-20 h-20 rounded-full flex items-center justify-center shrink-0 mb-4 ring-4 ring-white shadow-md overflow-hidden mt-3 bg-gray-150">
+                    <img
+                      src={expert.img || "/assets/media/avatars/blank.png"}
                       alt={expert.name}
-                      fill
-                      className="object-cover object-top"
+                      className="w-full h-full object-cover object-center bg-gray-100"
                     />
                   </div>
-                  <div className="p-4 flex flex-col justify-between flex-1 text-left">
-                    <div>
-                      <h3 className="font-extrabold text-[#0f1b3d] text-[13px] mb-0.5">
-                        {expert.name}
-                      </h3>
-                      <p className="text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-wide">
-                        {expert.role}
+
+                  {/* Name and Role */}
+                  <div className="flex flex-col items-center flex-1 min-w-0 w-full text-center">
+                    <h3 className="font-extrabold text-[#0f1b3d] text-[14px] mb-1 tracking-tight truncate w-full">
+                      {expert.name}
+                    </h3>
+                    <span className="text-[9px] font-extrabold text-indigo-600 bg-indigo-50/70 px-2.5 py-0.5 rounded-full uppercase tracking-wider mb-2">
+                      {expert.role}
+                    </span>
+
+                    {/* Stats block */}
+                    <div className="space-y-0.5 mb-3 text-center">
+                      <p className="text-[10px] font-extrabold text-[#3f159a]">
+                        {expert.qual}
                       </p>
-                      <div className="space-y-0.5 mb-3">
-                        <p className="text-[11px] font-extrabold text-[#3f159a]">
-                          {expert.qual}
-                        </p>
-                        <p className="text-[10px] text-gray-500 font-bold">
-                          {expert.exp}
-                        </p>
+                      <p className="text-[9px] text-gray-500 font-bold">
+                        {expert.exp} Experience
+                      </p>
+                    </div>
+
+                    {/* Rating stars */}
+                    <div className="flex items-center gap-1.5 justify-center mb-3">
+                      <div className="flex text-yellow-400 text-[10px]">
+                        ★★★★★
+                      </div>
+                      <span className="text-[#0f1b3d] text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">
+                        {expert.rating || 4.8}
+                      </span>
+                    </div>
+
+                    {/* Mini stats row */}
+                    <div className="grid grid-cols-2 gap-1 w-full pt-3 border-t border-gray-100 mt-auto text-left">
+                      <div>
+                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-wide m-0">Orders</p>
+                        <p className="text-[10px] font-black text-slate-800 m-0">{expert.orders}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-wide m-0">Success Rate</p>
+                        <p className="text-[10px] font-black text-emerald-600 m-0">99%</p>
                       </div>
                     </div>
-                    <div>
-                      <div className="flex items-center justify-between text-xs mb-3 border-t border-gray-100 pt-2.5">
-                        <div className="flex items-center font-extrabold text-[#ea580c] gap-0.5">
-                          <Star className="w-3 h-3 fill-[#ea580c] text-[#ea580c]" />{" "}
-                          {expert.rating}
-                        </div>
-                        <div className="text-gray-400 text-[10px] font-bold">
-                          ({expert.orders} Orders)
-                        </div>
-                      </div>
-                      <Link
-                        href="#quote-form"
-                        className="btn-shutter-blue-close block w-full py-2 rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-center transition-colors duration-250 cursor-pointer"
-                      >
-                        Hire Expert
-                      </Link>
-                    </div>
+
+                    <Link
+                      href="#quote-form"
+                      className="btn-shutter-blue-close block w-full py-2 rounded-lg text-[10px] font-extrabold uppercase tracking-widest text-center transition-colors duration-250 cursor-pointer mt-3"
+                    >
+                      Hire Expert
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -905,7 +1039,7 @@ export default function SubjectLanding() {
 
           {/* Testimonials Grid / List */}
           <div className="flex flex-col md:grid md:grid-cols-3 gap-6 md:gap-8">
-            {reviews.map((review, i) => {
+            {reviewsToRender.map((review, i) => {
               const isFeatured = i === 1; // Middle card featured
               return (
                 <div
@@ -931,12 +1065,11 @@ export default function SubjectLanding() {
                     {review.text}
                   </p>
                   <div className="flex items-center relative z-10 pt-4 border-t border-gray-100/10">
-                    <div className="relative w-10 h-10 rounded-full mr-3.5 overflow-hidden bg-gray-200 shrink-0 shadow-sm border border-white">
-                      <Image
+                    <div className="w-10 h-10 rounded-full mr-3.5 overflow-hidden bg-gray-200 shrink-0 shadow-sm border border-white">
+                      <img
                         src={review.img}
                         alt={review.name}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     <div>

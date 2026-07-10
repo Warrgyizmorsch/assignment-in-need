@@ -26,6 +26,7 @@ import {
 import { Heading } from "@/components/ui/Heading";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/Text";
+import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SectionContainer } from "@/components/ui/SectionContainer";
@@ -89,15 +90,15 @@ export default function OrderPage() {
   const [selectedWorkType, setSelectedWorkType] = useState("writing");
   const [academicLevel, setAcademicLevel] = useState("undergraduate");
   const [dynamicServices, setDynamicServices] = useState<any[]>([]);
+  const [dynamicSubjects, setDynamicSubjects] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const baseUrl = getBaseUrl();
-        const res = await fetch(`${baseUrl}/api/service-pages`);
+        const res = await fetch("/api/admin/service-pages");
         if (res.ok) {
           const result = await res.json();
-          if (result.success && Array.isArray(result.data)) {
+          if ((result.success || result.status === "success") && Array.isArray(result.data)) {
             setDynamicServices(result.data);
             if (result.data.length > 0) {
               setSelectedService(result.data[0].slug);
@@ -108,8 +109,58 @@ export default function OrderPage() {
         console.error("Error fetching services for order form:", err);
       }
     };
+
+    const fetchSubjects = async () => {
+      try {
+        const res = await fetch("/api/admin/subjects");
+        if (res.ok) {
+          const payload = await res.json();
+          if ((payload.success || payload.status === "success") && Array.isArray(payload.data)) {
+            setDynamicSubjects(payload.data);
+            if (payload.data.length > 0) {
+              const cleanSlug = (payload.data[0].slug || "").replace(/^\/+/, "");
+              const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
+              setSelectedSubject(finalSlug);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching subjects for order form:", err);
+      }
+    };
+
     fetchServices();
+    fetchSubjects();
   }, []);
+
+  const subjectOptions = useMemo(() => {
+    if (dynamicSubjects.length > 0) {
+      return dynamicSubjects.map((sub: any) => {
+        const cleanSlug = (sub.slug || "").replace(/^\/+/, "");
+        const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
+        const humanized = finalSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+        const label = sub.title || humanized;
+        return { label, value: finalSlug };
+      });
+    }
+    return SUBJECTS.map((sub) => ({ label: sub.name, value: sub.slug }));
+  }, [dynamicSubjects]);
+
+  const serviceOptions = useMemo(() => {
+    const list: { label: string; value: string }[] = [];
+    dynamicServices.forEach((s: any) => {
+      const pName = s.title || s.hero_heading || s.meta_title || "Service";
+      list.push({ label: pName, value: s.slug });
+      
+      if (Array.isArray(s.children)) {
+        s.children.forEach((c: any) => {
+          const cName = c.title || c.hero_heading || c.meta_title || "Sub-Service";
+          list.push({ label: `↳ ${cName}`, value: c.slug });
+        });
+      }
+    });
+    return list;
+  }, [dynamicServices]);
 
   // Step 3: Delivery Details
   const [selectedDeadline, setSelectedDeadline] = useState("3d");
@@ -208,8 +259,20 @@ export default function OrderPage() {
   }, [selectedWordCount]);
 
   const activeServiceLabel = useMemo(() => {
-    const match = dynamicServices.find((s) => s.slug === selectedService);
-    return match ? match.hero_heading || "Service" : "Academic Writing";
+    let matchName = "";
+    dynamicServices.forEach((s: any) => {
+      if (s.slug === selectedService) {
+        matchName = s.title || s.hero_heading || "Service";
+      }
+      if (Array.isArray(s.children)) {
+        s.children.forEach((c: any) => {
+          if (c.slug === selectedService) {
+            matchName = c.title || c.hero_heading || "Service";
+          }
+        });
+      }
+    });
+    return matchName || "Academic Writing";
   }, [selectedService, dynamicServices]);
 
   const activeDeadlineLabel = useMemo(() => {
@@ -507,27 +570,17 @@ export default function OrderPage() {
                       Subject <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10">
                         <BookOpen className="w-[18px] h-[18px] text-gray-400" />
                       </div>
-                      <select
-                        className="w-full pl-10 pr-10 h-[46px] border border-gray-200 bg-white rounded-xl text-[14px] text-gray-800 focus:outline-none focus:border-purple-600 transition-colors shadow-sm appearance-none font-medium"
+                      <CustomDropdown
+                        options={subjectOptions}
                         value={selectedSubject}
-                        onChange={(e) => setSelectedSubject(e.target.value)}
-                        required
-                      >
-                        <option value="" disabled>
-                          Select Subject
-                        </option>
-                        {SUBJECTS.map((sub) => (
-                          <option key={sub.slug} value={sub.slug}>
-                            {sub.name}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      </div>
+                        onChange={setSelectedSubject}
+                        placeholder="Select Subject"
+                        triggerClassName="!text-[14px] !text-gray-800 !font-medium !h-[46px] pl-10 pr-4 bg-white !border !border-solid !border-gray-200 rounded-xl focus:border-purple-600 focus-within:border-purple-600 transition-colors shadow-sm flex items-center justify-between"
+                        dropdownClassName="!text-[14px] shadow-lg rounded-xl border border-gray-150"
+                      />
                     </div>
                   </div>
 
@@ -537,27 +590,17 @@ export default function OrderPage() {
                       Service <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10">
                         <FileText className="w-[18px] h-[18px] text-gray-400" />
                       </div>
-                      <select
-                        className="w-full pl-10 pr-10 h-[46px] border border-gray-200 bg-white rounded-xl text-[14px] text-gray-800 focus:outline-none focus:border-purple-600 transition-colors shadow-sm appearance-none font-medium"
+                      <CustomDropdown
+                        options={serviceOptions}
                         value={selectedService}
-                        onChange={(e) => setSelectedService(e.target.value)}
-                        required
-                      >
-                        <option value="" disabled>
-                          Select Service
-                        </option>
-                        {dynamicServices.map((s) => (
-                          <option key={s.slug} value={s.slug}>
-                            {s.hero_heading || s.meta_title || "Service"}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      </div>
+                        onChange={setSelectedService}
+                        placeholder="Select Service"
+                        triggerClassName="!text-[14px] !text-gray-800 !font-medium !h-[46px] pl-10 pr-4 bg-white !border !border-solid !border-gray-200 rounded-xl focus:border-purple-600 focus-within:border-purple-600 transition-colors shadow-sm flex items-center justify-between"
+                        dropdownClassName="!text-[14px] shadow-lg rounded-xl border border-gray-150"
+                      />
                     </div>
                   </div>
 
@@ -567,27 +610,17 @@ export default function OrderPage() {
                       Work Type <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10">
                         <Briefcase className="w-[18px] h-[18px] text-gray-400" />
                       </div>
-                      <select
-                        className="w-full pl-10 pr-10 h-[46px] border border-gray-200 bg-white rounded-xl text-[14px] text-gray-800 focus:outline-none focus:border-purple-600 transition-colors shadow-sm appearance-none font-medium"
+                      <CustomDropdown
+                        options={WORK_TYPES}
                         value={selectedWorkType}
-                        onChange={(e) => setSelectedWorkType(e.target.value)}
-                        required
-                      >
-                        <option value="" disabled>
-                          Select Work Type
-                        </option>
-                        {WORK_TYPES.map((wt) => (
-                          <option key={wt.value} value={wt.value}>
-                            {wt.label}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      </div>
+                        onChange={setSelectedWorkType}
+                        placeholder="Select Work Type"
+                        triggerClassName="!text-[14px] !text-gray-800 !font-medium !h-[46px] pl-10 pr-4 bg-white !border !border-solid !border-gray-200 rounded-xl focus:border-purple-600 focus-within:border-purple-600 transition-colors shadow-sm flex items-center justify-between"
+                        dropdownClassName="!text-[14px] shadow-lg rounded-xl border border-gray-150"
+                      />
                     </div>
                   </div>
                 </div>
@@ -609,27 +642,17 @@ export default function OrderPage() {
                       Deadline / Urgency <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10">
                         <Calendar className="w-[18px] h-[18px] text-gray-400" />
                       </div>
-                      <select
-                        className="w-full pl-10 pr-10 h-[46px] border border-gray-200 bg-white rounded-xl text-[14px] text-gray-800 focus:outline-none focus:border-purple-600 transition-colors shadow-sm appearance-none font-medium"
+                      <CustomDropdown
+                        options={DEADLINES}
                         value={selectedDeadline}
-                        onChange={(e) => setSelectedDeadline(e.target.value)}
-                        required
-                      >
-                        <option value="" disabled>
-                          Select Deadline
-                        </option>
-                        {DEADLINES.map((dl) => (
-                          <option key={dl.value} value={dl.value}>
-                            {dl.label}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      </div>
+                        onChange={setSelectedDeadline}
+                        placeholder="Select Deadline"
+                        triggerClassName="!text-[14px] !text-gray-800 !font-medium !h-[46px] pl-10 pr-4 bg-white !border !border-solid !border-gray-200 rounded-xl focus:border-purple-600 focus-within:border-purple-600 transition-colors shadow-sm flex items-center justify-between"
+                        dropdownClassName="!text-[14px] shadow-lg rounded-xl border border-gray-150"
+                      />
                     </div>
                   </div>
 
@@ -639,29 +662,19 @@ export default function OrderPage() {
                       Word Count <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10">
                         <span className="font-black text-[11px] text-gray-400 select-none">
                           123
                         </span>
                       </div>
-                      <select
-                        className="w-full pl-10 pr-10 h-[46px] border border-gray-200 bg-white rounded-xl text-[14px] text-gray-800 focus:outline-none focus:border-purple-600 transition-colors shadow-sm appearance-none font-medium"
+                      <CustomDropdown
+                        options={WORD_COUNTS}
                         value={selectedWordCount}
-                        onChange={(e) => setSelectedWordCount(e.target.value)}
-                        required
-                      >
-                        <option value="" disabled>
-                          Select Word Count
-                        </option>
-                        {WORD_COUNTS.map((wc) => (
-                          <option key={wc.value} value={wc.value}>
-                            {wc.label}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      </div>
+                        onChange={setSelectedWordCount}
+                        placeholder="Select Word Count"
+                        triggerClassName="!text-[14px] !text-gray-800 !font-medium !h-[46px] pl-10 pr-4 bg-white !border !border-solid !border-gray-200 rounded-xl focus:border-purple-600 focus-within:border-purple-600 transition-colors shadow-sm flex items-center justify-between"
+                        dropdownClassName="!text-[14px] shadow-lg rounded-xl border border-gray-150"
+                      />
                     </div>
                   </div>
 
