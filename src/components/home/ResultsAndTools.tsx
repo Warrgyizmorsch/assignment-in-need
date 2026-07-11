@@ -18,7 +18,7 @@ export default function ResultsAndTools() {
           </AnimateIn>
 
           <StaggerContainer className="flex flex-col md:flex-row gap-4 w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] pb-2 max-md:flex-col">
-            <StaggerItem className="flex-1 min-w-[180px]">
+            <StaggerItem className="flex-1 min-w-[170px]">
               <div className="group bg-white rounded-2xl p-[1.5rem_1rem] w-full shadow-[0_4px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_15px_rgba(0,0,0,0.05)] border border-gray-50 max-md:border-gray-100 flex flex-col gap-4 transition-transform duration-300 hover:-translate-y-1 h-full">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <div className="flex flex-col items-center">
@@ -60,7 +60,7 @@ export default function ResultsAndTools() {
               </div>
             </StaggerItem>
 
-            <StaggerItem className="flex-1 min-w-[180px]">
+            <StaggerItem className="flex-1 min-w-[170px]">
               <div className="group bg-white rounded-2xl p-[1.5rem_1rem] w-full shadow-[0_4px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_15px_rgba(0,0,0,0.05)] border border-gray-50 max-md:border-gray-100 flex flex-col gap-4 transition-transform duration-300 hover:-translate-y-1 h-full">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <div className="flex flex-col items-center">
@@ -102,7 +102,7 @@ export default function ResultsAndTools() {
               </div>
             </StaggerItem>
 
-            <StaggerItem className="flex-1 min-w-[180px]">
+            <StaggerItem className="flex-1 min-w-[170px]">
               <div className="group bg-white rounded-2xl p-[1.5rem_1rem] w-full shadow-[0_4px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_15px_rgba(0,0,0,0.05)] border border-gray-50 max-md:border-gray-100 flex flex-col gap-4 transition-transform duration-300 hover:-translate-y-1 h-full">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <div className="flex flex-col items-center">
@@ -145,14 +145,14 @@ export default function ResultsAndTools() {
             </StaggerItem>
           </StaggerContainer>
 
-          <div className="text-right max-lg:text-left">
+          {/* <div className="text-right max-lg:text-left">
             <a
               href="#"
               className="text-[#6d28d9] hover:text-[#4c1d95] text-[0.85rem] font-bold hover:underline transition-colors duration-300 max-md:block max-md:w-full max-md:text-center max-md:py-3 max-md:px-4 max-md:mt-2.5 max-md:bg-white max-md:border max-md:border-gray-200 max-md:rounded-lg max-md:text-[#6d28d9] max-md:font-semibold max-md:text-[0.85rem] max-md:hover:bg-gray-50"
             >
               View More Success Stories ➔
             </a>
-          </div>
+          </div> */}
         </div>
 
         {/* Academic Tools */}
@@ -305,14 +305,14 @@ export default function ResultsAndTools() {
             </StaggerItem>
           </StaggerContainer>
 
-          <div className="text-left">
+          {/* <div className="text-left">
             <a
               href="#"
               className="text-[#6d28d9] hover:text-[#4c1d95] text-[0.85rem] font-bold hover:underline transition-colors duration-300 max-md:block max-md:w-full max-md:text-center max-md:py-3 max-md:px-4 max-md:mt-2.5 max-md:bg-white max-md:border max-md:border-gray-200 max-md:rounded-lg max-md:text-[#6d28d9] max-md:font-semibold max-md:text-[0.85rem] max-md:hover:bg-gray-50"
             >
               Explore All Tools ➔
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

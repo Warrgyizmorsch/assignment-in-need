@@ -131,18 +131,17 @@ export default function HeroSection() {
               </div>
 
               <h1 className="text-[2.75rem] max-md:text-[2.1rem] max-[480px]:text-[1.8rem] font-extrabold leading-[1.3] text-gray-900 mb-3 line-clamp-3 max-md:text-left">
-                Assignment Help UK That Helps You
+                Assignment Help UK by Expert 
                 <br />
                 <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent block mt-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                  Score Higher Grades
+                  Assignment Helpers
                 </span>
               </h1>
 
               <div className="max-lg:text-center max-md:text-left">
                 <p className="text-[0.92rem] max-md:text-[0.78rem] text-gray-600 leading-relaxed mb-4">
-                  Get expert academic support for essays, reports,
-                  dissertations, case studies and more—crafted by subject
-                  specialists to help you achieve your academic goals.
+                  Get trusted assignment help online for essays, reports, coursework, dissertations, and case studies. Our subject specialists provide original, human-written academic support tailored to UK university standards, your module requirements, and your deadlines.
+
                 </p>
               </div>
 

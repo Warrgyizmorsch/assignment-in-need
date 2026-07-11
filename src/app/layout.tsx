@@ -29,8 +29,8 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Assignment In Need | 100% Original Academic Help",
-  description: "Get 100% ORIGINAL + 100% Plagiarism-free Assignment Help within 48 Hours or Less. A one-stop writing service for Business, Law, Nursing, and Engineering assignments, essays, and case studies.",
+  title: "Assignment Help UK | Human-Written Academic Support",
+  description: "Need reliable Assignment Help UK? Get human-written essays, reports, coursework, and dissertations from subject specialists who understand UK universities.",
   keywords: ["assignment help", "plagiarism-free writing", "case study writing", "business law essays", "nursing assignment help", "engineering report help"],
 };
 

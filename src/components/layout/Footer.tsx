@@ -41,7 +41,7 @@ export const Footer = () => {
               href="https://www.facebook.com/profile.php?id=61564613120071" 
               aria-label="Facebook" 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="flex items-center justify-center w-[38px] h-[38px] bg-white/10 text-white rounded-full no-underline transition-all duration-500 hover:bg-[#4f46e5] hover:-translate-y-0.5 hover:rotate-[360deg] text-[0.9rem]"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@ export const Footer = () => {
               href="https://twitter.com/assignment_in" 
               aria-label="Twitter/X" 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="flex items-center justify-center w-[38px] h-[38px] bg-white/10 text-white rounded-full no-underline transition-all duration-500 hover:bg-[#4f46e5] hover:-translate-y-0.5 hover:rotate-[360deg] text-[0.9rem]"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@ export const Footer = () => {
               href="https://linkedin.com" 
               aria-label="LinkedIn" 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="flex items-center justify-center w-[38px] h-[38px] bg-white/10 text-white rounded-full no-underline transition-all duration-500 hover:bg-[#4f46e5] hover:-translate-y-0.5 hover:rotate-[360deg] text-[0.9rem]"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ export const Footer = () => {
               href="https://www.instagram.com/assignmentinneedofficial/" 
               aria-label="Instagram" 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener noreferrer nofollow"
               className="flex items-center justify-center w-[38px] h-[38px] bg-white/10 text-white rounded-full no-underline transition-all duration-500 hover:bg-[#4f46e5] hover:-translate-y-0.5 hover:rotate-[360deg] text-[0.9rem]"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

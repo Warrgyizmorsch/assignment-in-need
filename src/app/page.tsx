@@ -15,6 +15,7 @@ import { PromoBanner } from "@/components/ui/PromoBanner";
 import { ProcessSteps } from "@/components/ui/ProcessSteps";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { Heading } from "@/components/ui/Heading";
+import SeoContentSection from "@/components/home/SeoContentSection";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -96,6 +97,7 @@ export default function Home() {
       <PromoBannerHome />
       <AssignmentSamples />
 
+      <SeoContentSection />
       <ResultsAndTools />
       {/* <WritersAndTrust /> */}
       <ReviewsAndFaq />

@@ -435,14 +435,14 @@ export default function ReviewsAndFaq() {
             })}
           </StaggerContainer>
 
-          <div className="text-left mt-6">
+          {/* <div className="text-left mt-6">
             <a
               href="#"
               className="text-[#6d28d9] hover:text-[#4c1d95] text-[0.85rem] font-bold no-underline hover:underline transition-colors duration-300 max-md:block max-md:w-full max-md:text-center max-md:py-3 max-md:mt-2.5 max-md:bg-white max-md:border max-md:border-gray-200 max-md:rounded-lg max-md:no-underline"
             >
               View All FAQs →
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
 
