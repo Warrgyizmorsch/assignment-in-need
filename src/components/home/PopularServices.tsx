@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { getBaseUrl } from "@/lib/api";
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
 
@@ -193,6 +194,13 @@ function ServiceTile({
   index: number;
   isFeature?: boolean;
 }) {
+  const [imgSrc, setImgSrc] = useState(service.image);
+
+  // Sync state when props change
+  useEffect(() => {
+    setImgSrc(service.image);
+  }, [service.image]);
+
   const imageSize = isFeature
     ? "absolute bottom-[-5%] right-[-5%] w-[100%] max-h-[70%]"
     : "absolute bottom-[-10px] right-[-10px] w-[62%] max-h-[80%]";
@@ -229,15 +237,14 @@ function ServiceTile({
           </span>
         </div>
       </div>
-      <img
-        src={service.image}
+      <Image
+        src={imgSrc}
         alt={service.title}
         width={isFeature ? 280 : 180}
         height={isFeature ? 240 : 130}
         className={`${imageSize} object-contain pointer-events-none transition-transform duration-300 group-hover:scale-105`}
-        onError={(event) => {
-          event.currentTarget.src =
-            SERVICE_STYLES[index % SERVICE_STYLES.length].image;
+        onError={() => {
+          setImgSrc(SERVICE_STYLES[index % SERVICE_STYLES.length].image);
         }}
       />
     </Link>

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 export const Footer = () => {
@@ -36,7 +37,7 @@ export const Footer = () => {
             href="/"
             className="inline-block bg-white p-1 rounded-lg max-h-[70px]"
           >
-            <img
+            <Image
               src="/assets/media/layout/ain-logo.webp"
               alt="Assignment IN NEED"
               width={180}
@@ -113,35 +114,35 @@ export const Footer = () => {
 
             {/* Payment card row */}
             <div className="flex flex-wrap gap-3 items-center">
-              <img
+              <Image
                 src="/images/badge-visa.png"
                 alt="Visa"
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
               />
-              <img
+              <Image
                 src="/images/badge-mastercard.png"
                 alt="Mastercard"
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
               />
-              <img
+              <Image
                 src="/images/badge-maestro.png"
                 alt="Maestro"
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
               />
-              <img
+              <Image
                 src="/images/badge-amex.png"
                 alt="American Express"
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
               />
-              <img
+              <Image
                 src="/images/badge-discover.png"
                 alt="Discover"
                 width={60}
@@ -152,21 +153,21 @@ export const Footer = () => {
 
             {/* Security badges row */}
             <div className="flex flex-wrap gap-3 items-center">
-              <img
+              <Image
                 src="/images/badge-dmca.png"
                 alt="DMCA Protected"
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
               />
-              <img
+              <Image
                 src="/images/badge-mcafee.png"
                 alt="McAfee Secure"
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
               />
-              <img
+              <Image
                 src="/images/badge-gdpr.png"
                 alt="GDPR Compliant"
                 width={60}

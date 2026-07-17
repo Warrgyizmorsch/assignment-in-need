@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { WRITERS, Writer } from "@/lib/data";
 import { getBaseUrl, mapExpertToWriter } from "@/lib/api";
 import { Loader2 } from "lucide-react";
@@ -461,9 +462,9 @@ export default function WritersDirectory() {
               Our professional academic writers are here to deliver high-quality, plagiarism-free assignments
               tailored to your requirements.
             </p>
-            <a href="/order" className="btn-shutter-orange-open inline-flex items-center gap-2 font-semibold text-base py-3.5 px-7 rounded-lg cursor-pointer shadow-[0_4px_15px_rgba(255,107,0,0.4)]">
+            <Link href="/order" className="btn-shutter-orange-open inline-flex items-center gap-2 font-semibold text-base py-3.5 px-7 rounded-lg cursor-pointer shadow-[0_4px_15px_rgba(255,107,0,0.4)]">
               Get Free Quote Now &rarr;
-            </a>
+            </Link>
           </div>
           <div className="znw-banner-divider"></div>
           <div className="znw-banner-right">

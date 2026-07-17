@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 import {
@@ -685,10 +686,12 @@ export default function OrderPage() {
           {/* Right Column Graphic */}
           <AnimateIn variant="scaleUp" delay={0.15} className="lg:col-span-5 flex justify-center items-center relative">
             <div className="relative w-full max-w-[340px] aspect-square">
-              <img
+              <Image
                 src="/order-page/order-hero.png"
                 alt="Student assignment help assistance"
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
+                priority
               />
 
               {/* Floating 24/7 support badge */}

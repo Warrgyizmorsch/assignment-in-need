@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import {
@@ -1023,11 +1024,12 @@ export const Navbar = () => {
             className="znh-logo"
             aria-label="Assignment In Need home"
           >
-            <img
+            <Image
               src="/assets/media/layout/ain-logo.webp"
               alt="Assignment In Need Logo"
               width={160}
               height={55}
+              priority
             />
           </Link>
 

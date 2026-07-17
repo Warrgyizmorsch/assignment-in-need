@@ -140,10 +140,12 @@ export default function BlogPage() {
                       className="flex flex-col animate-fadeIn group no-underline text-left cursor-pointer"
                     >
                       <div className="relative w-full h-[240px] sm:h-[400px] rounded-3xl overflow-hidden mb-6 shadow-md">
-                        <img
+                        <Image
                           src={getImageUrl(latestPost.images)}
                           alt={latestPost.tittle}
-                          className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500"
+                          fill
+                          className="object-cover group-hover:scale-[1.01] transition-transform duration-500"
+                          priority
                         />
                         <span className="absolute top-4 right-4 bg-primary-700 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg uppercase tracking-wider">
                           Latest Blog

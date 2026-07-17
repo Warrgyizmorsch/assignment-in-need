@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimateIn } from "@/components/ui/AnimateIn";
 
 export default function CtaBanner() {
@@ -14,7 +15,7 @@ export default function CtaBanner() {
         </div>
 
         {/* Student Image popping out of the top container border */}
-        <img
+        <Image
           src="/new-home-page-images/Cta-New.webp"
           alt="Student assignment help assistance"
           width={360}
@@ -162,28 +163,28 @@ export default function CtaBanner() {
           <div className="flex items-center gap-2.5 justify-center lg:justify-start">
             {/* Hardcoded pixel widths to prevent browser sizing fallback stretching the avatars */}
             <div className="flex -space-x-2 shrink-0">
-              <img
+              <Image
                 src="/assets/media/layout/testimonial/testimonial1.webp"
                 alt="Student avatar 1"
                 width={28}
                 height={28}
                 className="w-[28px] h-[28px] rounded-full border-2 border-white bg-gray-150 relative z-[1]"
               />
-              <img
+              <Image
                 src="/assets/media/layout/testimonial/testimonial2.webp"
                 alt="Student avatar 2"
                 width={28}
                 height={28}
                 className="w-[28px] h-[28px] rounded-full border-2 border-white bg-gray-150 relative z-[2]"
               />
-              <img
+              <Image
                 src="/assets/media/layout/testimonial/testimonial3.webp"
                 alt="Student avatar 3"
                 width={28}
                 height={28}
                 className="w-[28px] h-[28px] rounded-full border-2 border-white bg-gray-150 relative z-[3]"
               />
-              <img
+              <Image
                 src="/assets/media/layout/testimonial/testimonial4.webp"
                 alt="Student avatar 4"
                 width={28}

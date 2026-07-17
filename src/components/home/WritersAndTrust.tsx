@@ -175,11 +175,9 @@ export const WritersAndTrust: React.FC = () => {
           <StaggerContainer className="flex md:hidden flex-col gap-3 mb-6">
             {experts.map((expert) => (
               <StaggerItem key={expert.id}>
-                <div
-                  onClick={() => {
-                    window.location.href = `/writers/${expert.id}`;
-                  }}
-                  className="bg-white rounded-xl p-[1.2rem_1rem] flex items-center gap-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-[#f9fafb] cursor-pointer"
+                <Link
+                  href={`/writers/${expert.id}`}
+                  className="bg-white rounded-xl p-[1.2rem_1rem] flex items-center gap-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-[#f9fafb] cursor-pointer no-underline block"
                 >
                   <img
                     src={getAvatarUrl(expert.image)}
@@ -211,7 +209,7 @@ export const WritersAndTrust: React.FC = () => {
                   <div className="text-gray-300 text-2xl pl-2 font-bold">
                     &rarr;
                   </div>
-                </div>
+                </Link>
               </StaggerItem>
             ))}
           </StaggerContainer>

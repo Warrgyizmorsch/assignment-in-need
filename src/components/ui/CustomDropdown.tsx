@@ -44,10 +44,23 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
     opt.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const toggleDropdown = () => {
+    setIsOpen((prev) => {
+      const next = !prev;
+      if (!next) setSearchQuery("");
+      return next;
+    });
+  };
+
+  const closeDropdown = () => {
+    setIsOpen(false);
+    setSearchQuery("");
+  };
+
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
+        closeDropdown();
       }
     };
     document.addEventListener("mousedown", handleOutsideClick);
@@ -55,9 +68,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!isOpen) {
-      setSearchQuery("");
-    } else if (shouldSearch) {
+    if (isOpen && shouldSearch) {
       // Focus on search input when dropdown opens
       setTimeout(() => {
         searchInputRef.current?.focus();
@@ -69,7 +80,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
     <div ref={containerRef} className={`relative ${className}`}>
       <button
         type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={toggleDropdown}
         className={`w-full flex items-center justify-between bg-transparent border-none outline-none cursor-pointer py-0.5 text-[0.72rem] text-slate-800 font-medium ${triggerClassName}`}
       >
         <span className="truncate">

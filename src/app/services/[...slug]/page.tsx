@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { QuoteForm } from "@/components/ui/QuoteForm";
@@ -124,33 +125,73 @@ export default function ServiceLanding() {
 
         // FIX: hit the real detail endpoint shape (/api/service-pages/:slug)
         // instead of the old admin query-string variant.
-        const pageRes = await fetch(`/api/service-pages/${apiSlug}`);
         let pageResult: any = null;
-        if (pageRes.ok) {
-          pageResult = await pageRes.json();
-          console.log(pageResult, "pageResult")
-          if (pageResult.success && pageResult.data && pageResult.data.page) {
-            setPageData(pageResult.data.page);
-
-            if (
-              Array.isArray(pageResult.data.experts) &&
-              pageResult.data.experts.length > 0
-            ) {
-              // These are the experts the backend explicitly assigned to
-              // this page (via expert_ids). Trust them as-is.
-              setExperts(
-                pageResult.data.experts.map((item: any) =>
-                  mapExpertToWriter(item),
-                ),
-              );
-              setExpertsFromPage(true);
-            } else {
-              setExpertsFromPage(false);
+        
+        // Try 1: Cleaned/extracted apiSlug
+        try {
+          const pageRes = await fetch(`/api/service-pages/${apiSlug}`);
+          if (pageRes.ok) {
+            const temp = await pageRes.json();
+            if (temp && temp.success && temp.data && temp.data.page) {
+              pageResult = temp;
             }
+          }
+        } catch (e) {
+          console.error("Error in Try 1 fetch:", e);
+        }
 
-            if (Array.isArray(pageResult.data.reviews)) {
-              setReviews(pageResult.data.reviews.map(mapReviewToTestimonial));
+        // Try 2: Full uncleaned slug (e.g. /assignment/dissertation-writing-services)
+        if (!pageResult || !pageResult.success || !pageResult.data || !pageResult.data.page) {
+          try {
+            const pageRes2 = await fetch(`/api/service-pages/${fullSlug}`);
+            if (pageRes2.ok) {
+              const temp = await pageRes2.json();
+              if (temp && temp.success && temp.data && temp.data.page) {
+                pageResult = temp;
+              }
             }
+          } catch (e) {
+            console.error("Error in Try 2 fetch:", e);
+          }
+        }
+
+        // Try 3: Full slug replacing slashes with dashes
+        if (!pageResult || !pageResult.success || !pageResult.data || !pageResult.data.page) {
+          try {
+            const pageRes3 = await fetch(`/api/service-pages/${fullSlug.replace(/\//g, "-")}`);
+            if (pageRes3.ok) {
+              const temp = await pageRes3.json();
+              if (temp && temp.success && temp.data && temp.data.page) {
+                pageResult = temp;
+              }
+            }
+          } catch (e) {
+            console.error("Error in Try 3 fetch:", e);
+          }
+        }
+
+        // Parse result if successfully loaded
+        if (pageResult && pageResult.success && pageResult.data && pageResult.data.page) {
+          setPageData(pageResult.data.page);
+
+          if (
+            Array.isArray(pageResult.data.experts) &&
+            pageResult.data.experts.length > 0
+          ) {
+            // These are the experts the backend explicitly assigned to
+            // this page (via expert_ids). Trust them as-is.
+            setExperts(
+              pageResult.data.experts.map((item: any) =>
+                mapExpertToWriter(item),
+              ),
+            );
+            setExpertsFromPage(true);
+          } else {
+            setExpertsFromPage(false);
+          }
+
+          if (Array.isArray(pageResult.data.reviews)) {
+            setReviews(pageResult.data.reviews.map(mapReviewToTestimonial));
           }
         }
 
@@ -491,10 +532,12 @@ export default function ServiceLanding() {
                 />
 
                 <div className="relative w-full max-w-[360px] h-[240px] mx-auto my-4 block lg:hidden z-10">
-                  <img
+                  <Image
                     src="/new-subject-sectionimg/herosubject.png"
                     alt={`${title} student`}
-                    className="w-full h-full object-contain object-bottom"
+                    fill
+                    className="object-contain object-bottom"
+                    priority
                   />
                   <div className="absolute bottom-[20px] right-0 bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-2.5 flex items-center gap-2 border border-gray-100 z-20">
                     <div className="w-7 h-7 rounded-full bg-[#fff2ea] flex items-center justify-center shrink-0">
@@ -550,7 +593,7 @@ export default function ServiceLanding() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </a>
-                  <a
+                  <Link
                     href={pageData.cta_button_url || "/samples"}
                     className="btn-shutter-blue-close font-bold py-3.5 px-6 rounded-lg text-[13px] transition shadow-sm flex items-center justify-center gap-2.5 w-full sm:w-auto text-center shrink-0 cursor-pointer"
                   >
@@ -558,7 +601,7 @@ export default function ServiceLanding() {
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </AnimateIn>
@@ -570,10 +613,12 @@ export default function ServiceLanding() {
                 maskImage: "linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 8%, rgba(0,0,0,1) 92%, rgba(0,0,0,0) 100%)",
               }}
             >
-              <img
+              <Image
                 src="/new-subject-sectionimg/herosubject.png"
                 alt={`${title} student`}
-                className="w-full h-full object-contain object-top"
+                fill
+                className="object-contain object-top"
+                priority
               />
             </div>
 
@@ -838,7 +883,7 @@ export default function ServiceLanding() {
             </div>
 
             <div className="w-[110px] h-[110px] lg:w-[190px] lg:h-[190px] shrink-0 relative lg:absolute lg:right-6 lg:top-1/2 lg:-translate-y-1/2 flex items-center justify-center z-10 mt-4 lg:mt-0">
-              <img src="/images/gift.png" alt="3D Gift Box" className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]" />
+              <Image src="/images/gift.png" alt="3D Gift Box" fill className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]" />
             </div>
           </div>
         </div>
@@ -1021,7 +1066,7 @@ export default function ServiceLanding() {
 
           <div
             className={cn(
-              "block text-sm text-text-body leading-relaxed transition-all duration-300 overflow-hidden space-y-3 [&_p]:m-0",
+              "block text-sm text-text-body leading-relaxed transition-all duration-300 overflow-hidden space-y-3 rich-text-content",
               !seoExpanded && "max-h-[140px] relative",
             )}
             dangerouslySetInnerHTML={{ __html: longContentHtml }}

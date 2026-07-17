@@ -206,7 +206,7 @@ export default function ExploreSubjects() {
 
                     return (
                       <StaggerItem key={sub.id || i}>
-                        <a
+                        <Link
                           href={`/${mappedSlug}-assignment-help`}
                           className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff] max-md:min-w-0 max-md:p-3 max-md:flex-col max-md:justify-center max-md:items-center max-md:gap-2"
                         >
@@ -235,7 +235,7 @@ export default function ExploreSubjects() {
                               + Orders
                             </span>
                           </div>
-                        </a>
+                        </Link>
                       </StaggerItem>
                     );
                   })
@@ -243,7 +243,7 @@ export default function ExploreSubjects() {
                     const mappedSlug = sub.slug === "maths" || sub.slug === "math" ? "math" : sub.slug;
                     return (
                       <StaggerItem key={i}>
-                        <a
+                        <Link
                           href={`/${mappedSlug}-assignment-help`}
                           className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff] max-md:min-w-0 max-md:p-3 max-md:flex-col max-md:justify-center max-md:items-center max-md:gap-2"
                         >
@@ -282,7 +282,7 @@ export default function ExploreSubjects() {
                             {sub.count} Orders
                           </span>
                         </div>
-                      </a>
+                      </Link>
                     </StaggerItem>
                     );
                   })}
@@ -306,12 +306,12 @@ export default function ExploreSubjects() {
           </button>
         </div>
 
-        <a
+        <Link
           href="/services"
           className="flex md:hidden justify-center items-center w-full p-3 mt-5 bg-white border border-gray-200 rounded-lg text-[#4f46e5] hover:bg-gray-50 font-semibold text-[0.68rem] transition-all duration-300"
         >
           View All Subjects &rarr;
-        </a>
+        </Link>
       </div>
     </section>
   );

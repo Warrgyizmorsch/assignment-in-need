@@ -82,10 +82,12 @@ export default async function BlogDetailPage({ params }: Props) {
             </div>
 
             <div className="w-full h-64 sm:h-[380px] relative mb-8 rounded-2xl overflow-hidden shadow-md">
-              <img
+              <Image
                 src={getImageUrl(post.images)}
                 alt={post.tittle}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
               />
             </div>
 

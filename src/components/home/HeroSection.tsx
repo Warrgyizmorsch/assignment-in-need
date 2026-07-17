@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { QuoteForm } from "@/components/ui/QuoteForm";
 import { AnimateIn } from "@/components/ui/AnimateIn";
 
@@ -193,18 +195,18 @@ export default function HeroSection() {
               </div>
 
               <div className="flex gap-3 flex-row flex-nowrap max-lg:justify-center">
-                <a
+                <Link
                   href="/order"
                   className="btn-shutter-blue-open text-white py-[9px] px-4 rounded-lg no-underline font-semibold inline-flex items-center transition-all duration-300 border border-transparent whitespace-nowrap text-xs sm:text-sm md:text-base"
                 >
                   Get Free Quote &rarr;
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/writers"
                   className="btn-shutter-blue-close text-gray-900 py-[9px] px-4 rounded-lg no-underline font-semibold inline-flex items-center transition-all duration-300 whitespace-nowrap text-xs sm:text-sm md:text-base"
                 >
                   View Our Experts &rarr;
-                </a>
+                </Link>
               </div>
             </AnimateIn>
 
@@ -215,12 +217,13 @@ export default function HeroSection() {
               className="flex-1 hidden lg:flex  justify-center relative z-[1] max-lg:order-2 max-lg:mt-8 max-lg:w-full max-lg:max-w-[450px] max-lg:flex-none"
             >
               <div className="relative w-full max-w-[360px] min-h-[320px]">
-                <img
+                <Image
                   src="/new-home-page-images/New-Hero-Bg.webp"
                   alt="Student"
                   width={360}
                   height={320}
                   className="hidden max-md:block w-full h-auto rounded-[20px] max-md:max-h-[380px] max-md:object-contain max-md:mx-auto"
+                  priority
                 />
 
                 {/* Floating Badges */}

@@ -38,7 +38,6 @@ export default function CatchAllPage() {
     "assignment-writing-uk",
     "dissertation-writing-services",
     "english",
-    "management-assignment-help",
   ]);
 
   useEffect(() => {
@@ -52,7 +51,7 @@ export default function CatchAllPage() {
             const parentSlugs = result.data
               .map((item: any) => item.slug)
               .filter((slug: string) => slug);
-            setSERVICE_PARENT_SLUGS(parentSlugs);
+            setSERVICE_PARENT_SLUGS((prev) => Array.from(new Set([...prev, ...parentSlugs])));
           }
         }
       } catch (error) {

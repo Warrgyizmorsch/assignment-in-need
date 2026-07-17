@@ -249,6 +249,36 @@ export default function SubjectLanding() {
           }
         }
 
+        // Fallback: try with the original uncleaned slug (e.g. management-assignment-help)
+        if (!payload || !payload.success || !payload.data || !payload.data.page) {
+          const origRes = await fetch(`/api/admin/subjects?slug=${slug}`);
+          if (origRes.ok) {
+            const temp = await origRes.json();
+            if (temp.success && temp.data && temp.data.page) {
+              payload = temp;
+            }
+          }
+        }
+
+        if (!payload || !payload.success || !payload.data || !payload.data.page) {
+          const origRes2 = await fetch(`/api/admin/subjects?slug=subject/${slug}`);
+          if (origRes2.ok) {
+            const temp = await origRes2.json();
+            if (temp.success && temp.data && temp.data.page) {
+              payload = temp;
+            }
+          }
+        }
+
+        if (!payload || !payload.success || !payload.data || !payload.data.page) {
+          const origRes3 = await fetch(`/api/admin/service-pages?slug=${slug}`);
+          if (origRes3.ok) {
+            const temp = await origRes3.json();
+            if (temp.success && temp.data && temp.data.page) {
+              payload = temp;
+            }
+          }
+        }
 
         if (!payload || !payload.success || !payload.data || !payload.data.page) {
           setIsNotFound(true);
@@ -1245,7 +1275,7 @@ export default function SubjectLanding() {
               )}
             >
               <div
-                className="flex flex-col gap-4 text-[13.5px] leading-relaxed text-gray-500 font-medium max-w-4xl mx-auto text-left [&_p]:m-0 html-desc select-text"
+                className="block text-[14.5px] text-gray-700 leading-relaxed max-w-4xl mx-auto text-left space-y-3 rich-text-content html-desc select-text"
                 dangerouslySetInnerHTML={{ __html: longContentHtml }}
               />
               {!seoExpanded && (
@@ -1276,12 +1306,12 @@ export default function SubjectLanding() {
                 dangerouslySetInnerHTML={{ __html: pageData.cta_content }}
               />
               {pageData.cta_button_label && (
-                <a
+                <Link
                   href={pageData.cta_button_url || "#quote-form"}
                   className="btn-shutter-blue-open text-white font-bold py-3.5 px-6 rounded-lg text-[13px] transition shadow-md inline-flex items-center justify-center gap-2 cursor-pointer border-none"
                 >
                   {pageData.cta_button_label}
-                </a>
+                </Link>
               )}
             </div>
           ) : (

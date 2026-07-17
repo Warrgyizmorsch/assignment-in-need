@@ -30,6 +30,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://www.assignmentinneed.co.uk"),
   title: "Assignment Help UK | Human-Written Academic Support",
   description:
     "Need reliable Assignment Help UK? Get human-written essays, reports, coursework, and dissertations from subject specialists who understand UK universities.",
