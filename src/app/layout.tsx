@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import { CanonicalHeader } from "@/components/layout/CanonicalHeader";
+import { ChunkFix } from "@/components/common/ChunkFix";
 import { ChatBot } from "@/components/ui/ChatBot";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import "./globals.css";
@@ -146,6 +147,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
+        <ChunkFix />
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />
