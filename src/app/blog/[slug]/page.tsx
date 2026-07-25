@@ -15,6 +15,8 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+import { constructMetadata } from "@/lib/metadata";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
@@ -24,32 +26,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       const result = await res.json();
       if (result.success && result.data) {
         const post = result.data;
-        return {
-          title: post.meta_title || post.tittle || "Blog - Assignment In Need",
-          description: post.meta_discribtion || post.meta_description || "Read expert academic articles and student guides.",
-          robots: {
-            index: true,
-            follow: true,
-            googleBot: {
-              index: true,
-              follow: true,
-              "max-video-preview": -1,
-              "max-image-preview": "large",
-              "max-snippet": -1,
-            },
+        const title = post.meta_title || post.tittle || "Blog - Assignment In Need";
+        const description = post.meta_discribtion || post.meta_description || "Read expert academic articles and student guides.";
+        const image = post.image ? getImageUrl(post.image) : undefined;
+        
+        return constructMetadata({
+          title,
+          description,
+          canonicalUrl: `/blog/${slug}`,
+          openGraph: {
+            title,
+            description,
+            image,
           },
-        };
+        });
       }
     }
   } catch (e) {}
 
-  return {
+  return constructMetadata({
     title: "Blog - Assignment In Need",
-    robots: {
-      index: true,
-      follow: true,
-    },
-  };
+    canonicalUrl: `/blog/${slug}`,
+  });
 }
 
 export default async function BlogDetailPage({ params }: Props) {
@@ -187,7 +185,10 @@ export default async function BlogDetailPage({ params }: Props) {
                       finalSlug = s.slug || "";
                       name = s.name || "";
                     }
-                    const mappedSlug = finalSlug === "maths" || finalSlug === "math" ? "math" : finalSlug;
+                    const mappedSlug =
+                      finalSlug === "maths" || finalSlug === "math"
+                        ? "math"
+                        : finalSlug;
                     return (
                       <li key={finalSlug || idx}>
                         <Link
@@ -212,20 +213,38 @@ export default async function BlogDetailPage({ params }: Props) {
         if (post.faqs) {
           if (Array.isArray(post.faqs)) blogFaqs = post.faqs;
           else if (typeof post.faqs === "string") {
-            try { blogFaqs = JSON.parse(post.faqs); } catch (e) {}
+            try {
+              blogFaqs = JSON.parse(post.faqs);
+            } catch (e) {}
           }
         } else if (post.faq) {
           if (Array.isArray(post.faq)) blogFaqs = post.faq;
           else if (typeof post.faq === "string") {
-            try { blogFaqs = JSON.parse(post.faq); } catch (e) {}
+            try {
+              blogFaqs = JSON.parse(post.faq);
+            } catch (e) {}
           }
         }
 
         if (!Array.isArray(blogFaqs) || blogFaqs.length === 0) {
           blogFaqs = [
-            { question: "How does Assignment In Need help students with academic writing?", answer: "Assignment In Need provides expert academic writing assistance, coursework planning, research guidance, and proofreading services tailored to UK university standards." },
-            { question: "Are the study guides and articles free to access?", answer: "Yes, all articles, guides, and tips published on our blog are 100% free for students to read and reference." },
-            { question: "Can I order custom assignment help based on these blog topics?", answer: "Absolutely. Our expert writers specialize in every subject covered on our blog and can assist you with custom assignments." }
+            {
+              question:
+                "How does Assignment In Need help students with academic writing?",
+              answer:
+                "Assignment In Need provides expert academic writing assistance, coursework planning, research guidance, and proofreading services tailored to UK university standards.",
+            },
+            {
+              question: "Are the study guides and articles free to access?",
+              answer:
+                "Yes, all articles, guides, and tips published on our blog are 100% free for students to read and reference.",
+            },
+            {
+              question:
+                "Can I order custom assignment help based on these blog topics?",
+              answer:
+                "Absolutely. Our expert writers specialize in every subject covered on our blog and can assist you with custom assignments.",
+            },
           ];
         }
 

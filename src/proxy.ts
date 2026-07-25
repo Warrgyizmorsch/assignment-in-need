@@ -116,14 +116,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Ignore standard static page routes
+  // 3. Ignore standard static page routes and sub-routes
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
-    pathname.startsWith("/writers/") ||
-    pathname.startsWith("/samples/") ||
+    pathname.startsWith("/blog") ||
+    pathname.startsWith("/samples") ||
+    pathname.startsWith("/writers") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/cities") ||
+    pathname.startsWith("/subjects") ||
+    pathname.startsWith("/style-guide") ||
     pathname === "/about" ||
-    pathname === "/blog" ||
     pathname === "/contact" ||
     pathname === "/login" ||
     pathname === "/signup" ||
@@ -133,10 +137,6 @@ export async function proxy(request: NextRequest) {
     pathname === "/privacy-policy" ||
     pathname === "/review" ||
     pathname === "/terms-conditions" ||
-    pathname === "/writers" ||
-    pathname === "/cities" ||
-    pathname === "/subjects" ||
-    pathname === "/samples" ||
     pathname === "/sitemap.xml" ||
     pathname.endsWith("sitemap.xml") ||
     pathname === "/"
@@ -188,6 +188,24 @@ export async function proxy(request: NextRequest) {
     if (childSeg) {
       return NextResponse.redirect(new URL(`/subject/${childSeg}`, request.url), 301);
     }
+  }
+
+  // 3.75. Redirect misplaced /service/ prefixes back to top-level routes
+  if (pathname.startsWith("/service/blog")) {
+    const cleanPath = pathname.replace(/^\/service\/blog/, "/blog");
+    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
+  }
+  if (pathname.startsWith("/service/samples")) {
+    const cleanPath = pathname.replace(/^\/service\/samples/, "/samples");
+    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
+  }
+  if (pathname.startsWith("/service/writers")) {
+    const cleanPath = pathname.replace(/^\/service\/writers/, "/writers");
+    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
+  }
+  if (pathname.startsWith("/service/profile")) {
+    const cleanPath = pathname.replace(/^\/service\/profile/, "/profile");
+    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
   }
 
   // 3.8. If already on /service/, pass through directly
