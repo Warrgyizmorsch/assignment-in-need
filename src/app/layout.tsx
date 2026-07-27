@@ -34,7 +34,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "https://assignmentinneed.co.uk",
+    process.env.NEXT_PUBLIC_BASE_URL || "https://www.assignmentinneed.co.uk",
   ),
   title: "Assignment Help UK | Human-Written Academic Support",
   description:

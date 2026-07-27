@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { fetchSamples, fetchSampleCategories, toSitemapXml, getSitemapBaseUrl } from "@/lib/sitemap-data";
+import {
+  fetchSamples,
+  fetchSampleCategories,
+  toSitemapXml,
+  getSitemapBaseUrl,
+} from "@/lib/sitemap-data";
 
 export async function GET() {
   const baseUrl = getSitemapBaseUrl();
@@ -8,14 +13,14 @@ export async function GET() {
   const samples = await fetchSamples(baseUrl);
 
   const urls = [
-    { loc: `${baseUrl}/samples`, priority: "0.9" },
+    { loc: `${baseUrl}/samples`, priority: "0.7" },
     ...sampleCategories.map((catUrl: string) => ({
       loc: catUrl,
-      priority: "0.9",
+      priority: "0.7",
     })),
     ...samples.map((sampleUrl: string) => ({
       loc: sampleUrl,
-      priority: "0.9",
+      priority: "0.7",
     })),
   ];
 

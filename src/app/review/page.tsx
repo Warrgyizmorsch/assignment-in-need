@@ -335,7 +335,7 @@ export default function ReviewsAndFaq() {
           </AnimateIn>
           <AnimateIn variant="scaleUp" className="znw-hero-image-wrapper hidden lg:flex">
             <img 
-              src="https://assignmentinneed.co.uk/public/new-home-page-images/Writer-Hero-bg.webp" 
+              src="https://www.assignmentinneed.co.uk/public/new-home-page-images/Writer-Hero-bg.webp" 
               alt="Academic Writers Illustration" 
             />
           </AnimateIn>
@@ -470,7 +470,7 @@ export default function ReviewsAndFaq() {
                       <Link href={`/writers/${expert.slug}`}>
                         <img
                           className="ts-avatar"
-                          src={expert.image ? getImageUrl(expert.image) : "https://assignmentinneed.co.uk/assets/media/avatars/blank.png"}
+                          src={expert.image ? getImageUrl(expert.image) : "https://www.assignmentinneed.co.uk/assets/media/avatars/blank.png"}
                           alt={expert.name}
                           loading="lazy"
                         />

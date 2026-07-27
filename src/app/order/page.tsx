@@ -509,7 +509,7 @@ export default function OrderPage() {
         topic: "Academic Assignment Help",
         requirements: instructions || "No requirements specified.",
         finalPrice: total,
-        source_page: typeof window !== "undefined" ? window.location.href : "https://assignmentinneed.com/order"
+        source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/order"
       };
 
       const response = await fetch("/api/web-place-order", {

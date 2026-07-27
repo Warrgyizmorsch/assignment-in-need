@@ -13,7 +13,7 @@ export function getSitemapBaseUrl(): string {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`.replace(/\/+$/, "");
   }
-  return "https://assignmentinneed.co.uk";
+  return "https://www.assignmentinneed.co.uk";
 }
 
 export function slugify(text: string): string {

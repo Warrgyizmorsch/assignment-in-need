@@ -77,7 +77,7 @@ export default function TermsConditionsPage() {
                 },
                 {
                   title: "Website",
-                  desc: "Means the website located at www.assignmentinneed.com.",
+                  desc: "Means the website located at www.assignmentinneed.co.uk.",
                 },
                 {
                   title: "Order",

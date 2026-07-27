@@ -205,7 +205,7 @@ export function SidebarQuoteForm({ sourceName = "Blog Page" }: SidebarQuoteFormP
           deadline: cleanedDeadline,
           wordCount: String(pages * 250),
           description: `Quote request from ${sourceName}`,
-          source_page: typeof window !== "undefined" ? window.location.href : "https://assignmentinneed.com/blog",
+          source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/blog",
         }),
       });
 

@@ -244,7 +244,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
           deadline: timePeriod.replace(/[^0-9]/g, "") || timePeriod || "5",
           wordCount: String(wordCount),
           description: description || "",
-          source_page: typeof window !== "undefined" ? window.location.href : "https://assignmentinneed.com/quote",
+          source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/quote",
         }),
       });
 

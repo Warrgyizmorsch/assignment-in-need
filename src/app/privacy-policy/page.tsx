@@ -73,8 +73,8 @@ export default function PrivacyPolicyPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#fbfcff] border border-purple-100/50 p-4 rounded-2xl mt-2">
               <div className="flex flex-col text-xs font-bold text-gray-700">
                 <span className="text-gray-400 font-semibold mb-1 uppercase tracking-wider text-[9px]">Website</span>
-                <a href="https://www.assignmentinneed.com/" className="text-[#3f159a] hover:underline">
-                  www.assignmentinneed.com
+                <a href="https://www.assignmentinneed.co.uk/" className="text-[#3f159a] hover:underline">
+                  www.assignmentinneed.co.uk
                 </a>
               </div>
               <div className="flex flex-col text-xs font-bold text-gray-700">

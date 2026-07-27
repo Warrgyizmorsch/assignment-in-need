@@ -678,7 +678,7 @@ export default function SubjectLanding() {
           source_page:
             typeof window !== "undefined"
               ? window.location.href
-              : `https://assignmentinneed.com/${subject.slug}-assignment-help`,
+              : `https://www.assignmentinneed.co.uk/${subject.slug}-assignment-help`,
         }),
       });
 
