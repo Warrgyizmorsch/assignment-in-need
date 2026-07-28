@@ -183,15 +183,27 @@ const FALLBACK_SERVICES: NavLinkItem[] = [
   {
     name: "Assignment Writing Help UK",
     path: "/assignment-writing-uk",
-    children: ASSIGNMENT_SERVICE_SUBJECTS,
+    children: [
+      { name: "Essay Writing", path: "/essay-writing-help-services" },
+      { name: "Coursework Help", path: "/coursework-writing-help" },
+      { name: "Case Study Help", path: "/case-study-dissertation-help-uk" },
+      { name: "Report Writing", path: "/report-writing" },
+      ...ASSIGNMENT_SERVICE_SUBJECTS,
+    ],
   },
-  { name: "Essay Writing", path: "/essay-writing-help-services" },
-  { name: "Dissertation Help", path: "/dissertation-writing-help-services" },
-  { name: "Case Study Help", path: "/case-study-dissertation-help-uk" },
-  { name: "Report Writing", path: "/report-writing" },
-  { name: "Coursework Help", path: "/coursework-writing-help" },
-  { name: "Proofreading", path: "/proofreading-and-editing-writing-help" },
-  { name: "Editing & Formatting", path: "/dissertation-editing-and-proofreading-help-uk" },
+  {
+    name: "Dissertation Writing Services UK",
+    path: "/dissertation-writing-help-services",
+    children: [
+      { name: "Dissertation Help", path: "/dissertation-writing-help-services" },
+      { name: "Proofreading", path: "/proofreading-and-editing-writing-help" },
+      { name: "Editing & Formatting", path: "/dissertation-editing-and-proofreading-help-uk" },
+    ],
+  },
+  {
+    name: "Pay Someone To Do My Assignment",
+    path: "/assignment-writing-uk",
+  },
 ];
 
 const CITIES: NavLinkItem[] = [

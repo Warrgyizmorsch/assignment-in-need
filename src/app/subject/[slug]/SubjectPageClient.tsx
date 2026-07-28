@@ -260,7 +260,7 @@ export default function SubjectLanding() {
           !pageResult.data ||
           !pageResult.data.page
         ) {
-          setIsNotFound(true);
+          setIsNotFound(false);
           setLoading(false);
           return;
         }
