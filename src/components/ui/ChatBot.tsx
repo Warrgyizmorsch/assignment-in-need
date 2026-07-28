@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 
 interface ChatMessage {
   id: string;
@@ -367,15 +366,21 @@ export function ChatBot() {
             className="bg-gradient-to-r from-[#6a11cb] to-[#2575fc] text-white p-4 flex justify-between items-center shadow-md"
           >
             <div className="flex items-center gap-3">
-              <div className="w-[45px] h-[45px] bg-white rounded-full flex items-center justify-center border-2 border-white overflow-hidden relative shadow-sm">
-                <Image
-                  src="/call-center-agent-v2.png"
-                  alt="Daniel"
-                  width={45}
-                  height={45}
-                  className="object-cover w-full h-full"
-                  priority
-                />
+              <div className="w-[42px] h-[42px] bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 shadow-xs relative">
+                <svg
+                  className="w-5 h-5 text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                  <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                  <path d="M18 13.5v2.5a3.5 3.5 0 0 1-3.5 3.5h-1" />
+                </svg>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border border-white rounded-full" />
               </div>
               <div>
                 <h3 className="font-semibold text-base leading-tight">Daniel</h3>
@@ -414,28 +419,32 @@ export function ChatBot() {
             {messages.map((msg) => (
               <React.Fragment key={msg.id}>
                 <div
-                  className={`flex items-start gap-2 w-full ${
-                    msg.sender === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex items-start gap-2 w-full ${msg.sender === "user" ? "justify-end" : "justify-start"
+                    }`}
                 >
                   {msg.sender === "bot" && (
-                    <div className="w-[28px] h-[28px] rounded-full flex-shrink-0 border border-gray-200 bg-white overflow-hidden flex items-center justify-center shadow-xs">
-                      <Image
-                        src="/call-center-agent-v2.png"
-                        alt="Daniel"
-                        width={28}
-                        height={28}
-                        className="object-cover w-full h-full"
-                      />
+                    <div className="w-[28px] h-[28px] rounded-full flex-shrink-0 bg-gradient-to-tr from-[#6a11cb] to-[#2575fc] text-white flex items-center justify-center shadow-xs">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                        <path d="M18 13.5v2.5a3.5 3.5 0 0 1-3.5 3.5h-1" />
+                      </svg>
                     </div>
                   )}
 
                   <div
-                    className={`max-w-[78%] p-3 px-4 text-sm leading-relaxed ${
-                      msg.sender === "user"
+                    className={`max-w-[78%] p-3 px-4 text-sm leading-relaxed ${msg.sender === "user"
                         ? "bg-[#6a11cb] text-white rounded-[18px] rounded-br-[4px]"
                         : "bg-white text-[#333] rounded-[18px] rounded-bl-[4px] shadow-xs"
-                    }`}
+                      }`}
                   >
                     {msg.isHtml ? (
                       <span dangerouslySetInnerHTML={{ __html: msg.text }} />
@@ -479,14 +488,20 @@ export function ChatBot() {
             {/* Admin / Bot Typing Indicators */}
             {isAdminTyping && (
               <div className="flex items-start gap-2 w-full justify-start">
-                <div className="w-[28px] h-[28px] rounded-full flex-shrink-0 border border-gray-200 bg-white overflow-hidden flex items-center justify-center shadow-xs">
-                  <Image
-                    src="/call-center-agent-v2.png"
-                    alt="Daniel"
-                    width={28}
-                    height={28}
-                    className="object-cover w-full h-full"
-                  />
+                <div className="w-[28px] h-[28px] rounded-full flex-shrink-0 bg-gradient-to-tr from-[#6a11cb] to-[#2575fc] text-white flex items-center justify-center shadow-xs">
+                  <svg
+                    className="w-4 h-4 text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                    <path d="M18 13.5v2.5a3.5 3.5 0 0 1-3.5 3.5h-1" />
+                  </svg>
                 </div>
                 <div className="bg-white text-[#333] text-sm italic p-3 px-4 rounded-[18px] rounded-bl-[4px] shadow-xs">
                   Agent is typing...
@@ -496,14 +511,20 @@ export function ChatBot() {
 
             {isDanielTyping && !isAdminTyping && (
               <div className="flex items-start gap-2 w-full justify-start">
-                <div className="w-[28px] h-[28px] rounded-full flex-shrink-0 border border-gray-200 bg-white overflow-hidden flex items-center justify-center shadow-xs">
-                  <Image
-                    src="/call-center-agent-v2.png"
-                    alt="Daniel"
-                    width={28}
-                    height={28}
-                    className="object-cover w-full h-full"
-                  />
+                <div className="w-[28px] h-[28px] rounded-full flex-shrink-0 bg-gradient-to-tr from-[#6a11cb] to-[#2575fc] text-white flex items-center justify-center shadow-xs">
+                  <svg
+                    className="w-4 h-4 text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                    <path d="M18 13.5v2.5a3.5 3.5 0 0 1-3.5 3.5h-1" />
+                  </svg>
                 </div>
                 <div className="bg-white text-[#333] text-sm italic p-3 px-4 rounded-[18px] rounded-bl-[4px] shadow-xs">
                   Daniel is typing...
@@ -548,18 +569,26 @@ export function ChatBot() {
         <button
           id="ain-chat-bubble"
           onClick={() => setIsOpen(true)}
-          className="w-[65px] h-[65px] rounded-full cursor-pointer shadow-xl hover:shadow-2xl border-2 border-white bg-white overflow-hidden transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none relative group"
-          aria-label="Open Chat"
+          className="w-[62px] h-[62px] rounded-full cursor-pointer shadow-xl hover:shadow-2xl border-2 border-white/90 bg-gradient-to-tr from-[#6a11cb] via-[#4d38df] to-[#2575fc] text-white flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none relative group shadow-purple-600/30"
+          aria-label="Open Live Chat"
         >
-          <span className="absolute inset-0 rounded-full bg-[#6a11cb] opacity-20 animate-ping group-hover:animate-none pointer-events-none" />
-          <Image
-            src="/call-center-agent-v2.png"
-            alt="Daniel"
-            width={65}
-            height={65}
-            className="object-cover w-full h-full relative z-10"
-            priority
-          />
+          <span className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 opacity-40 animate-ping group-hover:animate-none pointer-events-none" />
+          <div className="relative z-10 flex items-center justify-center">
+            <svg
+              className="w-7 h-7 text-white drop-shadow-sm transition-transform duration-300 group-hover:scale-110"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+              <path d="M18 13.5v2.5a3.5 3.5 0 0 1-3.5 3.5h-1" />
+            </svg>
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow-xs" />
+          </div>
         </button>
       )}
     </div>
