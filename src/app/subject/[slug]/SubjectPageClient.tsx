@@ -596,7 +596,14 @@ export default function SubjectLanding() {
   const sectionThreeHeading = pageData?.section_three_heading || null;
   const sectionThreeContent = pageData?.section_three_content || null;
 
-  const longContentHtml = pageData?.long_content || null;
+  const longContentHtml =
+    pageData?.long_content ||
+    pageData?.seo_content ||
+    pageData?.content ||
+    pageData?.description ||
+    pageData?.body ||
+    pageData?.section_content ||
+    null;
 
   // Dynamic benefits points
   const benefits = [
@@ -1251,7 +1258,7 @@ export default function SubjectLanding() {
 
       {/* Dynamic "long_content" SEO text from API */}
       {longContentHtml && (
-        <section className="py-8 md:py-10 bg-white border-b border-gray-50 select-none">
+        <section className="py-8 md:py-10 bg-white border-b border-gray-50">
           <div className="max-w-[1000px] mx-auto px-4 flex flex-col gap-4">
             <div
               className={cn(
