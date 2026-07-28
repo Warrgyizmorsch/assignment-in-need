@@ -44,6 +44,17 @@ const humanizeSlug = (slug: string) =>
     .replace(/-/g, " ")
     .replace(/\b\w/g, (character) => character.toUpperCase());
 
+const ensureRelativePath = (url: string): string => {
+  if (!url) return "/";
+  try {
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      const parsed = new URL(url);
+      return parsed.pathname + parsed.search + parsed.hash;
+    }
+  } catch {}
+  return url.startsWith("/") ? url : `/${url}`;
+};
+
 const ASSIGNMENT_SERVICE_SUBJECTS: NavLinkItem[] = [
   {
     name: "Marketing Assignment Help UK",
@@ -238,7 +249,7 @@ const DesktopDropdown = ({
               {item.name}
             </span>
           ) : (
-            <Link href={item.path} className="znh-dropdown-link">
+            <Link href={ensureRelativePath(item.path)} className="znh-dropdown-link">
               <span>{item.name}</span>
               {item.children && item.children.length > 0 && (
                 <ChevronRight className="znh-right-icon" />
@@ -254,7 +265,7 @@ const DesktopDropdown = ({
                       {child.name}
                     </span>
                   ) : (
-                    <Link href={child.path} className="znh-dropdown-link">
+                    <Link href={ensureRelativePath(child.path)} className="znh-dropdown-link">
                       {child.name}
                     </Link>
                   )}
@@ -323,7 +334,7 @@ const MobileDropdown = ({
                   </span>
                 ) : (
                   <Link
-                    href={item.path}
+                    href={ensureRelativePath(item.path)}
                     className="znh-dropdown-link"
                     onClick={onNavigate}
                   >
@@ -348,7 +359,7 @@ const MobileDropdown = ({
                       </span>
                     ) : (
                       <Link
-                        href={child.path}
+                        href={ensureRelativePath(child.path)}
                         className="znh-dropdown-link"
                         onClick={onNavigate}
                       >
