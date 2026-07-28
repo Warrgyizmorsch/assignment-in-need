@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SubjectPageClient from "./SubjectPageClient";
 import { constructMetadata } from "@/lib/metadata";
 import { SUBJECTS } from "@/lib/data";
+import { canonicalSubjectPath, subjectDataSlug } from "@/lib/utils";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -14,8 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     if (baseUrl) {
-      let cleanSlug = slug.toLowerCase().replace("-assignment-writing-help", "").replace("-assignment-help", "").replace("-help", "").trim();
-      if (cleanSlug === "math") cleanSlug = "maths";
+      const cleanSlug = subjectDataSlug(slug);
 
       const endpoints = [
         `/api/subject-pages/${slug}`,
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
               return constructMetadata({
                 title,
                 description,
-                canonicalUrl: `/subject/${slug}`,
+                canonicalUrl: canonicalSubjectPath(slug),
               });
             }
           }
@@ -51,18 +51,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   // Fallback
-  let subjectName = slug;
-  const subject = SUBJECTS.find(s => s.slug === slug || s.slug === slug.replace("-assignment-help", ""));
+  const cleanSlug = subjectDataSlug(slug);
+  let subjectName = cleanSlug;
+  const subject = SUBJECTS.find(s => s.slug === slug || s.slug === cleanSlug);
   if (subject) {
     subjectName = subject.name;
   } else {
-    subjectName = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    subjectName = cleanSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   }
 
   return constructMetadata({
     title: `${subjectName} Assignment Help | Expert Specialists`,
     description: `Get expert ${subjectName} assignment help from qualified UK academic writers. 100% original, plagiarism-free, on-time delivery.`,
-    canonicalUrl: `/subject/${slug}`,
+    canonicalUrl: canonicalSubjectPath(slug),
   });
 }
 

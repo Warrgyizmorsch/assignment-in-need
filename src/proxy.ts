@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { canonicalSubjectPath } from "@/lib/utils";
 
 const BACKEND_URL =
   process.env.BACKEND_INTERNAL_URL ||
@@ -14,24 +15,18 @@ const CITY_IDENTIFIERS = [
   "kuala-lumpur", "penang"
 ];
 
-let cachedApiSlugs: string[] | null = null;
-let lastFetchedApiSlugs = 0;
-
 async function getAllApiSlugs(): Promise<string[]> {
-  const now = Date.now();
-  if (cachedApiSlugs && now - lastFetchedApiSlugs < 300000) {
-    return cachedApiSlugs;
-  }
-
   try {
     const [resServices, resSubjects] = await Promise.all([
       fetch(`${BACKEND_URL}/api/service-pages`, {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(8000),
+        cache: "no-store",
       }),
       fetch(`${BACKEND_URL}/api/subject-pages`, {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(8000),
+        cache: "no-store",
       }),
     ]);
 
@@ -64,16 +59,14 @@ async function getAllApiSlugs(): Promise<string[]> {
     }
 
     if (slugs.length > 0) {
-      cachedApiSlugs = Array.from(new Set(slugs));
-      lastFetchedApiSlugs = now;
-      return cachedApiSlugs;
+      return Array.from(new Set(slugs));
     }
   } catch (e) {
     // Silent fallback when API fetch is interrupted or offline
   }
 
   // Fallback to exact original slugs from backend APIs
-  cachedApiSlugs = [
+  return [
     "service/assignment",
     "service/assignment/english",
     "service/assignment/economics",
@@ -87,8 +80,6 @@ async function getAllApiSlugs(): Promise<string[]> {
     "subject/marketing",
     "subject/business",
   ];
-  lastFetchedApiSlugs = now;
-  return cachedApiSlugs;
 }
 
 export async function proxy(request: NextRequest) {
@@ -144,40 +135,25 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3.5. Subject route canonical normalization
+  // 3.5. Keep one canonical URL for every subject page.
   if (pathname.startsWith("/subject/")) {
-    const subSlug = pathname.replace(/^\/subject\//, "").replace(/\/+$/, "").toLowerCase();
-    if (subSlug === "math" || subSlug === "math-assignment-help" || subSlug === "maths-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/maths", request.url), 301);
-    }
-    if (subSlug === "chemistry-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/chemistry", request.url), 301);
-    }
-    if (subSlug === "history-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/history", request.url), 301);
-    }
-    if (subSlug === "do-my-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/do-my-assignment", request.url), 301);
-    }
-    if (subSlug === "marketing-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/marketing", request.url), 301);
-    }
-    if (subSlug === "business-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/business", request.url), 301);
-    }
-    if (subSlug === "english-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/english", request.url), 301);
-    }
-    if (subSlug === "economics-assignment-help") {
-      return NextResponse.redirect(new URL("/subject/economics", request.url), 301);
-    }
-    if (subSlug === "management") {
-      return NextResponse.redirect(new URL("/subject/management-assignment-help", request.url), 301);
+    const requestedPath = pathname.replace(/\/+$/, "").toLowerCase();
+    const canonicalPath = canonicalSubjectPath(
+      pathname.replace(/^\/subject\//, "").replace(/\/+$/, ""),
+    );
+
+    if (requestedPath !== canonicalPath) {
+      return NextResponse.redirect(new URL(canonicalPath, request.url), 301);
     }
     return NextResponse.next();
   }
-
-  // 3.6. If already on /cities/, pass through directly
+  // 3.6. Keep the London city page on its requested canonical URL.
+  if (pathname.toLowerCase().replace(/\/+$/, "") === "/cities/london") {
+    return NextResponse.redirect(
+      new URL("/cities/assignment-help-london", request.url),
+      301,
+    );
+  }
   if (pathname.startsWith("/cities/")) {
     return NextResponse.next();
   }
@@ -186,7 +162,7 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/service/assignment/")) {
     const childSeg = pathname.replace(/^\/+/, "").split("/").pop() || "";
     if (childSeg) {
-      return NextResponse.redirect(new URL(`/subject/${childSeg}`, request.url), 301);
+      return NextResponse.redirect(new URL(canonicalSubjectPath(childSeg), request.url), 301);
     }
   }
 
@@ -229,7 +205,15 @@ export async function proxy(request: NextRequest) {
     );
   });
   if (matchedCity) {
-    return NextResponse.redirect(new URL(`/cities/${matchedCity}`, request.url), 301);
+    return NextResponse.redirect(
+      new URL(
+        matchedCity === "london"
+          ? "/cities/assignment-help-london"
+          : `/cities/${matchedCity}`,
+        request.url,
+      ),
+      301,
+    );
   }
 
   // 5. Match against exact original API slugs for shorthand/legacy URLs
@@ -259,9 +243,12 @@ export async function proxy(request: NextRequest) {
   });
 
   if (matchedApiSlug) {
-    if (matchedApiSlug.startsWith("service/assignment/")) {
+    if (
+      matchedApiSlug.startsWith("service/assignment/") ||
+      matchedApiSlug.startsWith("subject/")
+    ) {
       const childSeg = matchedApiSlug.split("/").pop() || "";
-      return NextResponse.redirect(new URL(`/subject/${childSeg}`, request.url), 301);
+      return NextResponse.redirect(new URL(canonicalSubjectPath(childSeg), request.url), 301);
     }
     return NextResponse.redirect(new URL(`/${matchedApiSlug}`, request.url), 301);
   }

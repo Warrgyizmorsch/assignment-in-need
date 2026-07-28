@@ -64,7 +64,11 @@ export interface CityDetailPageProps {
 }
 
 export default function CityDetailPage({ slug }: CityDetailPageProps) {
-  const citySlug = slug.toLowerCase().replace("-assignment-help", "").split("/").pop() || "";
+  const requestedSlug = slug.toLowerCase().split("/").pop() || "";
+  const citySlug =
+    requestedSlug === "assignment-help-london"
+      ? "london"
+      : requestedSlug.replace("-assignment-help", "");
   const matchedCity = CITIES_LIST.find((c) => c.slug === citySlug) || {
     name: citySlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
     country: "United Kingdom",
@@ -350,6 +354,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
                 src="/new-subject-sectionimg/herosubject.png"
                 alt={`${cityName} student`}
                 fill
+                sizes="420px"
                 className="object-contain object-top"
                 priority
               />
@@ -550,6 +555,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
                 src="/images/gift.png"
                 alt="3D Gift Box"
                 fill
+                sizes="(min-width: 1024px) 190px, 120px"
                 className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
               />
             </div>

@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       headers: {
         Accept: "application/json",
       },
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
 
     const text = await response.text();
@@ -41,7 +41,9 @@ export async function GET(request: Request) {
 
     try {
       const parsed = JSON.parse(text);
-      return NextResponse.json(parsed);
+      return NextResponse.json(parsed, {
+        headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+      });
     } catch {
       return NextResponse.json(
         {

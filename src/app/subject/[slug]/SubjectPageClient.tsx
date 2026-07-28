@@ -50,6 +50,7 @@ const TIME_PERIOD_OPTIONS = [
   { label: "21+ Days", value: "21+" },
 ];
 import { cn } from "@/lib/utils";
+import { subjectDataSlug } from "@/lib/utils";
 import { SUBJECTS } from "@/lib/data";
 import {
   Star,
@@ -102,11 +103,7 @@ export default function SubjectLanding() {
   };
 
   // Normalize slug to extract the subject key, e.g. "history-assignment-help" -> "history"
-  const cleanSubjectSlug = (s: string) => {
-    let base = s.replace("-assignment-help", "").toLowerCase();
-    if (base === "math") base = "maths";
-    return base;
-  };
+  const cleanSubjectSlug = (s: string) => subjectDataSlug(s);
   const cleanSlugForSubject = cleanSubjectSlug(slug);
 
   // Find current subject or construct a dynamic fallback
@@ -224,13 +221,7 @@ export default function SubjectLanding() {
       try {
         setLoading(true);
         let pageResult: any = null;
-        let cleanSlug = slug
-          .toLowerCase()
-          .replace("-assignment-writing-help", "")
-          .replace("-assignment-help", "")
-          .replace("-help", "")
-          .trim();
-        if (cleanSlug === "math") cleanSlug = "maths";
+        const cleanSlug = subjectDataSlug(slug);
 
         const endpointsToTry = [
           `/api/subject-pages/${slug}`,
@@ -936,6 +927,7 @@ export default function SubjectLanding() {
                 src="/new-subject-sectionimg/herosubject.png"
                 alt={`${subject.name} student`}
                 fill
+                sizes="420px"
                 className="object-contain object-top"
                 priority
               />

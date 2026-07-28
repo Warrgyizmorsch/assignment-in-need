@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getBaseUrl } from "@/lib/api";
 import {
   AnimateIn,
   StaggerContainer,
@@ -264,10 +263,10 @@ export default function PopularServices() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const baseUrl = getBaseUrl();
-        const response = await fetch(`${baseUrl}/api/service-pages`);
+        const response = await fetch("/api/service-pages", {
+          cache: "no-store",
+        });
         if (!response.ok) {
-          console.error("Failed to load homepage services");
           return;
         }
 
@@ -277,8 +276,8 @@ export default function PopularServices() {
             result.data.filter(isApiRecord).slice(0, 8).map(mapService),
           );
         }
-      } catch (err) {
-        console.error("Error fetching homepage services:", err);
+      } catch {
+        // The static service cards below remain available if the API is offline.
       }
     };
 

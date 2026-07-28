@@ -38,12 +38,13 @@ const CITIES_LIST = [
 export async function generateMetadata({ params }: CityRoutePageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
+  const cityDataSlug = slug === "assignment-help-london" ? "london" : slug;
   const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
-  let cityName = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  let cityName = cityDataSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   let countryName = "Global";
 
-  const staticCity = CITIES_LIST.find((c) => c.slug === slug);
+  const staticCity = CITIES_LIST.find((c) => c.slug === cityDataSlug);
   if (staticCity) {
     cityName = staticCity.name;
     countryName = staticCity.country;
@@ -51,7 +52,7 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
 
   try {
     if (baseUrl) {
-      const res = await fetch(`${baseUrl}/api/city-pages/${slug}`);
+      const res = await fetch(`${baseUrl}/api/city-pages/${cityDataSlug}`);
       if (res.ok) {
         const json = await res.json();
         const pageData = json?.data?.page;

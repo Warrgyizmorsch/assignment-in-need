@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSitemapBaseUrl } from "@/lib/sitemap-data";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const baseUrl = getSitemapBaseUrl();
 
@@ -29,6 +31,7 @@ export async function GET() {
   return new NextResponse(xml, {
     headers: {
       "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
     },
   });
 }

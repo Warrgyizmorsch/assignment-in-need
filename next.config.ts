@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
-const backendUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
+const backendUrl =
+  process.env.BACKEND_INTERNAL_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "https://ain.warrgyizmorsch.com";
 
 let backendHostname = "";
 let backendProtocol: "http" | "https" = "https";
@@ -45,8 +48,18 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns,
   },
+  async headers() {
+    return ["service-pages", "subject-pages", "city-pages"].map((endpoint) => ({
+      source: `/api/${endpoint}`,
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "no-store, no-cache, must-revalidate",
+        },
+      ],
+    }));
+  },
   async rewrites() {
-    if (!backendUrl) return [];
     return [
       {
         source: "/api/:path*",

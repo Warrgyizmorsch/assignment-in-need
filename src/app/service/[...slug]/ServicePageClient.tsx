@@ -13,7 +13,6 @@ import { ExpertCard } from "@/components/ui/ExpertCard";
 import { ExpertSlider } from "@/components/ui/ExpertSlider";
 import { SectionContainer } from "@/components/ui/SectionContainer";
 import { ProcessSteps } from "@/components/ui/ProcessSteps";
-import { Badge } from "@/components/ui/Badge";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
@@ -646,6 +645,7 @@ export default function ServiceLanding() {
                 src="/new-subject-sectionimg/herosubject.png"
                 alt={`${title} student`}
                 fill
+                sizes="420px"
                 className="object-contain object-top"
                 priority
               />
@@ -877,7 +877,7 @@ export default function ServiceLanding() {
             </div>
 
             <div className="w-[110px] h-[110px] lg:w-[190px] lg:h-[190px] shrink-0 relative lg:absolute lg:right-6 lg:top-1/2 lg:-translate-y-1/2 flex items-center justify-center z-10 mt-4 lg:mt-0">
-              <Image src="/images/gift.png" alt="3D Gift Box" fill className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]" />
+              <Image src="/images/gift.png" alt="3D Gift Box" fill sizes="(min-width: 1024px) 190px, 120px" className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]" />
             </div>
           </div>
         </div>
@@ -1010,7 +1010,30 @@ export default function ServiceLanding() {
         </div>
       </SectionContainer>
 
-      {/* 7. Dynamic FAQ Accordion */}
+      {/* 7. Backend-driven long-form SEO content */}
+      <SectionContainer className="bg-surface-lavender py-6 md:py-8 lg:py-10">
+        <div className="max-w-4xl mx-auto flex flex-col gap-4 text-left">
+          <div
+            className={cn(
+              "block text-[15px] text-text-body leading-relaxed transition-all duration-300 space-y-3 rich-text-content",
+              seoExpanded ? "max-h-none overflow-visible" : "max-h-[140px] overflow-hidden relative",
+            )}
+            dangerouslySetInnerHTML={{ __html: longContentHtml }}
+          />
+          {!seoExpanded && (
+            <div className="h-16 -mt-16 bg-gradient-to-t from-surface-lavender to-transparent pointer-events-none" />
+          )}
+
+          <button
+            onClick={() => setSeoExpanded(!seoExpanded)}
+            className="text-xs font-bold text-primary-700 hover:text-primary-600 transition-colors flex items-center gap-1 mt-1 underline"
+          >
+            {seoExpanded ? "Show Less \u25B2" : "Read More \u25BC"}
+          </button>
+        </div>
+      </SectionContainer>
+
+      {/* 8. Dynamic FAQ Accordion */}
       {(() => {
         const parsedFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
         const faqsList = parsedFaqs.length > 0 ? parsedFaqs : [
@@ -1024,7 +1047,6 @@ export default function ServiceLanding() {
           <SectionContainer className="bg-white border-t border-slate-100 py-6 md:py-8 lg:py-10">
             <div className="max-w-4xl mx-auto flex flex-col gap-8">
               <div className="text-center max-w-2xl mx-auto flex flex-col gap-2">
-                <Badge variant="soft-purple" className="w-fit mx-auto text-xs px-3 py-1 font-bold">FAQs</Badge>
                 <Heading level={2} className="text-2xl md:text-3xl font-bold text-text-heading">
                   Frequently Asked Questions
                 </Heading>
@@ -1060,33 +1082,6 @@ export default function ServiceLanding() {
           </SectionContainer>
         );
       })()}
-
-      {/* 8. Backend-driven long-form SEO content (was fully hard-coded before) */}
-      <SectionContainer className="bg-surface-lavender py-6 md:py-8 lg:py-10">
-        <div className="max-w-4xl mx-auto flex flex-col gap-4 text-left">
-          <Heading level={3} className="text-xl md:text-2xl font-bold text-text-heading">
-            Guaranteed Academic Support Under Strict Quality Frameworks
-          </Heading>
-
-          <div
-            className={cn(
-              "block text-[15px] text-text-body leading-relaxed transition-all duration-300 space-y-3 rich-text-content",
-              seoExpanded ? "max-h-none overflow-visible" : "max-h-[140px] overflow-hidden relative",
-            )}
-            dangerouslySetInnerHTML={{ __html: longContentHtml }}
-          />
-          {!seoExpanded && (
-            <div className="h-16 -mt-16 bg-gradient-to-t from-surface-lavender to-transparent pointer-events-none" />
-          )}
-
-          <button
-            onClick={() => setSeoExpanded(!seoExpanded)}
-            className="text-xs font-bold text-primary-700 hover:text-primary-600 transition-colors flex items-center gap-1 mt-1 underline"
-          >
-            {seoExpanded ? "Show Less ▲" : "Read More ▼"}
-          </button>
-        </div>
-      </SectionContainer>
 
       {/* 9. Bottom Stats Strip */}
       <StatsStrip />

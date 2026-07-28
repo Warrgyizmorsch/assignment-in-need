@@ -101,12 +101,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${montserrat.variable} ${nunito.variable} ${roboto.variable}`}
     >
       <head>
         <CanonicalHeader />
-        <script
+        <Script
           id="chunk-error-handler"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function () {

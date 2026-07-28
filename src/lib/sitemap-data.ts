@@ -1,19 +1,24 @@
+import { canonicalSubjectPath } from "@/lib/utils";
+
 const BACKEND_URL =
   process.env.BACKEND_INTERNAL_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   "https://ain.warrgyizmorsch.com";
 
 export function getSitemapBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_BASE_URL) {
-    return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/+$/, "");
+  const configuredUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "https://www.assignmentinneed.co.uk");
+
+  const url = new URL(configuredUrl);
+  if (url.hostname === "assignmentinneed.co.uk") {
+    url.hostname = "www.assignmentinneed.co.uk";
   }
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`.replace(/\/+$/, "");
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`.replace(/\/+$/, "");
-  }
-  return "https://www.assignmentinneed.co.uk";
+  return url.toString().replace(/\/+$/, "");
 }
 
 export function slugify(text: string): string {
@@ -70,7 +75,11 @@ export const citySlugs = [
 
 export function getCityRoutes(baseUrl: string): string[] {
   // Map standard UK and global city paths to the /cities/[slug] format
-  return citySlugs.map((slug) => `${baseUrl}/cities/${slug}`);
+  return citySlugs.map((slug) =>
+    slug === "london"
+      ? `${baseUrl}/cities/assignment-help-london`
+      : `${baseUrl}/cities/${slug}`,
+  );
 }
 
 export async function fetchCityPages(baseUrl: string): Promise<string[]> {
@@ -87,19 +96,41 @@ export async function fetchCityPages(baseUrl: string): Promise<string[]> {
 
       staticCities.forEach((city: any) => {
         if (city.id) {
-          routes.push(`${baseUrl}/cities/${city.id}`);
+          const citySlug = String(city.id);
+          routes.push(
+            citySlug === "london"
+              ? `${baseUrl}/cities/assignment-help-london`
+              : `${baseUrl}/cities/${citySlug}`,
+          );
         } else if (city.slug) {
           const lastSeg = city.slug.split("/").pop();
-          if (lastSeg) routes.push(`${baseUrl}/cities/${lastSeg}`);
+          if (lastSeg) {
+            routes.push(
+              lastSeg === "london"
+                ? `${baseUrl}/cities/assignment-help-london`
+                : `${baseUrl}/cities/${lastSeg}`,
+            );
+          }
         }
       });
 
       dynamicData.forEach((city: any) => {
         if (city.id) {
-          routes.push(`${baseUrl}/cities/${city.id}`);
+          const citySlug = String(city.id);
+          routes.push(
+            citySlug === "london"
+              ? `${baseUrl}/cities/assignment-help-london`
+              : `${baseUrl}/cities/${citySlug}`,
+          );
         } else if (city.slug) {
           const lastSeg = city.slug.split("/").pop();
-          if (lastSeg) routes.push(`${baseUrl}/cities/${lastSeg}`);
+          if (lastSeg) {
+            routes.push(
+              lastSeg === "london"
+                ? `${baseUrl}/cities/assignment-help-london`
+                : `${baseUrl}/cities/${lastSeg}`,
+            );
+          }
         }
       });
 
@@ -151,7 +182,7 @@ export async function fetchServicePages(baseUrl: string): Promise<string[]> {
             if (childSlug) {
               if (childSlug.startsWith("service/assignment/")) {
                 const lastSeg = childSlug.split("/").pop() || childSlug;
-                routes.push(`${baseUrl}/subject/${lastSeg}`);
+                routes.push(`${baseUrl}${canonicalSubjectPath(lastSeg)}`);
               } else {
                 routes.push(`${baseUrl}/${childSlug}`);
               }
@@ -177,7 +208,7 @@ export async function fetchSubjectPages(baseUrl: string): Promise<string[]> {
       const list = Array.isArray(payload?.data) ? payload.data : [];
       return list.map((subject: any) => {
         const slug = subject.slug?.trim().replace(/^\/+/, "") || "";
-        return `${baseUrl}/${slug}`;
+        return `${baseUrl}${canonicalSubjectPath(slug)}`;
       });
     }
   } catch (e) {

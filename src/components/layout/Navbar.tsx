@@ -14,7 +14,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { canonicalSubjectPath, cn } from "@/lib/utils";
 
 type NavLinkItem = {
   name: string;
@@ -44,25 +44,64 @@ const humanizeSlug = (slug: string) =>
     .replace(/-/g, " ")
     .replace(/\b\w/g, (character) => character.toUpperCase());
 
+const ASSIGNMENT_SERVICE_SUBJECTS: NavLinkItem[] = [
+  {
+    name: "Marketing Assignment Help UK",
+    path: canonicalSubjectPath("marketing"),
+  },
+  { name: "MBA Assignment Help", path: canonicalSubjectPath("mba") },
+  {
+    name: "Accounting Assignment Help",
+    path: canonicalSubjectPath("accounting"),
+  },
+  { name: "Law Assignment Help", path: canonicalSubjectPath("law") },
+  {
+    name: "Programming Assignment Help",
+    path: canonicalSubjectPath("programming"),
+  },
+  {
+    name: "Nursing Assignment Help",
+    path: canonicalSubjectPath("nursing"),
+  },
+];
 const mapServicePagesToMenu = (
   services: ServicePageApiItem[],
 ): NavLinkItem[] => {
-  return services.map((service) => {
+  return services.filter((service) => {
+    const searchableText = [
+      service.slug,
+      service.title,
+      service.hero_heading,
+      service.meta_title,
+    ].filter(Boolean).join(" ");
+    return !/\bassignment help london\b|\blondon assignment help\b|(?:^|\/)london(?:\/|$)/i.test(searchableText);
+  }).map((service) => {
     const parentSlug = service.slug?.trim().replace(/^\/+/, "") || "";
     const parentPath = `/${parentSlug}`;
     
     const parentName = service.title?.trim() || service.hero_heading?.trim() || service.meta_title?.trim() || humanizeSlug(parentSlug || "service");
     
-    const isAssignmentParent = parentSlug === "service/assignment" || parentSlug === "assignment";
+    const isAssignmentParent =
+      parentSlug === "service/assignment" ||
+      parentSlug === "assignment" ||
+      parentSlug === "assignment-writing-uk" ||
+      /assignment writing (?:help )?uk/i.test(parentName);
 
-    const mappedChildren = Array.isArray(service.children)
-      ? service.children.map((child) => {
+    const mappedChildren = isAssignmentParent
+      ? ASSIGNMENT_SERVICE_SUBJECTS
+      : Array.isArray(service.children)
+        ? service.children.filter((child) => {
+          const searchableText = [child.slug, child.title, child.hero_heading, child.meta_title]
+            .filter(Boolean)
+            .join(" ");
+          return !/\bassignment help london\b|\blondon assignment help\b|(?:^|\/)london(?:\/|$)/i.test(searchableText);
+        }).map((child) => {
           const rawChildSlug = child.slug?.trim().replace(/^\/+/, "") || "";
           let childPath = `/${rawChildSlug}`;
 
           if (isAssignmentParent || rawChildSlug.startsWith("service/assignment/")) {
             const lastSeg = rawChildSlug.split("/").pop() || rawChildSlug;
-            childPath = `/subject/${lastSeg}`;
+            childPath = canonicalSubjectPath(lastSeg);
           }
 
           const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(rawChildSlug || "service");
@@ -82,36 +121,36 @@ const mapServicePagesToMenu = (
 };
 
 const SUBJECTS: NavLinkItem[] = [
-  ["Maths", "subject/maths"],
-  ["English", "subject/english"],
-  ["Economics", "subject/economics"],
-  ["Chemistry", "subject/chemistry"],
-  ["History", "subject/history"],
-  ["Law", "subject/law"],
-  ["Linguistic", "subject/linguistic"],
-  ["Nursing", "subject/nursing"],
-  ["Physics", "subject/physics"],
-  ["Sociology", "subject/sociology"],
-  ["Philosophy", "subject/philosophy"],
-  ["Statistics", "subject/statistics"],
-  ["Accounting", "subject/accounting"],
-  ["Programming", "subject/programming"],
-  ["Marketing", "subject/marketing"],
-  ["Computer Science", "subject/computer-science"],
-  ["Engineering", "subject/engineering"],
-  ["Finance", "subject/finance"],
-  ["Management", "subject/management-assignment-help"],
-  ["Business", "subject/business"],
-  ["Geography", "subject/geography"],
-  ["Psychology", "subject/psychology"],
-  ["Biology", "subject/biology"],
-  ["Entrepreneurship", "subject/entrepreneurship"],
-  ["Artificial Intelligence", "subject/artificial-intelligence"],
-  ["Machine Learning", "subject/machine-learning"],
-  ["Cybersecurity", "subject/cybersecurity"],
-  ["Humanities", "subject/humanities"],
+  ["Maths Assignment Help", "subject/maths"],
+  ["English Assignment Help", "subject/english"],
+  ["Economics Assignment Help", "subject/economics"],
+  ["Chemistry Assignment Help", "subject/chemistry"],
+  ["History Assignment Help UK", "subject/history"],
+  ["Law Assignment Help", "subject/law"],
+  ["Linguistic Assignment Help", "subject/linguistic"],
+  ["Nursing Assignment Help", "subject/nursing"],
+  ["Physics Assignment Help", "subject/physics"],
+  ["Sociology Assignment Help", "subject/sociology"],
+  ["Philosophy Assignment Help", "subject/philosophy"],
+  ["Statistics Assignment Help", "subject/statistics"],
+  ["Accounting Assignment Help", "subject/accounting"],
+  ["Programming Assignment Help", "subject/programming"],
+  ["Marketing Assignment Help UK", "subject/marketing"],
+  ["Computer Science Assignment Help", "subject/computer-science"],
+  ["Engineering Assignment Help", "subject/engineering"],
+  ["Finance Assignment Help", "subject/finance"],
+  ["Management Assignment Help", "subject/management-assignment-help"],
+  ["Business Assignment Help", "subject/business"],
+  ["Geography Assignment Help", "subject/geography"],
+  ["Psychology Assignment Help", "subject/psychology"],
+  ["Biology Assignment Help", "subject/biology"],
+  ["Entrepreneurship Assignment Help", "subject/entrepreneurship"],
+  ["Artificial Intelligence Assignment Help", "subject/artificial-intelligence"],
+  ["Machine Learning Assignment Help", "subject/machine-learning"],
+  ["Cybersecurity Assignment Help", "subject/cybersecurity"],
+  ["Humanities Assignment Help", "subject/humanities"],
 ].map(([name, slug]) => {
-  return { name, path: `/${slug}` };
+  return { name, path: canonicalSubjectPath(slug) };
 });
 
 const RESOURCES: NavLinkItem[] = [
@@ -120,10 +159,45 @@ const RESOURCES: NavLinkItem[] = [
   { name: "Reviews", path: "/review" },
 ];
 
+const FALLBACK_SERVICES: NavLinkItem[] = [
+  {
+    name: "Assignment Writing Help UK",
+    path: "/assignment-writing-uk",
+    children: ASSIGNMENT_SERVICE_SUBJECTS,
+  },
+  { name: "Essay Writing", path: "/essay-writing-help-services" },
+  { name: "Dissertation Help", path: "/dissertation-writing-help-services" },
+  { name: "Case Study Help", path: "/case-study-dissertation-help-uk" },
+  { name: "Report Writing", path: "/report-writing" },
+  { name: "Coursework Help", path: "/coursework-writing-help" },
+  { name: "Proofreading", path: "/proofreading-and-editing-writing-help" },
+  { name: "Editing & Formatting", path: "/dissertation-editing-and-proofreading-help-uk" },
+];
+
 const CITIES: NavLinkItem[] = [
-  { name: "London", path: "/london" },
-  { name: "Birmingham", path: "/birmingham" },
-  { name: "Manchester", path: "/manchester" },
+  { name: "Assignment Help London", path: "/cities/assignment-help-london" },
+  { name: "Birmingham", path: "/cities/birmingham" },
+  { name: "Manchester", path: "/cities/manchester" },
+  { name: "Leeds", path: "/cities/leeds" },
+  { name: "Glasgow", path: "/cities/glasgow" },
+  { name: "Edinburgh", path: "/cities/edinburgh" },
+  { name: "Bristol", path: "/cities/bristol" },
+  { name: "Liverpool", path: "/cities/liverpool" },
+  { name: "Sydney", path: "/cities/sydney" },
+  { name: "Melbourne", path: "/cities/melbourne" },
+  { name: "Brisbane", path: "/cities/brisbane" },
+  { name: "Perth", path: "/cities/perth" },
+  { name: "Adelaide", path: "/cities/adelaide" },
+  { name: "Canberra", path: "/cities/canberra" },
+  { name: "Toronto", path: "/cities/toronto" },
+  { name: "Vancouver", path: "/cities/vancouver" },
+  { name: "Montreal", path: "/cities/montreal" },
+  { name: "Ottawa", path: "/cities/ottawa" },
+  { name: "Dubai", path: "/cities/dubai" },
+  { name: "Abu Dhabi", path: "/cities/abu-dhabi" },
+  { name: "Sharjah", path: "/cities/sharjah" },
+  { name: "Kuala Lumpur", path: "/cities/kuala-lumpur" },
+  { name: "Penang", path: "/cities/penang" },
   { name: "View All Cities", path: "/cities" },
 ];
 
@@ -294,8 +368,6 @@ export const Navbar = () => {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [nestedGroups, setNestedGroups] = useState<Record<string, boolean>>({});
   const [serviceMenu, setServiceMenu] = useState<NavLinkItem[]>([]);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [servicesError, setServicesError] = useState(false);
   const [subjects, setSubjects] = useState<NavLinkItem[]>([]);
   const [citiesMenu, setCitiesMenu] = useState<NavLinkItem[]>([]);
   const accountDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -303,17 +375,14 @@ export const Navbar = () => {
   useEffect(() => {
     const fetchServiceMenu = async () => {
       try {
-        setServicesLoading(true);
-        setServicesError(false);
-
         const response = await fetch(SERVICE_PAGES_API_URL, {
           headers: { Accept: "application/json" },
+          cache: "no-store",
         });
 
         const payload = await response.json();
         if (!response.ok || payload?.success === false) {
           setServiceMenu([]);
-          setServicesError(true);
           return;
         }
 
@@ -321,9 +390,6 @@ export const Navbar = () => {
         setServiceMenu(mapServicePagesToMenu(services));
       } catch {
         setServiceMenu([]);
-        setServicesError(true);
-      } finally {
-        setServicesLoading(false);
       }
     };
 
@@ -331,6 +397,7 @@ export const Navbar = () => {
       try {
         const response = await fetch("/api/subject-pages", {
           headers: { Accept: "application/json" },
+          cache: "no-store",
         });
         const payload = await response.json();
         if (
@@ -344,10 +411,13 @@ export const Navbar = () => {
               .replace(/^subject\//, "")
               .replace(/-/g, " ")
               .replace(/\b\w/g, (c: string) => c.toUpperCase());
-            const name = item.title?.trim() || humanized;
+            const rawName = item.title?.trim() || humanized;
+            const name = /\bassignment help\b/i.test(rawName)
+              ? rawName
+              : `${rawName} Assignment Help`;
             return {
               name,
-              path: `/${cleanSlug}`,
+              path: canonicalSubjectPath(cleanSlug),
             };
           });
           setSubjects(mapped);
@@ -361,6 +431,7 @@ export const Navbar = () => {
       try {
         const response = await fetch("/api/city-pages", {
           headers: { Accept: "application/json" },
+          cache: "no-store",
         });
         const payload = await response.json();
         const apiCitiesList = [
@@ -376,8 +447,30 @@ export const Navbar = () => {
               path: `/cities/${slug}`,
             };
           });
-          mapped.push({ name: "View All Cities", path: "/cities" });
-          setCitiesMenu(mapped);
+          const apiCityNames = new Set(
+            mapped.map((item) => item.name.trim().toLowerCase()),
+          );
+          const completeCities = [
+            ...mapped.filter((item) => item.path !== "/cities"),
+            ...CITIES.filter(
+              (item) =>
+                item.path !== "/cities" &&
+                !apiCityNames.has(item.name.trim().toLowerCase()),
+            ),
+          ];
+          const londonIndex = completeCities.findIndex(
+            (item) => /\blondon\b/i.test(item.name),
+          );
+          if (londonIndex >= 0) {
+            completeCities[londonIndex] = {
+              name: "Assignment Help London",
+              path: "/cities/assignment-help-london",
+            };
+          }
+          setCitiesMenu([
+            ...completeCities,
+            { name: "View All Cities", path: "/cities" },
+          ]);
         }
       } catch (err) {
         console.warn("Failed to fetch dynamic cities list:", err);
@@ -469,19 +562,14 @@ export const Navbar = () => {
     setNestedGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const serviceDropdownItems = servicesLoading
-    ? [{ name: "Loading services...", path: "#", disabled: true }]
-    : servicesError
-      ? [{ name: "Unable to load services", path: "#", disabled: true }]
-      : serviceMenu.length > 0
-        ? serviceMenu
-        : [{ name: "No services found", path: "#", disabled: true }];
+  const serviceDropdownItems =
+    serviceMenu.length > 0 ? serviceMenu : FALLBACK_SERVICES;
 
   const subjectsDropdownItems = subjects.length > 0 ? subjects : SUBJECTS;
   const citiesDropdownItems =
     citiesMenu.length > 0
       ? citiesMenu
-      : [{ name: "View All Cities", path: "/cities" }];
+      : CITIES;
 
   return (
     <>

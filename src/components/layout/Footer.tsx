@@ -128,6 +128,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
               <Image
                 src="/images/badge-mastercard.png"
@@ -135,6 +136,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
               <Image
                 src="/images/badge-maestro.png"
@@ -142,6 +144,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
               <Image
                 src="/images/badge-amex.png"
@@ -149,6 +152,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
               <Image
                 src="/images/badge-discover.png"
@@ -156,6 +160,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
             </div>
 
@@ -167,6 +172,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
               <Image
                 src="/images/badge-mcafee.png"
@@ -174,6 +180,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
               <Image
                 src="/images/badge-gdpr.png"
@@ -181,6 +188,7 @@ export const Footer = () => {
                 width={60}
                 height={38}
                 className="h-[38px] w-auto object-contain"
+                style={{ width: "auto" }}
               />
             </div>
           </div>
