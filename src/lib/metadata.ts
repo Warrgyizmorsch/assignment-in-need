@@ -24,7 +24,19 @@ export const constructMetadata = ({
   openGraph,
   twitter,
 }: MetadataProps = {}): Metadata => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.assignmentinneed.co.uk";
+  let baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.assignmentinneed.co.uk";
+  if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+    baseUrl = `https://${baseUrl}`;
+  }
+  try {
+    const parsedUrl = new URL(baseUrl);
+    if (parsedUrl.hostname === "assignmentinneed.co.uk" || (parsedUrl.hostname.includes("assignmentinneed") && !parsedUrl.hostname.startsWith("www."))) {
+      parsedUrl.hostname = "www.assignmentinneed.co.uk";
+    }
+    baseUrl = parsedUrl.toString().replace(/\/+$/, "");
+  } catch {
+    baseUrl = "https://www.assignmentinneed.co.uk";
+  }
   const url = canonicalUrl ? `${baseUrl}${canonicalUrl}` : baseUrl;
   
   return {

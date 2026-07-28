@@ -87,7 +87,10 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
     const fetchCityPageData = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/city-pages/${citySlug}`);
+        let res = await fetch(`/api/city-pages/${citySlug}`);
+        if (!res.ok && requestedSlug && requestedSlug !== citySlug) {
+          res = await fetch(`/api/city-pages/${requestedSlug}`);
+        }
         if (res.ok) {
           const result = await res.json();
           if (result.success && result.data) {

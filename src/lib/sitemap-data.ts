@@ -6,7 +6,7 @@ const BACKEND_URL =
   "https://ain.warrgyizmorsch.com";
 
 export function getSitemapBaseUrl(): string {
-  const configuredUrl =
+  let configuredUrl =
     process.env.NEXT_PUBLIC_BASE_URL ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
@@ -14,11 +14,19 @@ export function getSitemapBaseUrl(): string {
         ? `https://${process.env.VERCEL_URL}`
         : "https://www.assignmentinneed.co.uk");
 
-  const url = new URL(configuredUrl);
-  if (url.hostname === "assignmentinneed.co.uk") {
-    url.hostname = "www.assignmentinneed.co.uk";
+  if (!configuredUrl.startsWith("http://") && !configuredUrl.startsWith("https://")) {
+    configuredUrl = `https://${configuredUrl}`;
   }
-  return url.toString().replace(/\/+$/, "");
+
+  try {
+    const url = new URL(configuredUrl);
+    if (url.hostname === "assignmentinneed.co.uk" || (url.hostname.includes("assignmentinneed") && !url.hostname.startsWith("www."))) {
+      url.hostname = "www.assignmentinneed.co.uk";
+    }
+    return url.toString().replace(/\/+$/, "");
+  } catch {
+    return "https://www.assignmentinneed.co.uk";
+  }
 }
 
 export function slugify(text: string): string {

@@ -64,60 +64,80 @@ const ASSIGNMENT_SERVICE_SUBJECTS: NavLinkItem[] = [
     path: canonicalSubjectPath("nursing"),
   },
 ];
+const isNonServicePage = (item: ServicePageApiItem) => {
+  const rawSlug = (item.slug || "").toLowerCase().trim().replace(/^\/+/, "");
+  if (
+    rawSlug.startsWith("cities/") ||
+    rawSlug.startsWith("city/") ||
+    rawSlug.includes("/cities/") ||
+    rawSlug.includes("/city/") ||
+    rawSlug.startsWith("assignment-help-") ||
+    rawSlug.startsWith("subject/") ||
+    rawSlug.includes("/subject/") ||
+    rawSlug.includes("management-assignment-help")
+  ) {
+    return true;
+  }
+  const searchableText = [
+    item.slug,
+    item.title,
+    item.hero_heading,
+    item.meta_title,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return /\b(london|birmingham|manchester|leeds|glasgow|edinburgh|bristol|liverpool|sydney|melbourne|brisbane|perth|adelaide|canberra|toronto|vancouver|montreal|ottawa|dubai|abu-dhabi|sharjah|kuala-lumpur|penang)\b/i.test(
+    searchableText,
+  );
+};
+
 const mapServicePagesToMenu = (
   services: ServicePageApiItem[],
 ): NavLinkItem[] => {
-  return services.filter((service) => {
-    const searchableText = [
-      service.slug,
-      service.title,
-      service.hero_heading,
-      service.meta_title,
-    ].filter(Boolean).join(" ");
-    return !/\bassignment help london\b|\blondon assignment help\b|(?:^|\/)london(?:\/|$)/i.test(searchableText);
-  }).map((service) => {
-    const parentSlug = service.slug?.trim().replace(/^\/+/, "") || "";
-    const parentPath = `/${parentSlug}`;
-    
-    const parentName = service.title?.trim() || service.hero_heading?.trim() || service.meta_title?.trim() || humanizeSlug(parentSlug || "service");
-    
-    const isAssignmentParent =
-      parentSlug === "service/assignment" ||
-      parentSlug === "assignment" ||
-      parentSlug === "assignment-writing-uk" ||
-      /assignment writing (?:help )?uk/i.test(parentName);
+  return services
+    .filter((service) => !isNonServicePage(service))
+    .map((service) => {
+      const parentSlug = service.slug?.trim().replace(/^\/+/, "") || "";
+      const parentPath = `/${parentSlug}`;
+      
+      const parentName = service.title?.trim() || service.hero_heading?.trim() || service.meta_title?.trim() || humanizeSlug(parentSlug || "service");
+      
+      const isAssignmentParent =
+        parentSlug === "service/assignment" ||
+        parentSlug === "assignment" ||
+        parentSlug === "assignment-writing-uk" ||
+        /assignment writing (?:help )?uk/i.test(parentName);
 
-    const mappedChildren = isAssignmentParent
-      ? ASSIGNMENT_SERVICE_SUBJECTS
-      : Array.isArray(service.children)
-        ? service.children.filter((child) => {
-          const searchableText = [child.slug, child.title, child.hero_heading, child.meta_title]
-            .filter(Boolean)
-            .join(" ");
-          return !/\bassignment help london\b|\blondon assignment help\b|(?:^|\/)london(?:\/|$)/i.test(searchableText);
-        }).map((child) => {
-          const rawChildSlug = child.slug?.trim().replace(/^\/+/, "") || "";
-          let childPath = `/${rawChildSlug}`;
+      const mappedChildren = isAssignmentParent
+        ? ASSIGNMENT_SERVICE_SUBJECTS
+        : Array.isArray(service.children)
+          ? service.children
+              .filter((child) => !isNonServicePage(child))
+              .map((child) => {
+                const rawChildSlug = child.slug?.trim().replace(/^\/+/, "") || "";
+                let childPath = `/${rawChildSlug}`;
 
-          if (isAssignmentParent || rawChildSlug.startsWith("service/assignment/")) {
-            const lastSeg = rawChildSlug.split("/").pop() || rawChildSlug;
-            childPath = canonicalSubjectPath(lastSeg);
-          }
+                if (isAssignmentParent || rawChildSlug.startsWith("service/assignment/")) {
+                  const lastSeg = rawChildSlug.split("/").pop() || rawChildSlug;
+                  childPath = canonicalSubjectPath(lastSeg);
+                }
 
-          const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(rawChildSlug || "service");
-          return {
-            name: childName,
-            path: childPath,
-          };
-        }).sort((first, second) => first.name.localeCompare(second.name))
-      : undefined;
+                const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(rawChildSlug || "service");
+                return {
+                  name: childName,
+                  path: childPath,
+                };
+              }).sort((first, second) => first.name.localeCompare(second.name))
+        : undefined;
 
-    return {
-      name: parentName,
-      path: parentPath,
-      children: mappedChildren,
-    };
-  }).sort((first, second) => first.name.localeCompare(second.name));
+      return {
+        name: parentName,
+        path: parentPath,
+        children: mappedChildren,
+      };
+    }).sort((first, second) => first.name.localeCompare(second.name));
 };
 
 const SUBJECTS: NavLinkItem[] = [
@@ -176,28 +196,6 @@ const FALLBACK_SERVICES: NavLinkItem[] = [
 
 const CITIES: NavLinkItem[] = [
   { name: "Assignment Help London", path: "/cities/assignment-help-london" },
-  { name: "Birmingham", path: "/cities/birmingham" },
-  { name: "Manchester", path: "/cities/manchester" },
-  { name: "Leeds", path: "/cities/leeds" },
-  { name: "Glasgow", path: "/cities/glasgow" },
-  { name: "Edinburgh", path: "/cities/edinburgh" },
-  { name: "Bristol", path: "/cities/bristol" },
-  { name: "Liverpool", path: "/cities/liverpool" },
-  { name: "Sydney", path: "/cities/sydney" },
-  { name: "Melbourne", path: "/cities/melbourne" },
-  { name: "Brisbane", path: "/cities/brisbane" },
-  { name: "Perth", path: "/cities/perth" },
-  { name: "Adelaide", path: "/cities/adelaide" },
-  { name: "Canberra", path: "/cities/canberra" },
-  { name: "Toronto", path: "/cities/toronto" },
-  { name: "Vancouver", path: "/cities/vancouver" },
-  { name: "Montreal", path: "/cities/montreal" },
-  { name: "Ottawa", path: "/cities/ottawa" },
-  { name: "Dubai", path: "/cities/dubai" },
-  { name: "Abu Dhabi", path: "/cities/abu-dhabi" },
-  { name: "Sharjah", path: "/cities/sharjah" },
-  { name: "Kuala Lumpur", path: "/cities/kuala-lumpur" },
-  { name: "Penang", path: "/cities/penang" },
   { name: "View All Cities", path: "/cities" },
 ];
 
@@ -221,8 +219,8 @@ const DesktopDropdown = ({
         scrollable && "znh-dropdown-scrollable",
       )}
     >
-      {items.map((item) => (
-        <li key={item.path} className="znh-dropdown-item">
+      {items.map((item, idx) => (
+        <li key={`${item.path}-${item.name}-${idx}`} className="znh-dropdown-item">
           {item.disabled ? (
             <span className="znh-dropdown-link znh-dropdown-link-disabled">
               {item.name}
@@ -237,8 +235,8 @@ const DesktopDropdown = ({
           )}
           {item.children && item.children.length > 0 && (
             <ul className="znh-submenu">
-              {item.children.map((child) => (
-                <li key={child.path}>
+              {item.children.map((child, childIdx) => (
+                <li key={`${child.path}-${child.name}-${childIdx}`}>
                   {child.disabled ? (
                     <span className="znh-dropdown-link znh-dropdown-link-disabled">
                       {child.name}
@@ -285,12 +283,12 @@ const MobileDropdown = ({
       />
     </button>
     <ul className={cn("znh-dropdown-menu", openGroups[id] && "active")}>
-      {items.map((item) => {
-        const nestedKey = `${id}-${item.name}`;
+      {items.map((item, idx) => {
+        const nestedKey = `${id}-${item.name}-${idx}`;
         const hasChildren = item.children && item.children.length > 0;
 
         return (
-          <li key={item.path} className="znh-dropdown-item">
+          <li key={`${item.path}-${item.name}-${idx}`} className="znh-dropdown-item">
             {hasChildren ? (
               <button
                 type="button"
@@ -330,8 +328,8 @@ const MobileDropdown = ({
                   nestedGroups[nestedKey] && "active",
                 )}
               >
-                {item.children!.map((child) => (
-                  <li key={child.path}>
+                {item.children!.map((child, childIdx) => (
+                  <li key={`${child.path}-${child.name}-${childIdx}`}>
                     {child.disabled ? (
                       <span className="znh-dropdown-link znh-dropdown-link-disabled">
                         {child.name}
@@ -434,39 +432,52 @@ export const Navbar = () => {
           cache: "no-store",
         });
         const payload = await response.json();
-        const apiCitiesList = [
-          ...(Array.isArray(payload?.static_cities) ? payload.static_cities : []),
-          ...(Array.isArray(payload?.data) ? payload.data : []),
-        ];
-        if (apiCitiesList.length > 0) {
-          const mapped: NavLinkItem[] = apiCitiesList.map((c: any) => {
-            const cityName = c.city || c.title?.replace(/^Assignment Help\s+/i, "") || c.id;
-            const slug = c.id || c.slug?.split("/").pop() || cityName.toLowerCase().replace(/\s+/g, "-");
+        const dynamicBackendCities = Array.isArray(payload?.data) ? payload.data : [];
+        if (dynamicBackendCities.length > 0) {
+          const rawMapped: NavLinkItem[] = dynamicBackendCities.map((c: any) => {
+            const rawTitle = c.title || c.city || c.hero_heading || c.meta_title || c.id || "";
+            const rawSlug = (c.slug || c.id || rawTitle).toString().trim().replace(/^\/+/, "").replace(/^cities\//, "");
+
+            let slug = rawSlug;
+            let name = rawTitle.trim();
+
+            if (/\blondon\b/i.test(name) || rawSlug === "london" || rawSlug === "assignment-help-london") {
+              slug = "assignment-help-london";
+              name = "Assignment Help London";
+            } else {
+              if (!name || name === rawSlug) {
+                name = rawSlug.replace(/-/g, " ").replace(/\b\w/g, (char: string) => char.toUpperCase());
+              }
+            }
+
             return {
-              name: cityName,
+              name,
               path: `/cities/${slug}`,
             };
           });
-          const apiCityNames = new Set(
-            mapped.map((item) => item.name.trim().toLowerCase()),
-          );
-          const completeCities = [
-            ...mapped.filter((item) => item.path !== "/cities"),
-            ...CITIES.filter(
-              (item) =>
-                item.path !== "/cities" &&
-                !apiCityNames.has(item.name.trim().toLowerCase()),
-            ),
-          ];
-          const londonIndex = completeCities.findIndex(
-            (item) => /\blondon\b/i.test(item.name),
-          );
-          if (londonIndex >= 0) {
-            completeCities[londonIndex] = {
-              name: "Assignment Help London",
-              path: "/cities/assignment-help-london",
-            };
+
+          const seenPaths = new Set<string>();
+          const completeCities: NavLinkItem[] = [];
+
+          for (const item of rawMapped) {
+            if (item.path === "/cities") continue;
+            let finalPath = item.path;
+            let finalName = item.name;
+
+            if (/\blondon\b/i.test(finalName) || finalPath === "/cities/london") {
+              finalName = "Assignment Help London";
+              finalPath = "/cities/assignment-help-london";
+            }
+
+            if (!seenPaths.has(finalPath)) {
+              seenPaths.add(finalPath);
+              completeCities.push({
+                name: finalName,
+                path: finalPath,
+              });
+            }
           }
+
           setCitiesMenu([
             ...completeCities,
             { name: "View All Cities", path: "/cities" },

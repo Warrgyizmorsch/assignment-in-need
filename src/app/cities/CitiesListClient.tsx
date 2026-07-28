@@ -38,12 +38,7 @@ export default function CitiesListPage() {
         const res = await fetch("/api/city-pages");
         if (res.ok) {
           const payload = await res.json();
-          const apiCitiesList = [
-            ...(Array.isArray(payload?.static_cities)
-              ? payload.static_cities
-              : []),
-            ...(Array.isArray(payload?.data) ? payload.data : []),
-          ];
+          const apiCitiesList = Array.isArray(payload?.data) ? payload.data : [];
 
           if (apiCitiesList.length > 0) {
             const citiesList = apiCitiesList.map((item: any) => {
