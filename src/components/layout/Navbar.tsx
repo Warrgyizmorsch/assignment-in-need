@@ -51,7 +51,7 @@ const ensureRelativePath = (url: string): string => {
       const parsed = new URL(url);
       return parsed.pathname + parsed.search + parsed.hash;
     }
-  } catch {}
+  } catch { }
   return url.startsWith("/") ? url : `/${url}`;
 };
 
@@ -112,9 +112,9 @@ const mapServicePagesToMenu = (
     .map((service) => {
       const parentSlug = service.slug?.trim().replace(/^\/+/, "") || "";
       const parentPath = `/${parentSlug}`;
-      
+
       const parentName = service.title?.trim() || service.hero_heading?.trim() || service.meta_title?.trim() || humanizeSlug(parentSlug || "service");
-      
+
       const isAssignmentParent =
         parentSlug === "service/assignment" ||
         parentSlug === "assignment" ||
@@ -125,23 +125,23 @@ const mapServicePagesToMenu = (
         ? ASSIGNMENT_SERVICE_SUBJECTS
         : Array.isArray(service.children)
           ? service.children
-              .filter((child) => !isNonServicePage(child))
-              .map((child) => {
-                const rawChildSlug = child.slug?.trim().replace(/^\/+/, "") || "";
-                let childPath = `/${rawChildSlug}`;
+            .filter((child) => !isNonServicePage(child))
+            .map((child) => {
+              const rawChildSlug = child.slug?.trim().replace(/^\/+/, "") || "";
+              let childPath = `/${rawChildSlug}`;
 
-                if (isAssignmentParent || rawChildSlug.startsWith("service/assignment/")) {
-                  const lastSeg = rawChildSlug.split("/").pop() || rawChildSlug;
-                  childPath = canonicalSubjectPath(lastSeg);
-                }
+              if (isAssignmentParent || rawChildSlug.startsWith("service/assignment/")) {
+                const lastSeg = rawChildSlug.split("/").pop() || rawChildSlug;
+                childPath = canonicalSubjectPath(lastSeg);
+              }
 
-                const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(rawChildSlug || "service");
-                return {
-                  name: childName,
-                  path: childPath,
-                };
-              }).sort((first, second) => first.name.localeCompare(second.name))
-        : undefined;
+              const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(rawChildSlug || "service");
+              return {
+                name: childName,
+                path: childPath,
+              };
+            }).sort((first, second) => first.name.localeCompare(second.name))
+          : undefined;
 
       return {
         name: parentName,
@@ -219,8 +219,9 @@ const FALLBACK_SERVICES: NavLinkItem[] = [
 
 const CITIES: NavLinkItem[] = [
   { name: "Assignment Help London", path: "/cities/assignment-help-london" },
-  { name: "View All Cities", path: "/cities" },
+  // { name: "View All Cities", path: "/cities" },
 ];
+
 
 const DesktopDropdown = ({
   label,
@@ -501,10 +502,7 @@ export const Navbar = () => {
             }
           }
 
-          setCitiesMenu([
-            ...completeCities,
-            { name: "View All Cities", path: "/cities" },
-          ]);
+          setCitiesMenu(completeCities);
         }
       } catch (err) {
         console.warn("Failed to fetch dynamic cities list:", err);
@@ -537,9 +535,9 @@ export const Navbar = () => {
       setUserProfile(
         loggedIn
           ? {
-              name: parsedUserData?.name || storedName || "Student",
-              email: parsedUserData?.email || storedEmail || "",
-            }
+            name: parsedUserData?.name || storedName || "Student",
+            email: parsedUserData?.email || storedEmail || "",
+          }
           : null,
       );
     };
@@ -1218,32 +1216,32 @@ export const Navbar = () => {
 
             <div className="hidden min-[1025px]:contents">
               <ul className="znh-nav-list">
-              <DesktopDropdown label="Services" items={serviceDropdownItems} />
-              <DesktopDropdown
-                label="Subjects"
-                items={subjectsDropdownItems}
-                scrollable
-              />
+                <DesktopDropdown label="Services" items={serviceDropdownItems} />
+                <DesktopDropdown
+                  label="Subjects"
+                  items={subjectsDropdownItems}
+                  scrollable
+                />
 
-              <li className="znh-nav-item">
-                <Link href="/writers" className="znh-nav-link">
-                  Experts
-                </Link>
-              </li>
-              <li className="znh-nav-item">
-                <Link href="/samples" className="znh-nav-link">
-                  Samples
-                </Link>
-              </li>
+                <li className="znh-nav-item">
+                  <Link href="/writers" className="znh-nav-link">
+                    Experts
+                  </Link>
+                </li>
+                <li className="znh-nav-item">
+                  <Link href="/samples" className="znh-nav-link">
+                    Samples
+                  </Link>
+                </li>
 
-              <DesktopDropdown label="Resources" items={RESOURCES} />
+                <DesktopDropdown label="Resources" items={RESOURCES} />
 
-              <DesktopDropdown
-                label="Cities"
-                items={citiesDropdownItems}
-                scrollable
-              />
-              {/* <li className="znh-nav-item">
+                <DesktopDropdown
+                  label="Cities"
+                  items={citiesDropdownItems}
+                  scrollable
+                />
+                {/* <li className="znh-nav-item">
                 <Link href="/about" className="znh-nav-link">
                   About Us
                 </Link>
@@ -1259,68 +1257,68 @@ export const Navbar = () => {
             <div className="contents min-[1025px]:hidden">
               <ul className="znh-nav-list w-full">
                 <MobileDropdown
-                label="Services"
-                id="services"
-                items={serviceDropdownItems}
-                openGroups={openGroups}
-                nestedGroups={nestedGroups}
-                onToggle={toggleMobileGroup}
-                onNestedToggle={toggleNestedGroup}
-                onNavigate={closeMobileMenu}
-              />
-              <MobileDropdown
-                label="Subjects"
-                id="subjects"
-                items={subjectsDropdownItems}
-                openGroups={openGroups}
-                nestedGroups={nestedGroups}
-                onToggle={toggleMobileGroup}
-                onNestedToggle={toggleNestedGroup}
-                onNavigate={closeMobileMenu}
-              />
+                  label="Services"
+                  id="services"
+                  items={serviceDropdownItems}
+                  openGroups={openGroups}
+                  nestedGroups={nestedGroups}
+                  onToggle={toggleMobileGroup}
+                  onNestedToggle={toggleNestedGroup}
+                  onNavigate={closeMobileMenu}
+                />
+                <MobileDropdown
+                  label="Subjects"
+                  id="subjects"
+                  items={subjectsDropdownItems}
+                  openGroups={openGroups}
+                  nestedGroups={nestedGroups}
+                  onToggle={toggleMobileGroup}
+                  onNestedToggle={toggleNestedGroup}
+                  onNavigate={closeMobileMenu}
+                />
 
-              <li className="znh-nav-item">
-                <Link
-                  href="/writers"
-                  className="znh-nav-link"
-                  onClick={closeMobileMenu}
-                >
-                  Experts
-                </Link>
-              </li>
-              <li className="znh-nav-item">
-                <Link
-                  href="/samples"
-                  className="znh-nav-link"
-                  onClick={closeMobileMenu}
-                >
-                  Samples
-                </Link>
-              </li>
+                <li className="znh-nav-item">
+                  <Link
+                    href="/writers"
+                    className="znh-nav-link"
+                    onClick={closeMobileMenu}
+                  >
+                    Experts
+                  </Link>
+                </li>
+                <li className="znh-nav-item">
+                  <Link
+                    href="/samples"
+                    className="znh-nav-link"
+                    onClick={closeMobileMenu}
+                  >
+                    Samples
+                  </Link>
+                </li>
 
-              <MobileDropdown
-                label="Resources"
-                id="resources"
-                items={RESOURCES}
-                openGroups={openGroups}
-                nestedGroups={nestedGroups}
-                onToggle={toggleMobileGroup}
-                onNestedToggle={toggleNestedGroup}
-                onNavigate={closeMobileMenu}
-              />
+                <MobileDropdown
+                  label="Resources"
+                  id="resources"
+                  items={RESOURCES}
+                  openGroups={openGroups}
+                  nestedGroups={nestedGroups}
+                  onToggle={toggleMobileGroup}
+                  onNestedToggle={toggleNestedGroup}
+                  onNavigate={closeMobileMenu}
+                />
 
-              <MobileDropdown
-                label="Cities"
-                id="cities"
-                items={citiesDropdownItems}
-                openGroups={openGroups}
-                nestedGroups={nestedGroups}
-                onToggle={toggleMobileGroup}
-                onNestedToggle={toggleNestedGroup}
-                onNavigate={closeMobileMenu}
-              />
+                <MobileDropdown
+                  label="Cities"
+                  id="cities"
+                  items={citiesDropdownItems}
+                  openGroups={openGroups}
+                  nestedGroups={nestedGroups}
+                  onToggle={toggleMobileGroup}
+                  onNestedToggle={toggleNestedGroup}
+                  onNavigate={closeMobileMenu}
+                />
 
-              {/* <li className="znh-nav-item">
+                {/* <li className="znh-nav-item">
                 <Link
                   href="/about"
                   className="znh-nav-link"
@@ -1339,68 +1337,68 @@ export const Navbar = () => {
                 </Link>
               </li> */}
 
-              <li className="znh-mobile-only mt-4">
-                <Link
-                  href="/order"
-                  className="btn-shutter-orange-open text-white lg:py-3! py-2! lg:px-6! px-2! rounded-lg font-semibold inline-flex items-center justify-center w-56px! lg:w-full!"
-                  onClick={closeMobileMenu}
-                >
-                  Get Free Quote
-                </Link>
-              </li>
-
-              <li className="znh-mobile-account">
-                {isLoggedIn ? (
-                  <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4 text-white">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white font-bold text-sm">
-                        {isLoggedIn && userProfile?.name ? (
-                          userProfile.name.charAt(0).toUpperCase()
-                        ) : (
-                          <User className="h-5 w-5" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-semibold">
-                          {userProfile?.name || "Student"}
-                        </div>
-                        <div className="truncate text-xs text-white/65">
-                          {userProfile?.email || "No email available"}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2 mt-2 w-full">
-                      <Link
-                        href="/profile"
-                        onClick={closeMobileMenu}
-                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#3f159a] px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-900"
-                      >
-                        <User className="h-4 w-4" />
-                        My Profile
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleLogout();
-                          closeMobileMenu();
-                        }}
-                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                ) : (
+                <li className="znh-mobile-only mt-4">
                   <Link
-                    href="/login"
-                    className="btn-shutter-blue-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full"
+                    href="/order"
+                    className="btn-shutter-orange-open text-white lg:py-3! py-2! lg:px-6! px-2! rounded-lg font-semibold inline-flex items-center justify-center w-56px! lg:w-full!"
                     onClick={closeMobileMenu}
                   >
-                    Login
+                    Get Free Quote
                   </Link>
-                )}
-              </li>
+                </li>
+
+                <li className="znh-mobile-account">
+                  {isLoggedIn ? (
+                    <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white font-bold text-sm">
+                          {isLoggedIn && userProfile?.name ? (
+                            userProfile.name.charAt(0).toUpperCase()
+                          ) : (
+                            <User className="h-5 w-5" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-semibold">
+                            {userProfile?.name || "Student"}
+                          </div>
+                          <div className="truncate text-xs text-white/65">
+                            {userProfile?.email || "No email available"}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 mt-2 w-full">
+                        <Link
+                          href="/profile"
+                          onClick={closeMobileMenu}
+                          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#3f159a] px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-900"
+                        >
+                          <User className="h-4 w-4" />
+                          My Profile
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleLogout();
+                            closeMobileMenu();
+                          }}
+                          className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="btn-shutter-blue-open text-white py-3 px-6 rounded-lg font-semibold inline-flex items-center justify-center w-full"
+                      onClick={closeMobileMenu}
+                    >
+                      Login
+                    </Link>
+                  )}
+                </li>
               </ul>
             </div>
           </nav>
