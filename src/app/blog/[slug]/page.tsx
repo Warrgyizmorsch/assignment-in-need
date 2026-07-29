@@ -58,7 +58,7 @@ export default async function BlogDetailPage({ params }: Props) {
   try {
     const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/blogs/${slug}`, {
-      next: { revalidate: 600 }, // Cache post detail for 10 minutes
+      cache: "no-store",
     });
     if (res.ok) {
       const result = await res.json();
@@ -75,7 +75,7 @@ export default async function BlogDetailPage({ params }: Props) {
       process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
     const res = await fetch(`${backendUrl}/api/subject-pages`, {
       headers: { Accept: "application/json" },
-      next: { revalidate: 3600 }, // Cache subject list for 1 hour
+      cache: "no-store",
     });
     if (res.ok) {
       const payload = await res.json();

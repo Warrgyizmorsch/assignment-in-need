@@ -1064,9 +1064,23 @@ export const Navbar = () => {
               .znh-nav {
                 width: 300px;
               }
-
             }
-
+            .znh-desktop-menu-container {
+              display: flex;
+              align-items: center;
+            }
+            .znh-mobile-menu-container {
+              display: none;
+            }
+            @media (max-width: 1024px) {
+              .znh-desktop-menu-container {
+                display: none !important;
+              }
+              .znh-mobile-menu-container {
+                display: block !important;
+                width: 100%;
+              }
+            }
           `,
         }}
       />
@@ -1225,7 +1239,7 @@ export const Navbar = () => {
               <X className="h-7 w-7" />
             </button>
 
-            <div className="hidden min-[1025px]:contents">
+            <div className="znh-desktop-menu-container">
               <ul className="znh-nav-list">
                 <DesktopDropdown label="Services" items={serviceDropdownItems} />
                 <DesktopDropdown
@@ -1252,20 +1266,10 @@ export const Navbar = () => {
                   items={citiesDropdownItems}
                   scrollable
                 />
-                {/* <li className="znh-nav-item">
-                <Link href="/about" className="znh-nav-link">
-                  About Us
-                </Link>
-              </li>
-              <li className="znh-nav-item">
-                <Link href="/contact" className="znh-nav-link">
-                  Contact
-                </Link>
-              </li> */}
               </ul>
             </div>
 
-            <div className="contents min-[1025px]:hidden">
+            <div className="znh-mobile-menu-container">
               <ul className="znh-nav-list w-full">
                 <MobileDropdown
                   label="Services"

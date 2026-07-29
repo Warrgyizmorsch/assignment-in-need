@@ -11,7 +11,7 @@ export async function GET() {
       headers: {
         Accept: "application/json",
       },
-      next: { revalidate: 300 }, // Cache on Next.js server for 5 minutes
+      cache: "no-store",
     });
 
     const text = await response.text();

@@ -111,59 +111,60 @@ export default function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-              (function () {
-                var RETRY_KEY = 'ain:chunk-retry';
-                var RETRY_WINDOW_MS = 60000;
-
-                function isChunkError(value) {
-                  var message = value && value.message
-                    ? value.message
-                    : String(value || '');
-
-                  return (
-                    (value && value.name === 'ChunkLoadError') ||
-                    /ChunkLoadError/i.test(message) ||
-                    /Loading chunk .* failed/i.test(message) ||
-                    /Failed to load chunk/i.test(message)
-                  );
-                }
-
-                function recoverFromChunkError() {
-                  var now = Date.now();
+                (function () {
+                  var RETRY_KEY = 'ain:chunk-retry';
+                  var RETRY_WINDOW_MS = 60000;
 
                   try {
-                    var lastRetry = Number(sessionStorage.getItem(RETRY_KEY) || 0);
-                    if (now - lastRetry < RETRY_WINDOW_MS) {
+                    var currentUrl = new URL(window.location.href);
+                    if (currentUrl.searchParams.has('_chunk_retry')) {
+                      currentUrl.searchParams.delete('_chunk_retry');
+                      var cleanUrl = currentUrl.pathname + (currentUrl.search ? currentUrl.search : '') + (currentUrl.hash ? currentUrl.hash : '');
+                      window.history.replaceState({}, '', cleanUrl);
+                    }
+                  } catch (_) {}
+
+                  function isChunkError(value) {
+                    var message = value && value.message
+                      ? value.message
+                      : String(value || '');
+
+                    return (
+                      (value && value.name === 'ChunkLoadError') ||
+                      /ChunkLoadError/i.test(message) ||
+                      /Loading chunk .* failed/i.test(message) ||
+                      /Failed to load chunk/i.test(message)
+                    );
+                  }
+
+                  function recoverFromChunkError() {
+                    var now = Date.now();
+
+                    try {
+                      var lastRetry = Number(sessionStorage.getItem(RETRY_KEY) || 0);
+                      if (now - lastRetry < RETRY_WINDOW_MS) {
+                        return;
+                      }
+                      sessionStorage.setItem(RETRY_KEY, String(now));
+                    } catch (_) {
                       return;
                     }
-                    sessionStorage.setItem(RETRY_KEY, String(now));
-                  } catch (_) {
-                    return;
+
+                    window.location.reload();
                   }
 
-                  var retryUrl = new URL(window.location.href);
-                  retryUrl.searchParams.set('_chunk_retry', String(now));
-                  window.location.replace(retryUrl.toString());
-                }
+                  window.addEventListener('error', function (event) {
+                    if (event && isChunkError(event.error || event)) {
+                      recoverFromChunkError();
+                    }
+                  });
 
-                window.addEventListener('error', function (event) {
-                  var failedAsset = event && event.target;
-                  var assetUrl = failedAsset && (failedAsset.src || failedAsset.href);
-
-                  if (
-                    isChunkError(event && event.error ? event.error : event) ||
-                    (assetUrl && assetUrl.indexOf('/_next/static/') !== -1)
-                  ) {
-                    recoverFromChunkError();
-                  }
-                });
-
-                window.addEventListener('unhandledrejection', function (event) {
-                  if (isChunkError(event && event.reason)) {
-                    recoverFromChunkError();
-                  }
-                });
-              })();
+                  window.addEventListener('unhandledrejection', function (event) {
+                    if (event && isChunkError(event.reason)) {
+                      recoverFromChunkError();
+                    }
+                  });
+                })();
             `,
           }}
         />

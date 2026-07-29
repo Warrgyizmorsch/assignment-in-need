@@ -97,6 +97,17 @@ export default function ServiceLanding() {
       try {
         setLoading(true);
 
+        const STATIC_TOP_PATHS = [
+          "about", "contact", "login", "signup", "forgot-password", "order",
+          "pricing", "privacy-policy", "review", "terms-conditions", "user-delete-policy",
+          "style-guide", "blog", "samples", "writers", "profile", "cities", "subjects", "subject"
+        ];
+        const cleanStaticSub = fullSlug.replace(/^service\//, "").split("/")[0]?.toLowerCase();
+        if (cleanStaticSub && STATIC_TOP_PATHS.includes(cleanStaticSub)) {
+          router.replace(`/${cleanStaticSub}`);
+          return;
+        }
+
         let apiSlug = fullSlug;
         if (
           fullSlug === "assignment-writing-uk" ||
@@ -129,7 +140,7 @@ export default function ServiceLanding() {
         
         // Try 0: Full original slug with service/ or subject/ prefix
         try {
-          const pageRes0 = await fetch(`/api/service-pages/service/${fullSlug}`);
+          const pageRes0 = await fetch(`/api/service-pages/service/${fullSlug}`, { cache: "no-store" });
           if (pageRes0.ok) {
             const temp = await pageRes0.json();
             if (temp && temp.success && temp.data && temp.data.page) {
@@ -140,7 +151,7 @@ export default function ServiceLanding() {
 
         if (!pageResult || !pageResult.success || !pageResult.data || !pageResult.data.page) {
           try {
-            const pageResSub = await fetch(`/api/service-pages/subject/${fullSlug}`);
+            const pageResSub = await fetch(`/api/service-pages/subject/${fullSlug}`, { cache: "no-store" });
             if (pageResSub.ok) {
               const temp = await pageResSub.json();
               if (temp && temp.success && temp.data && temp.data.page) {
@@ -152,7 +163,7 @@ export default function ServiceLanding() {
 
         // Try 1: Cleaned/extracted apiSlug
         try {
-          const pageRes = await fetch(`/api/service-pages/${apiSlug}`);
+          const pageRes = await fetch(`/api/service-pages/${apiSlug}`, { cache: "no-store" });
           if (pageRes.ok) {
             const temp = await pageRes.json();
             if (temp && temp.success && temp.data && temp.data.page) {
@@ -166,7 +177,7 @@ export default function ServiceLanding() {
         // Try 2: Full uncleaned slug (e.g. /assignment/dissertation-writing-services)
         if (!pageResult || !pageResult.success || !pageResult.data || !pageResult.data.page) {
           try {
-            const pageRes2 = await fetch(`/api/service-pages/${fullSlug}`);
+            const pageRes2 = await fetch(`/api/service-pages/${fullSlug}`, { cache: "no-store" });
             if (pageRes2.ok) {
               const temp = await pageRes2.json();
               if (temp && temp.success && temp.data && temp.data.page) {
@@ -181,7 +192,7 @@ export default function ServiceLanding() {
         // Try 3: Full slug replacing slashes with dashes
         if (!pageResult || !pageResult.success || !pageResult.data || !pageResult.data.page) {
           try {
-            const pageRes3 = await fetch(`/api/service-pages/${fullSlug.replace(/\//g, "-")}`);
+            const pageRes3 = await fetch(`/api/service-pages/${fullSlug.replace(/\//g, "-")}`, { cache: "no-store" });
             if (pageRes3.ok) {
               const temp = await pageRes3.json();
               if (temp && temp.success && temp.data && temp.data.page) {

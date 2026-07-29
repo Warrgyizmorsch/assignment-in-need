@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       let targetUrl = `${SUBJECT_PAGES_API_BASE_URL}/${slug}`;
       let response = await fetch(targetUrl, {
         headers: { Accept: "application/json" },
-        next: { revalidate: 300 },
+        cache: "no-store",
       });
 
       // 2. Fallback: if it returns 404, try querying with the "subject/" prefix (e.g. subject-pages/subject/history)
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
         targetUrl = `${SUBJECT_PAGES_API_BASE_URL}/${fullSlug}`;
         response = await fetch(targetUrl, {
           headers: { Accept: "application/json" },
-          next: { revalidate: 300 },
+          cache: "no-store",
         });
       }
 
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
   try {
     const response = await fetch(SUBJECT_PAGES_API_BASE_URL, {
       headers: { Accept: "application/json" },
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
 
     const text = await response.text();

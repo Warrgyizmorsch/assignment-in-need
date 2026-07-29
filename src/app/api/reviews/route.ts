@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       headers: {
         Accept: "application/json",
       },
-      next: { revalidate: 300 }, // Cache for 5 minutes
+      cache: "no-store",
     });
 
     const text = await response.text();

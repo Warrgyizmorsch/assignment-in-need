@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       const targetUrl = `${SERVICE_PAGES_API_BASE_URL}/${slug}`;
       const response = await fetch(targetUrl, {
         headers: { Accept: "application/json" },
-        next: { revalidate: 300 },
+        cache: "no-store",
       });
 
       const text = await response.text();
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
   try {
     const response = await fetch(SERVICE_PAGES_API_BASE_URL, {
       headers: { Accept: "application/json" },
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
 
     const text = await response.text();

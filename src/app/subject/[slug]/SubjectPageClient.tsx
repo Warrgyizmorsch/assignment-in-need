@@ -244,7 +244,7 @@ export default function SubjectLanding() {
           )
             break;
           try {
-            const res = await fetch(endpoint);
+            const res = await fetch(endpoint, { cache: "no-store" });
             if (res.ok) {
               const temp = await res.json();
               if (temp && temp.success && temp.data && temp.data.page) {

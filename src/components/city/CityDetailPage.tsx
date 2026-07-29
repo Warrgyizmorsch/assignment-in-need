@@ -75,7 +75,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
   const [expertsList, setExpertsList] = useState<any[]>([]);
   const [pageData, setPageData] = useState<any>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-  const [seoExpanded, setSeoExpanded] = useState(true);
+  const [seoExpanded, setSeoExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fallbackCityName = (citySlug || "london")
@@ -115,13 +115,13 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
         setLoading(true);
 
         // 1. Try requestedSlug first (e.g. assignment-help-cardiff) as it contains full dynamic content & long_content
-        let res = await fetch(`/api/city-pages/${requestedSlug}`);
+        let res = await fetch(`/api/city-pages/${requestedSlug}`, { cache: "no-store" });
 
         // 2. If requestedSlug fails or returns a page without long_content, try citySlug fallback
         if (!res.ok || (res.ok && citySlug && citySlug !== requestedSlug)) {
           const testJson = res.ok ? await res.clone().json().catch(() => null) : null;
           if (!testJson?.data?.page?.long_content) {
-            const fallbackRes = await fetch(`/api/city-pages/${citySlug}`);
+            const fallbackRes = await fetch(`/api/city-pages/${citySlug}`, { cache: "no-store" });
             if (fallbackRes.ok) {
               const fallbackJson = await fallbackRes.clone().json().catch(() => null);
               if (fallbackJson?.data?.page?.long_content) {

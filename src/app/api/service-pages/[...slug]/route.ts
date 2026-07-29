@@ -19,7 +19,7 @@ export async function GET(
       headers: {
         Accept: "application/json",
       },
-      next: { revalidate: 300 },
+      cache: "no-store",
     });
 
     const text = await response.text();
@@ -27,21 +27,29 @@ export async function GET(
     if (!response.ok) {
       try {
         const parsed = JSON.parse(text);
-        return NextResponse.json(parsed, { status: response.status });
+        return NextResponse.json(parsed, {
+          status: response.status,
+          headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
+        });
       } catch {
         return NextResponse.json(
           {
             success: false,
             message: `Service Page detail API responded with status ${response.status}`,
           },
-          { status: response.status },
+          {
+            status: response.status,
+            headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
+          },
         );
       }
     }
 
     try {
       const parsed = JSON.parse(text);
-      return NextResponse.json(parsed);
+      return NextResponse.json(parsed, {
+        headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
+      });
     } catch {
       return NextResponse.json(
         {

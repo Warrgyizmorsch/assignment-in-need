@@ -20,11 +20,11 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
 
   try {
     let res = await fetch(`${baseUrl}/api/city-pages/${cityDataSlug}`, {
-      next: { revalidate: 300 }
+      cache: "no-store"
     });
     if (!res.ok && slug !== cityDataSlug) {
       res = await fetch(`${baseUrl}/api/city-pages/${slug}`, {
-        next: { revalidate: 300 }
+        cache: "no-store"
       });
     }
     if (res.ok) {

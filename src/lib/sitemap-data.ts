@@ -52,6 +52,7 @@ export const staticRoutes = [
   "/samples",
   "/subjects",
   "/terms-conditions",
+  "/user-delete-policy",
   "/writers",
 ];
 

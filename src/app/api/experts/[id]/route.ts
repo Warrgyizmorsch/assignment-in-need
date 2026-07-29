@@ -19,7 +19,7 @@ export async function GET(_request: Request, context: RouteContext) {
       headers: {
         Accept: "application/json",
       },
-      next: { revalidate: 600 }, // Cache expert profile details on Next.js server for 10 minutes
+      cache: "no-store",
     });
 
     const text = await response.text();
