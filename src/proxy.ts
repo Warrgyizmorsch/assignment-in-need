@@ -191,14 +191,18 @@ export async function proxy(request: NextRequest) {
     }
     return NextResponse.next();
   }
-  // 3.6. Keep the London city page on its requested canonical URL.
-  if (pathname.toLowerCase().replace(/\/+$/, "") === "/cities/london") {
-    return NextResponse.redirect(
-      new URL("/cities/assignment-help-london", request.url),
-      301,
-    );
-  }
   if (pathname.startsWith("/cities/")) {
+    const rawCitySlug = pathname
+      .replace(/^\/cities\//, "")
+      .replace(/\/+$/, "")
+      .toLowerCase();
+    if (rawCitySlug && !rawCitySlug.startsWith("assignment-help-")) {
+      const canonicalCitySlug = `assignment-help-${rawCitySlug.replace(/-assignment-help$/, "")}`;
+      return NextResponse.redirect(
+        new URL(`/cities/${canonicalCitySlug}`, request.url),
+        301,
+      );
+    }
     return NextResponse.next();
   }
 
@@ -242,9 +246,7 @@ export async function proxy(request: NextRequest) {
   if (matchedCity) {
     return NextResponse.redirect(
       new URL(
-        matchedCity === "london"
-          ? "/cities/assignment-help-london"
-          : `/cities/${matchedCity}`,
+        `/cities/assignment-help-${matchedCity}`,
         request.url,
       ),
       301,

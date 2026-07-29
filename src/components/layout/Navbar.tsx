@@ -464,20 +464,18 @@ export const Navbar = () => {
         });
         if (!response.ok) return;
         const payload = await response.json();
-        const staticCities = Array.isArray(payload?.static_cities) ? payload.static_cities : [];
-        const dynamicData = Array.isArray(payload?.data)
-          ? payload.data
-          : Array.isArray(payload?.data?.pages)
-          ? payload.data.pages
-          : Array.isArray(payload?.pages)
-          ? payload.pages
-          : Array.isArray(payload?.cities)
-          ? payload.cities
-          : Array.isArray(payload)
-          ? payload
-          : [];
-
-        const dynamicBackendCities = [...staticCities, ...dynamicData];
+        const dynamicBackendCities =
+          Array.isArray(payload?.data) && payload.data.length > 0
+            ? payload.data
+            : Array.isArray(payload?.data?.pages) && payload.data.pages.length > 0
+            ? payload.data.pages
+            : Array.isArray(payload?.pages) && payload.pages.length > 0
+            ? payload.pages
+            : Array.isArray(payload?.cities) && payload.cities.length > 0
+            ? payload.cities
+            : Array.isArray(payload?.static_cities)
+            ? payload.static_cities
+            : [];
 
         const seenPaths = new Set<string>();
         const completeCities: NavLinkItem[] = [];

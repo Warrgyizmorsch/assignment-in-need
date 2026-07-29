@@ -26,10 +26,12 @@ export async function GET(
   const candidateSlugs = Array.from(
     new Set([
       slug,
-      baseClean,
       `assignment-help-${baseClean}`,
+      baseClean,
       `${baseClean}-assignment-help`,
       `assignment-writing-help-${baseClean}`,
+      `uk/assignment-help-${baseClean}`,
+      `uk/${baseClean}`,
     ].filter(Boolean))
   );
 
@@ -73,11 +75,13 @@ export async function GET(
 
     if (listRes.ok) {
       const listJson = await listRes.json().catch(() => null);
-      const pagesArray = Array.isArray(listJson?.data)
+      const staticCities = Array.isArray(listJson?.static_cities) ? listJson.static_cities : [];
+      const dynamicData = Array.isArray(listJson?.data)
         ? listJson.data
         : Array.isArray(listJson)
         ? listJson
         : [];
+      const pagesArray = [...staticCities, ...dynamicData];
 
       const matchedPage = pagesArray.find((item: any) => {
         const itemSlug = cleanSlug(item.slug || "");
