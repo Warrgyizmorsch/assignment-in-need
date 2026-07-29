@@ -321,7 +321,7 @@ export default function HeroSection() {
       >
         <div className="bg-white rounded-[30px] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] max-w-[1200px] w-full py-3 px-6 flex flex-col items-center overflow-hidden border border-white/50">
           <h2 className="text-xl md:text-[1.75rem] font-black text-gray-900 m-0 mb-3 leading-tight text-center">
-            Trusted by Students from 
+            Trusted by Students from{" "}
             <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent overflow-hidden text-ellipsis">
               Top UK Universities
             </span>
