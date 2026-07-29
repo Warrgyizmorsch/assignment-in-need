@@ -3,6 +3,9 @@ import WriterProfileClient from "./WriterProfileClient";
 import { constructMetadata } from "@/lib/metadata";
 import { WRITERS } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type Props = {
   params: Promise<{ id: string }>;
 };

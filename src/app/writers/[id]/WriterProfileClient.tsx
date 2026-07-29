@@ -39,16 +39,52 @@ export default function WriterProfile() {
       try {
         setLoading(true);
         const baseUrl = getBaseUrl();
+        
+        // 1. Try direct ID endpoint
         const res = await fetch(`${baseUrl}/api/experts/${id}`, { cache: "no-store" });
         if (res.ok) {
-          const result = await res.json();
-          if (result.success && result.data) {
-            setWriter(mapExpertToWriter(result.data));
+          const result = await res.json().catch(() => null);
+          const expertObj = result?.data?.page || result?.data || result?.expert;
+          if (expertObj && typeof expertObj === "object" && !Array.isArray(expertObj)) {
+            setWriter(mapExpertToWriter(expertObj));
             return;
           }
         }
 
-        // Smart fallback to static WRITERS list
+        // 2. Try fetching full experts list from backend
+        const listRes = await fetch(`${baseUrl}/api/experts`, { cache: "no-store" });
+        if (listRes.ok) {
+          const listJson = await listRes.json().catch(() => null);
+          const expertsArray = Array.isArray(listJson?.data)
+            ? listJson.data
+            : Array.isArray(listJson)
+            ? listJson
+            : [];
+
+          const cleanSlug = (str: string) =>
+            str
+              ?.toLowerCase()
+              ?.replace(/^dr\.?\s*/i, "")
+              ?.replace(/^prof\.?\s*/i, "")
+              ?.replace(/[^a-z0-9]+/g, "-")
+              ?.replace(/^-+|-+$/g, "") || "";
+
+          const targetClean = cleanSlug(id);
+
+          const matchedExpert = expertsArray.find((item: any) => {
+            if (String(item.id) === String(id)) return true;
+            if (item.slug && (item.slug === id || cleanSlug(item.slug) === targetClean)) return true;
+            if (item.name && cleanSlug(item.name) === targetClean) return true;
+            return false;
+          });
+
+          if (matchedExpert) {
+            setWriter(mapExpertToWriter(matchedExpert));
+            return;
+          }
+        }
+
+        // 3. Fallback to static WRITERS list
         const cleanSlug = (str: string) =>
           str
             ?.toLowerCase()
