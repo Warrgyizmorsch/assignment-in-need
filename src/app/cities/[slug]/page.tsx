@@ -22,15 +22,29 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
   let countryName = "United Kingdom";
 
   try {
-    let res = await fetch(`${baseUrl}/api/city-pages/${cityDataSlug}`, {
-      cache: "no-store"
-    });
-    if (!res.ok && slug !== cityDataSlug) {
-      res = await fetch(`${baseUrl}/api/city-pages/${slug}`, {
-        cache: "no-store"
-      });
+    const endpointsToTry = Array.from(
+      new Set([
+        slug,
+        `assignment-help-${cityDataSlug}`,
+        cityDataSlug,
+        `uk/assignment-help-${cityDataSlug}`,
+      ]),
+    ).filter(Boolean);
+
+    let res: Response | null = null;
+    for (const ep of endpointsToTry) {
+      try {
+        const fetchRes = await fetch(`${baseUrl}/api/city-pages/${ep}`, {
+          cache: "no-store",
+        });
+        if (fetchRes.ok) {
+          res = fetchRes;
+          break;
+        }
+      } catch (e) {}
     }
-    if (res.ok) {
+
+    if (res && res.ok) {
       const json = await res.json();
       const pageData = json?.data?.page;
 

@@ -118,21 +118,40 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
       try {
         setLoading(true);
 
-        // 1. Try requestedSlug first (e.g. assignment-help-london, assignment-help-oxford, assignment-help-cardiff)
-        let res = await fetch(`/api/city-pages/${requestedSlug}`, { cache: "no-store" });
+        const endpointsToTry = Array.from(
+          new Set([
+            requestedSlug,
+            `assignment-help-${citySlug}`,
+            citySlug,
+            `uk/assignment-help-${citySlug}`,
+          ]),
+        ).filter(Boolean);
 
-        // 2. Only if requestedSlug fails with non-200, try citySlug fallback
-        if (!res.ok && citySlug && citySlug !== requestedSlug) {
-          res = await fetch(`/api/city-pages/${citySlug}`, { cache: "no-store" });
+        let res: Response | null = null;
+        for (const ep of endpointsToTry) {
+          try {
+            const fetchRes = await fetch(`/api/city-pages/${ep}`, {
+              cache: "no-store",
+            });
+            if (fetchRes.ok) {
+              res = fetchRes;
+              break;
+            }
+          } catch (e) {}
         }
 
-        if (res.ok) {
+        if (res && res.ok) {
           const result = await res.json().catch(() => null);
           if (result) {
             const pageObj = result?.data?.page || result?.data || result?.page;
             if (pageObj && typeof pageObj === "object" && !Array.isArray(pageObj)) {
               setPageData(pageObj);
             }
+
+            const currentCityName =
+              pageObj?.city ||
+              pageObj?.title?.replace(/^Assignment Help\s+/i, "") ||
+              fallbackCityName;
 
             const expertsArr = result?.data?.experts || result?.experts || [];
             if (Array.isArray(expertsArr) && expertsArr.length > 0) {
@@ -141,7 +160,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
                 return {
                   id: parsed.id,
                   name: parsed.name,
-                  role: `${cityName} Expert`,
+                  role: `${currentCityName} Expert`,
                   qual: parsed.qualifications,
                   exp: parsed.experience.includes("Years")
                     ? parsed.experience
@@ -175,7 +194,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
               return {
                 id: parsed.id,
                 name: parsed.name,
-                role: `${cityName} Expert`,
+                role: `${fallbackCityName} Expert`,
                 qual: parsed.qualifications,
                 exp: parsed.experience.includes("Years")
                   ? parsed.experience
@@ -205,7 +224,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
     if (requestedSlug) {
       fetchCityPageData();
     }
-  }, [requestedSlug, citySlug, cityName]);
+  }, [requestedSlug, citySlug]);
 
 
 
