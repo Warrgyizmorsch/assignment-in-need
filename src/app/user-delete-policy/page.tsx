@@ -27,7 +27,7 @@ export default function UserDeletePolicyPage() {
   const [copiedTemplate, setCopiedTemplate] = useState(false);
   const [showMailModal, setShowMailModal] = useState(false);
 
-  const emailAddress = "order@assignmentinneed.co.uk";
+  const emailAddress = "daniel24white@gmail.com";
   const subjectLine = "Account Deletion Request";
   
   const emailTemplateText = `Hello Support Team,
