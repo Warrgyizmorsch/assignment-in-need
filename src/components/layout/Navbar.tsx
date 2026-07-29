@@ -464,7 +464,8 @@ export const Navbar = () => {
         });
         if (!response.ok) return;
         const payload = await response.json();
-        const dynamicBackendCities = Array.isArray(payload?.data)
+        const staticCities = Array.isArray(payload?.static_cities) ? payload.static_cities : [];
+        const dynamicData = Array.isArray(payload?.data)
           ? payload.data
           : Array.isArray(payload?.data?.pages)
           ? payload.data.pages
@@ -476,13 +477,15 @@ export const Navbar = () => {
           ? payload
           : [];
 
+        const dynamicBackendCities = [...staticCities, ...dynamicData];
+
         const seenPaths = new Set<string>();
         const completeCities: NavLinkItem[] = [];
 
         if (dynamicBackendCities.length > 0) {
           for (const c of dynamicBackendCities) {
             const rawTitle = c.title || c.city || c.hero_heading || c.meta_title || c.name || c.id || "";
-            let rawSlug = (c.slug || c.url || c.id || rawTitle).toString().trim().replace(/^\/+/, "").replace(/^cities\//, "");
+            let rawSlug = (c.slug || c.url || c.id || rawTitle).toString().trim().replace(/^\/+/, "").replace(/^cities\//, "").replace(/^uk\//, "");
 
             let cSlug = rawSlug.toLowerCase();
             if (cSlug && !cSlug.startsWith("assignment-help-")) {
@@ -506,7 +509,9 @@ export const Navbar = () => {
           }
         }
 
-        setCitiesMenu(completeCities);
+        if (completeCities.length > 0) {
+          setCitiesMenu(completeCities);
+        }
       } catch (err) {
         console.warn("Failed to fetch dynamic cities list:", err);
       }
