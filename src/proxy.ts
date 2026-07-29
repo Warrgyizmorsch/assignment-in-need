@@ -15,6 +15,29 @@ const CITY_IDENTIFIERS = [
   "kuala-lumpur", "penang"
 ];
 
+const STATIC_TOP_LEVEL_PATHS = [
+  "about",
+  "contact",
+  "login",
+  "signup",
+  "forgot-password",
+  "order",
+  "pricing",
+  "privacy-policy",
+  "review",
+  "terms-conditions",
+  "user-delete-policy",
+  "style-guide",
+  "blog",
+  "samples",
+  "writers",
+  "profile",
+  "cities",
+  "subjects",
+  "subject",
+  "service",
+];
+
 async function getAllApiSlugs(): Promise<string[]> {
   try {
     const [resServices, resSubjects] = await Promise.all([
@@ -107,7 +130,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Ignore standard static page routes and sub-routes
+  // 3. Ignore standard static page routes and system assets
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -128,6 +151,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/privacy-policy" ||
     pathname === "/review" ||
     pathname === "/terms-conditions" ||
+    pathname === "/user-delete-policy" ||
     pathname === "/sitemap.xml" ||
     pathname.endsWith("sitemap.xml") ||
     pathname === "/"
@@ -166,22 +190,13 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 3.75. Redirect misplaced /service/ prefixes back to top-level routes
-  if (pathname.startsWith("/service/blog")) {
-    const cleanPath = pathname.replace(/^\/service\/blog/, "/blog");
-    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
-  }
-  if (pathname.startsWith("/service/samples")) {
-    const cleanPath = pathname.replace(/^\/service\/samples/, "/samples");
-    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
-  }
-  if (pathname.startsWith("/service/writers")) {
-    const cleanPath = pathname.replace(/^\/service\/writers/, "/writers");
-    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
-  }
-  if (pathname.startsWith("/service/profile")) {
-    const cleanPath = pathname.replace(/^\/service\/profile/, "/profile");
-    return NextResponse.redirect(new URL(cleanPath, request.url), 301);
+  // 3.75. Redirect misplaced /service/ prefixes back to top-level routes for non-service pages
+  if (pathname.startsWith("/service/")) {
+    const serviceSubPath = pathname.replace(/^\/service\//, "").split("/")[0]?.toLowerCase();
+    if (serviceSubPath && STATIC_TOP_LEVEL_PATHS.includes(serviceSubPath) && serviceSubPath !== "service") {
+      const cleanPath = pathname.replace(/^\/service/, "");
+      return NextResponse.redirect(new URL(cleanPath, request.url), 301);
+    }
   }
 
   // 3.8. If already on /service/, pass through directly
@@ -253,5 +268,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${matchedApiSlug}`, request.url), 301);
   }
 
-  return NextResponse.redirect(new URL(`/service/${rawPath}`, request.url), 301);
+  // 6. Default fallback: Let Next.js handle the route directly instead of forcing /service/ prefix
+  return NextResponse.next();
 }
