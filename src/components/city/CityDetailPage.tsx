@@ -118,31 +118,25 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
       try {
         setLoading(true);
 
-        // 1. Try requestedSlug first (e.g. assignment-help-cardiff) as it contains full dynamic content & long_content
+        // 1. Try requestedSlug first (e.g. assignment-help-london, assignment-help-oxford, assignment-help-cardiff)
         let res = await fetch(`/api/city-pages/${requestedSlug}`, { cache: "no-store" });
 
-        // 2. If requestedSlug fails or returns a page without long_content, try citySlug fallback
-        if (!res.ok || (res.ok && citySlug && citySlug !== requestedSlug)) {
-          const testJson = res.ok ? await res.clone().json().catch(() => null) : null;
-          if (!testJson?.data?.page?.long_content) {
-            const fallbackRes = await fetch(`/api/city-pages/${citySlug}`, { cache: "no-store" });
-            if (fallbackRes.ok) {
-              const fallbackJson = await fallbackRes.clone().json().catch(() => null);
-              if (fallbackJson?.data?.page?.long_content) {
-                res = fallbackRes;
-              }
-            }
-          }
+        // 2. Only if requestedSlug fails with non-200, try citySlug fallback
+        if (!res.ok && citySlug && citySlug !== requestedSlug) {
+          res = await fetch(`/api/city-pages/${citySlug}`, { cache: "no-store" });
         }
 
         if (res.ok) {
-          const result = await res.json();
-          if (result.success && result.data) {
-            if (result.data.page) {
-              setPageData(result.data.page);
+          const result = await res.json().catch(() => null);
+          if (result) {
+            const pageObj = result?.data?.page || result?.data || result?.page;
+            if (pageObj && typeof pageObj === "object" && !Array.isArray(pageObj)) {
+              setPageData(pageObj);
             }
-            if (Array.isArray(result.data.experts) && result.data.experts.length > 0) {
-              const mapped = result.data.experts.map((item: any) => {
+
+            const expertsArr = result?.data?.experts || result?.experts || [];
+            if (Array.isArray(expertsArr) && expertsArr.length > 0) {
+              const mapped = expertsArr.map((item: any) => {
                 const parsed = mapExpertToWriter(item);
                 return {
                   id: parsed.id,
@@ -171,11 +165,12 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
         }
 
         // Fallback: fetch general experts if no city experts returned
-        const expRes = await fetch("/api/experts");
+        const expRes = await fetch("/api/experts", { cache: "no-store" });
         if (expRes.ok) {
-          const result = await expRes.json();
-          if (result.success && Array.isArray(result.data)) {
-            const mapped = result.data.map((item: any) => {
+          const result = await expRes.json().catch(() => null);
+          const expData = Array.isArray(result?.data) ? result.data : Array.isArray(result) ? result : [];
+          if (expData.length > 0) {
+            const mapped = expData.map((item: any) => {
               const parsed = mapExpertToWriter(item);
               return {
                 id: parsed.id,
@@ -206,8 +201,11 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
         setLoading(false);
       }
     };
-    fetchCityPageData();
-  }, [slug, citySlug, cityName]);
+
+    if (requestedSlug) {
+      fetchCityPageData();
+    }
+  }, [requestedSlug, citySlug, cityName]);
 
 
 

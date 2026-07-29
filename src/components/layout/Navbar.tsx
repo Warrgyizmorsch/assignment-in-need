@@ -229,18 +229,29 @@ const DesktopDropdown = ({
   label: string;
   items: NavLinkItem[];
   scrollable?: boolean;
-}) => (
-  <li className="znh-nav-item">
-    <button type="button" className="znh-nav-link">
-      {label}
-      <ChevronDown className="znh-down-icon" />
-    </button>
-    <ul
-      className={cn(
-        "znh-dropdown-menu",
-        scrollable && "znh-dropdown-scrollable",
-      )}
-    >
+}) => {
+  if (!items || items.length === 0) {
+    return (
+      <li className="znh-nav-item">
+        <Link href="/cities" className="znh-nav-link">
+          {label}
+        </Link>
+      </li>
+    );
+  }
+
+  return (
+    <li className="znh-nav-item">
+      <button type="button" className="znh-nav-link">
+        {label}
+        <ChevronDown className="znh-down-icon" />
+      </button>
+      <ul
+        className={cn(
+          "znh-dropdown-menu",
+          scrollable && "znh-dropdown-scrollable",
+        )}
+      >
       {items.map((item, idx) => (
         <li key={`${item.path}-${item.name}-${idx}`} className="znh-dropdown-item">
           {item.disabled ? (
@@ -276,7 +287,8 @@ const DesktopDropdown = ({
       ))}
     </ul>
   </li>
-);
+  );
+};
 
 const MobileDropdown = ({
   label,
@@ -603,10 +615,7 @@ export const Navbar = () => {
     serviceMenu.length > 0 ? serviceMenu : FALLBACK_SERVICES;
 
   const subjectsDropdownItems = subjects.length > 0 ? subjects : SUBJECTS;
-  const citiesDropdownItems =
-    citiesMenu.length > 0
-      ? citiesMenu
-      : CITIES;
+  const citiesDropdownItems = citiesMenu;
 
   return (
     <>
