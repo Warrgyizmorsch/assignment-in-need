@@ -236,19 +236,23 @@ export default function SubjectLanding() {
         ];
 
         for (const endpoint of endpointsToTry) {
-          if (
-            pageResult &&
-            pageResult.success &&
-            pageResult.data &&
-            pageResult.data.page
-          )
-            break;
+          if (pageResult && pageResult.data && pageResult.data.page) break;
           try {
             const res = await fetch(endpoint, { cache: "no-store" });
             if (res.ok) {
               const temp = await res.json();
-              if (temp && temp.success && temp.data && temp.data.page) {
-                pageResult = temp;
+              if (temp) {
+                const pageObj = temp?.data?.page || temp?.data || temp?.page;
+                if (pageObj && typeof pageObj === "object") {
+                  pageResult = {
+                    success: true,
+                    data: {
+                      page: pageObj,
+                      experts: temp?.data?.experts || temp?.experts || [],
+                      reviews: temp?.data?.reviews || temp?.reviews || [],
+                    },
+                  };
+                }
               }
             }
           } catch (e) {}
@@ -256,7 +260,6 @@ export default function SubjectLanding() {
 
         if (
           !pageResult ||
-          !pageResult.success ||
           !pageResult.data ||
           !pageResult.data.page
         ) {
@@ -267,7 +270,6 @@ export default function SubjectLanding() {
 
         if (
           pageResult &&
-          pageResult.success &&
           pageResult.data &&
           pageResult.data.page
         ) {
@@ -596,14 +598,29 @@ export default function SubjectLanding() {
   const sectionThreeHeading = pageData?.section_three_heading || null;
   const sectionThreeContent = pageData?.section_three_content || null;
 
+  const rawContentParts = [
+    pageData?.long_content,
+    pageData?.seo_content,
+    pageData?.content,
+    pageData?.description,
+    pageData?.body,
+    pageData?.section_content,
+    pageData?.section_one_content,
+    pageData?.section_1_content,
+    pageData?.section_two_content,
+    pageData?.section_2_content,
+    pageData?.section_three_content,
+    pageData?.section_3_content,
+    pageData?.long_description,
+    pageData?.main_content,
+    pageData?.details,
+    pageData?.about_content,
+    pageData?.text_content,
+  ].filter((val) => typeof val === "string" && val.trim().length > 0);
+
+  const uniqueContentParts = Array.from(new Set(rawContentParts));
   const longContentHtml =
-    pageData?.long_content ||
-    pageData?.seo_content ||
-    pageData?.content ||
-    pageData?.description ||
-    pageData?.body ||
-    pageData?.section_content ||
-    null;
+    uniqueContentParts.length > 0 ? uniqueContentParts.join("<br/><br/>") : null;
 
   // Dynamic benefits points
   const benefits = [

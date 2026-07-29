@@ -495,9 +495,32 @@ export default function ServiceLanding() {
   const sectionThreeHeading = pageData.section_three_heading || null;
   const sectionThreeContent = pageData.section_three_content || null;
 
+  const rawServiceContentParts = [
+    pageData?.long_content,
+    pageData?.seo_content,
+    pageData?.content,
+    pageData?.description,
+    pageData?.body,
+    pageData?.section_content,
+    pageData?.section_one_content,
+    pageData?.section_1_content,
+    pageData?.section_two_content,
+    pageData?.section_2_content,
+    pageData?.section_three_content,
+    pageData?.section_3_content,
+    pageData?.long_description,
+    pageData?.main_content,
+    pageData?.details,
+    pageData?.about_content,
+    pageData?.text_content,
+  ].filter((val) => typeof val === "string" && val.trim().length > 0);
+
+  const uniqueServiceContentParts = Array.from(new Set(rawServiceContentParts));
+
   const longContentHtml =
-    pageData.long_content ||
-    `<p>When ordering our professional academic services, you connect with native British tutors holding accredited graduate degrees from leading institutions. We parse complex assignment criteria, gather scholarly evidence from peer-reviewed databases, and design standard analytical structures.</p>
+    uniqueServiceContentParts.length > 0
+      ? uniqueServiceContentParts.join("<br/><br/>")
+      : `<p>When ordering our professional academic services, you connect with native British tutors holding accredited graduate degrees from leading institutions. We parse complex assignment criteria, gather scholarly evidence from peer-reviewed databases, and design standard analytical structures.</p>
      <p>Whether it is a complex qualitative business case study, a quantitative engineering lab report, or a comprehensive option pricing model for finance coursework, we provide complete, step-by-step documentation. All works undergo secondary checks by our review editors to align grammar and verify citation lists.</p>
      <p>We guarantee 100% human-written content. Every file is analyzed with advanced checking tools to ensure zero trace of AI-generated content or recycled phrasing, keeping your academic record completely secure.</p>`;
 

@@ -218,10 +218,7 @@ const FALLBACK_SERVICES: NavLinkItem[] = [
   },
 ];
 
-const CITIES: NavLinkItem[] = [
-  { name: "Assignment Help London", path: "/cities/assignment-help-london" },
-  // { name: "View All Cities", path: "/cities" },
-];
+const CITIES: NavLinkItem[] = [];
 
 
 const DesktopDropdown = ({
@@ -467,55 +464,51 @@ export const Navbar = () => {
           headers: { Accept: "application/json" },
           cache: "no-store",
         });
+        if (!response.ok) return;
         const payload = await response.json();
-        const dynamicBackendCities = Array.isArray(payload?.data) ? payload.data : [];
+        const dynamicBackendCities = Array.isArray(payload?.data)
+          ? payload.data
+          : Array.isArray(payload?.data?.pages)
+          ? payload.data.pages
+          : Array.isArray(payload?.pages)
+          ? payload.pages
+          : Array.isArray(payload?.cities)
+          ? payload.cities
+          : Array.isArray(payload)
+          ? payload
+          : [];
+
+        const seenPaths = new Set<string>();
+        const completeCities: NavLinkItem[] = [];
+
         if (dynamicBackendCities.length > 0) {
-          const rawMapped: NavLinkItem[] = dynamicBackendCities.map((c: any) => {
-            const rawTitle = c.title || c.city || c.hero_heading || c.meta_title || c.id || "";
-            const rawSlug = (c.slug || c.id || rawTitle).toString().trim().replace(/^\/+/, "").replace(/^cities\//, "");
+          for (const c of dynamicBackendCities) {
+            const rawTitle = c.title || c.city || c.hero_heading || c.meta_title || c.name || c.id || "";
+            let rawSlug = (c.slug || c.url || c.id || rawTitle).toString().trim().replace(/^\/+/, "").replace(/^cities\//, "");
 
-            let slug = rawSlug;
-            let name = rawTitle.trim();
-
-            if (/\blondon\b/i.test(name) || rawSlug === "london" || rawSlug === "assignment-help-london") {
-              slug = "assignment-help-london";
-              name = "Assignment Help London";
-            } else {
-              if (!name || name === rawSlug) {
-                name = rawSlug.replace(/-/g, " ").replace(/\b\w/g, (char: string) => char.toUpperCase());
-              }
+            let cSlug = rawSlug.toLowerCase();
+            if (cSlug && !cSlug.startsWith("assignment-help-")) {
+              cSlug = `assignment-help-${cSlug.replace(/-assignment-help$/, "")}`;
             }
 
-            return {
-              name,
-              path: `/cities/${slug}`,
-            };
-          });
-
-          const seenPaths = new Set<string>();
-          const completeCities: NavLinkItem[] = [];
-
-          for (const item of rawMapped) {
-            if (item.path === "/cities") continue;
-            let finalPath = item.path;
-            let finalName = item.name;
-
-            if (/\blondon\b/i.test(finalName) || finalPath === "/cities/london") {
-              finalName = "Assignment Help London";
-              finalPath = "/cities/assignment-help-london";
+            let cleanedName = rawTitle.replace(/^Assignment Help\s+/i, "").replace(/-/g, " ").trim();
+            if (!cleanedName || cleanedName === rawSlug) {
+              cleanedName = cSlug.replace(/^assignment-help-/, "").replace(/-/g, " ");
             }
+            const formattedName = `Assignment Help ${cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1)}`;
+            const finalPath = `/cities/${cSlug}`;
 
             if (!seenPaths.has(finalPath)) {
               seenPaths.add(finalPath);
               completeCities.push({
-                name: finalName,
+                name: formattedName,
                 path: finalPath,
               });
             }
           }
-
-          setCitiesMenu(completeCities);
         }
+
+        setCitiesMenu(completeCities);
       } catch (err) {
         console.warn("Failed to fetch dynamic cities list:", err);
       }
