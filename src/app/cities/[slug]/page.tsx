@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import CityDetailPage from "@/components/city/CityDetailPage";
 import { constructMetadata } from "@/lib/metadata";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface CityRoutePageProps {
   params: Promise<{
     slug: string;

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import ServicePageClient from "./ServicePageClient";
 import { constructMetadata } from "@/lib/metadata";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type Props = {
   params: Promise<{ slug: string[] }>;
 };

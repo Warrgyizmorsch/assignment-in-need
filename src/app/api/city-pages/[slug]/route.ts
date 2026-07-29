@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const BACKEND_URL =
   process.env.BACKEND_INTERNAL_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
