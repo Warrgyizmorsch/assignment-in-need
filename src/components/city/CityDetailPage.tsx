@@ -66,17 +66,10 @@ export interface CityDetailPageProps {
 
 export default function CityDetailPage({ slug }: CityDetailPageProps) {
   const requestedSlug = slug.toLowerCase().split("/").pop() || "";
-  const citySlug =
-    requestedSlug === "assignment-help-london"
-      ? "london"
-      : requestedSlug.replace("-assignment-help", "");
-  const matchedCity = CITIES_LIST.find((c) => c.slug === citySlug) || {
-    name: citySlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-    country: "United Kingdom",
-  };
-
-  const cityName = matchedCity.name;
-  const countryName = matchedCity.country;
+  const citySlug = requestedSlug
+    .replace(/^assignment-help-/, "")
+    .replace(/-assignment-help$/, "")
+    .replace(/-assignment-writing-help$/, "");
 
   // Dynamic experts & page data
   const [expertsList, setExpertsList] = useState<any[]>([]);
@@ -84,6 +77,17 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const fallbackCityName = (citySlug || "london")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const cityName =
+    pageData?.city ||
+    pageData?.title?.replace(/^Assignment Help\s+/i, "") ||
+    fallbackCityName;
+
+  const countryName = pageData?.country || "United Kingdom";
 
   const longContentHtml =
     pageData?.long_content ||

@@ -90,55 +90,71 @@ export function getCityRoutes(baseUrl: string): string[] {
   );
 }
 
+export function extractCitySlug(item: any): string | null {
+  if (!item) return null;
+
+  let rawSlug = "";
+  if (typeof item.slug === "string" && item.slug.trim()) {
+    rawSlug = item.slug.trim().split("/").pop() || "";
+  } else if (typeof item.url === "string" && item.url.trim()) {
+    rawSlug = item.url.trim().split("/").pop() || "";
+  } else if (typeof item.city === "string" && item.city.trim()) {
+    rawSlug = slugify(item.city.trim());
+  } else if (typeof item.name === "string" && item.name.trim()) {
+    rawSlug = slugify(item.name.trim());
+  } else if (typeof item.title === "string" && item.title.trim()) {
+    const cleaned = item.title.replace(/^Assignment Help\s+/i, "").trim();
+    rawSlug = slugify(cleaned);
+  } else if (item.id) {
+    const idStr = String(item.id).trim();
+    if (isNaN(Number(idStr))) {
+      rawSlug = idStr.split("/").pop() || "";
+    }
+  }
+
+  if (!rawSlug || /^\d+$/.test(rawSlug)) {
+    return null;
+  }
+
+  rawSlug = rawSlug.toLowerCase();
+
+  // Standardize to assignment-help-[city] format (e.g. assignment-help-london, assignment-help-cardiff)
+  if (!rawSlug.startsWith("assignment-help-")) {
+    const cleanCity = rawSlug.replace(/-assignment-help$/, "").replace(/^cities-/, "");
+    return `assignment-help-${cleanCity}`;
+  }
+
+  return rawSlug;
+}
+
 export async function fetchCityPages(baseUrl: string): Promise<string[]> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/city-pages`, {
-      next: { revalidate: 3600 },
+    const backendUrl = (
+      process.env.BACKEND_INTERNAL_URL ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "https://ain.warrgyizmorsch.com"
+    ).replace(/\/+$/, "");
+
+    const res = await fetch(`${backendUrl}/api/city-pages`, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
     });
+
     if (res.ok) {
       const payload = await res.json();
-      const staticCities = Array.isArray(payload?.static_cities) ? payload.static_cities : [];
-      const dynamicData = Array.isArray(payload?.data) ? payload.data : [];
+      const dynamicData =
+        Array.isArray(payload?.data) && payload.data.length > 0
+          ? payload.data
+          : Array.isArray(payload?.static_cities)
+          ? payload.static_cities
+          : [];
 
       const routes: string[] = [];
 
-      staticCities.forEach((city: any) => {
-        if (city.id) {
-          const citySlug = String(city.id);
-          routes.push(
-            citySlug === "london"
-              ? `${baseUrl}/cities/assignment-help-london`
-              : `${baseUrl}/cities/${citySlug}`,
-          );
-        } else if (city.slug) {
-          const lastSeg = city.slug.split("/").pop();
-          if (lastSeg) {
-            routes.push(
-              lastSeg === "london"
-                ? `${baseUrl}/cities/assignment-help-london`
-                : `${baseUrl}/cities/${lastSeg}`,
-            );
-          }
-        }
-      });
-
       dynamicData.forEach((city: any) => {
-        if (city.id) {
-          const citySlug = String(city.id);
-          routes.push(
-            citySlug === "london"
-              ? `${baseUrl}/cities/assignment-help-london`
-              : `${baseUrl}/cities/${citySlug}`,
-          );
-        } else if (city.slug) {
-          const lastSeg = city.slug.split("/").pop();
-          if (lastSeg) {
-            routes.push(
-              lastSeg === "london"
-                ? `${baseUrl}/cities/assignment-help-london`
-                : `${baseUrl}/cities/${lastSeg}`,
-            );
-          }
+        const slug = extractCitySlug(city);
+        if (slug) {
+          routes.push(`${baseUrl}/cities/${slug}`);
         }
       });
 
@@ -149,7 +165,13 @@ export async function fetchCityPages(baseUrl: string): Promise<string[]> {
   } catch (e) {
     console.error("Sitemap: Failed to fetch city pages", e);
   }
-  return getCityRoutes(baseUrl);
+
+  // Resilient fallback to active backend cities if API fetch fails or returns empty array
+  return [
+    `${baseUrl}/cities/assignment-help-london`,
+    `${baseUrl}/cities/assignment-help-cardiff`,
+    `${baseUrl}/cities/assignment-help-birmingham`,
+  ];
 }
 
 export async function fetchBlogs(baseUrl: string): Promise<string[]> {

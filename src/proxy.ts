@@ -40,13 +40,18 @@ const STATIC_TOP_LEVEL_PATHS = [
 
 async function getAllApiSlugs(): Promise<string[]> {
   try {
-    const [resServices, resSubjects] = await Promise.all([
+    const [resServices, resSubjects, resCities] = await Promise.all([
       fetch(`${BACKEND_URL}/api/service-pages`, {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(8000),
         cache: "no-store",
       }),
       fetch(`${BACKEND_URL}/api/subject-pages`, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(8000),
+        cache: "no-store",
+      }),
+      fetch(`${BACKEND_URL}/api/city-pages`, {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(8000),
         cache: "no-store",
@@ -77,6 +82,21 @@ async function getAllApiSlugs(): Promise<string[]> {
           item.children.forEach((child: any) => {
             if (child.slug) slugs.push(child.slug.trim().replace(/^\/+/, ""));
           });
+        }
+      });
+    }
+
+    if (resCities.ok) {
+      const payload = await resCities.json();
+      const staticCities = Array.isArray(payload?.static_cities) ? payload.static_cities : [];
+      const dynamicData = Array.isArray(payload?.data) ? payload.data : [];
+      [...staticCities, ...dynamicData].forEach((city: any) => {
+        let citySlug = city.slug || city.url || city.city || city.title || "";
+        if (typeof citySlug === "string") {
+          const lastSeg = citySlug.trim().split("/").pop();
+          if (lastSeg && isNaN(Number(lastSeg))) {
+            slugs.push(`cities/${lastSeg}`);
+          }
         }
       });
     }

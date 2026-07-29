@@ -18,7 +18,7 @@ export async function GET(
       headers: {
         Accept: "application/json",
       },
-      next: { revalidate: 300 },
+      next: { revalidate: 60 },
     });
 
     const text = await response.text();
@@ -40,7 +40,9 @@ export async function GET(
 
     try {
       const parsed = JSON.parse(text);
-      return NextResponse.json(parsed);
+      return NextResponse.json(parsed, {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" },
+      });
     } catch {
       return NextResponse.json(
         {

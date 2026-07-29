@@ -38,21 +38,30 @@ export default function CitiesListPage() {
         const res = await fetch("/api/city-pages");
         if (res.ok) {
           const payload = await res.json();
+          // Strictly use dynamicData (cities added in backend DB/admin panel)
           const apiCitiesList = Array.isArray(payload?.data) ? payload.data : [];
 
           if (apiCitiesList.length > 0) {
             const citiesList = apiCitiesList.map((item: any) => {
-              const cSlug = (
-                item.id ||
-                item.slug?.split("/").pop() ||
-                ""
-              ).toLowerCase();
-              const cName =
+              let rawSlug = item.slug || item.url || item.id || "";
+              if (typeof rawSlug === "string") {
+                rawSlug = rawSlug.split("/").pop() || "";
+              } else {
+                rawSlug = "";
+              }
+              let cSlug = rawSlug.toLowerCase();
+              if (cSlug && !cSlug.startsWith("assignment-help-")) {
+                cSlug = `assignment-help-${cSlug.replace(/-assignment-help$/, "")}`;
+              }
+              const rawTitle =
+                item.title ||
                 item.city ||
-                item.title?.replace(/^Assignment Help\s+/i, "") ||
-                cSlug.replace(/-/g, " ");
+                item.hero_heading ||
+                cSlug.replace(/^assignment-help-/, "").replace(/-/g, " ");
+              const cleanedName = rawTitle.replace(/^Assignment Help\s+/i, "").trim();
               const formattedName =
-                cName.charAt(0).toUpperCase() + cName.slice(1);
+                cleanedName.charAt(0).toUpperCase() + cleanedName.slice(1);
+
               return {
                 name: formattedName,
                 slug: cSlug,
@@ -70,6 +79,8 @@ export default function CitiesListPage() {
                 cities: citiesList,
               },
             ]);
+          } else {
+            setCitiesData([]);
           }
         }
       } catch (err) {
@@ -290,7 +301,7 @@ export default function CitiesListPage() {
 
                           {/* Action button */}
                           <Link
-                            href={`/${city.slug}-assignment-help`}
+                            href={`/cities/${city.slug}`}
                             className="btn-shutter-blue-close flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wider text-center transition-colors duration-250 cursor-pointer"
                           >
                             Explore Services{" "}
