@@ -75,7 +75,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
   const [expertsList, setExpertsList] = useState<any[]>([]);
   const [pageData, setPageData] = useState<any>(null);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-  const [seoExpanded, setSeoExpanded] = useState(false);
+  const [seoExpanded, setSeoExpanded] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const fallbackCityName = (citySlug || "london")
@@ -89,23 +89,48 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
 
   const countryName = pageData?.country || "United Kingdom";
 
-  const longContentHtml =
+  const rawLongContent =
     pageData?.long_content ||
     pageData?.seo_content ||
     pageData?.content ||
     pageData?.description ||
     pageData?.body ||
     pageData?.section_content ||
-    null;
+    "";
+
+  const extraSections = [
+    pageData?.section_two_content,
+    pageData?.section_three_content,
+  ]
+    .filter(Boolean)
+    .join("<br/><br/>");
+
+  const longContentHtml = rawLongContent
+    ? `${rawLongContent}${extraSections ? `<br/><br/>${extraSections}` : ""}`
+    : extraSections || null;
 
   useEffect(() => {
     const fetchCityPageData = async () => {
       try {
         setLoading(true);
-        let res = await fetch(`/api/city-pages/${citySlug}`);
-        if (!res.ok && requestedSlug && requestedSlug !== citySlug) {
-          res = await fetch(`/api/city-pages/${requestedSlug}`);
+
+        // 1. Try requestedSlug first (e.g. assignment-help-cardiff) as it contains full dynamic content & long_content
+        let res = await fetch(`/api/city-pages/${requestedSlug}`);
+
+        // 2. If requestedSlug fails or returns a page without long_content, try citySlug fallback
+        if (!res.ok || (res.ok && citySlug && citySlug !== requestedSlug)) {
+          const testJson = res.ok ? await res.clone().json().catch(() => null) : null;
+          if (!testJson?.data?.page?.long_content) {
+            const fallbackRes = await fetch(`/api/city-pages/${citySlug}`);
+            if (fallbackRes.ok) {
+              const fallbackJson = await fallbackRes.clone().json().catch(() => null);
+              if (fallbackJson?.data?.page?.long_content) {
+                res = fallbackRes;
+              }
+            }
+          }
         }
+
         if (res.ok) {
           const result = await res.json();
           if (result.success && result.data) {

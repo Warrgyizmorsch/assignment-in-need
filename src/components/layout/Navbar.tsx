@@ -442,6 +442,17 @@ export const Navbar = () => {
               path: canonicalSubjectPath(cleanSlug),
             };
           });
+
+          const hasEconomics = mapped.some((s: any) =>
+            s.path.toLowerCase().includes("economics")
+          );
+          if (!hasEconomics) {
+            mapped.push({
+              name: "Economics Assignment Help",
+              path: canonicalSubjectPath("economics"),
+            });
+          }
+
           setSubjects(mapped);
         }
       } catch (err) {

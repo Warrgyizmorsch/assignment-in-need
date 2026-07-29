@@ -95,6 +95,16 @@ export default function SubjectsListPage() {
               slug: finalSlug,
             };
           });
+
+          // Merge STATIC_SUBJECTS to ensure subjects like Economics are always present
+          const existingSlugs = new Set(mapped.map((m: any) => m.slug.toLowerCase()));
+          STATIC_SUBJECTS.forEach((staticSub) => {
+            const sSlug = staticSub.slug.toLowerCase();
+            if (!existingSlugs.has(sSlug) && !existingSlugs.has(`${sSlug}-assignment-help`)) {
+              mapped.push(staticSub);
+            }
+          });
+
           setSubjects(mapped);
         } else {
           setSubjects(STATIC_SUBJECTS);
