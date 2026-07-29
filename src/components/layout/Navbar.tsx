@@ -1148,10 +1148,41 @@ export const Navbar = () => {
       />
 
       {/* Top Promotional Stripe */}
-      <div className="znh-top-stripe-wrapper">
-        <div className="znh-top-stripe-container">
+      <div
+        className="znh-top-stripe-wrapper"
+        style={{
+          width: "100%",
+          position: "relative",
+          zIndex: 10000,
+          color: "#ffffff",
+          background:
+            "linear-gradient(90deg, #1e3a5f 0%, #0f2a4a 50%, #1e3a5f 100%)",
+        }}
+      >
+        <div
+          className="znh-top-stripe-container"
+          style={{
+            maxWidth: "1400px",
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "28px",
+            overflow: "hidden",
+            fontSize: "13px",
+            padding: "7px 20px",
+          }}
+        >
           {/* Contact — fixed left */}
-          <div className="znh-top-contact">
+          <div
+            className="znh-top-contact"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "18px",
+              flexShrink: 0,
+            }}
+          >
             <a
               href="tel:+44 7826233106"
               className="flex items-center gap-[5px] font-semibold text-[12.5px] max-md:text-[11px] whitespace-nowrap [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:shrink-0"
@@ -1192,7 +1223,18 @@ export const Navbar = () => {
           </div>
 
           {/* Middle — marquee offers */}
-          <div className="znh-top-marquee-box">
+          <div
+            className="znh-top-marquee-box"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              overflow: "hidden",
+              position: "relative",
+              minWidth: 0,
+              flex: 1,
+            }}
+          >
             <div className="inline-flex items-center gap-[5px] bg-[#e85d04] text-white font-bold text-[11px] max-md:text-[10px] py-[3px] px-[10px] max-md:py-[2px] max-md:px-[8px] rounded-full uppercase tracking-[0.5px] whitespace-nowrap shrink-0">
               OFFER
             </div>
@@ -1283,7 +1325,10 @@ export const Navbar = () => {
               <X className="h-7 w-7" />
             </button>
 
-            <div className="znh-desktop-menu-container">
+            <div
+              className="znh-desktop-menu-container"
+              style={{ display: "flex", alignItems: "center" }}
+            >
               <ul className="znh-nav-list">
                 <DesktopDropdown label="Services" items={serviceDropdownItems} />
                 <DesktopDropdown
@@ -1313,7 +1358,10 @@ export const Navbar = () => {
               </ul>
             </div>
 
-            <div className="znh-mobile-menu-container">
+            <div
+              className="znh-mobile-menu-container"
+              style={{ display: "none" }}
+            >
               <ul className="znh-nav-list w-full">
                 <MobileDropdown
                   label="Services"
