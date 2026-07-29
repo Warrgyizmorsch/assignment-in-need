@@ -1072,6 +1072,41 @@ export const Navbar = () => {
             .znh-mobile-menu-container {
               display: none;
             }
+            .znh-top-stripe-wrapper {
+              width: 100%;
+              position: relative;
+              z-index: 10000;
+              color: #ffffff;
+              background: linear-gradient(90deg, #1e3a5f 0%, #0f2a4a 50%, #1e3a5f 100%);
+              font-family: var(--font-nunito), sans-serif;
+            }
+            .znh-top-stripe-container {
+              max-width: 1400px;
+              margin: 0 auto;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 28px;
+              overflow: hidden;
+              font-size: 13px;
+              padding: 7px 20px;
+            }
+            .znh-top-contact {
+              display: flex;
+              align-items: center;
+              gap: 18px;
+              flex-shrink: 0;
+            }
+            .znh-top-marquee-box {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              overflow: hidden;
+              position: relative;
+              min-width: 0;
+              max-width: 50%;
+            }
             @media (max-width: 1024px) {
               .znh-desktop-menu-container {
                 display: none !important;
@@ -1079,6 +1114,21 @@ export const Navbar = () => {
               .znh-mobile-menu-container {
                 display: block !important;
                 width: 100%;
+              }
+            }
+            @media (max-width: 768px) {
+              .znh-top-stripe-container {
+                padding: 6px 12px;
+                gap: 8px;
+                font-size: 11px;
+              }
+            }
+            @media (max-width: 480px) {
+              .znh-top-contact {
+                display: none !important;
+              }
+              .znh-top-marquee-box {
+                max-width: 100%;
               }
             }
           `,
@@ -1098,16 +1148,10 @@ export const Navbar = () => {
       />
 
       {/* Top Promotional Stripe */}
-      <div
-        className="w-full relative z-[10000] text-white font-[var(--font-nunito),sans-serif] [&_a]:text-white [&_a]:no-underline [&_a]:transition-opacity [&_a]:duration-200 [&_a:hover]:opacity-85"
-        style={{
-          background:
-            "linear-gradient(90deg, #1e3a5f 0%, #0f2a4a 50%, #1e3a5f 100%)",
-        }}
-      >
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-[28px] max-md:gap-[8px] overflow-hidden text-[13px] max-md:text-[11px] py-[7px] px-5 max-md:py-1.5 max-md:px-3">
-          {/* Contact — fixed left (hidden below 480px) */}
-          <div className="flex items-center gap-[18px] max-md:gap-2.5 max-[480px]:hidden shrink-0">
+      <div className="znh-top-stripe-wrapper">
+        <div className="znh-top-stripe-container">
+          {/* Contact — fixed left */}
+          <div className="znh-top-contact">
             <a
               href="tel:+44 7826233106"
               className="flex items-center gap-[5px] font-semibold text-[12.5px] max-md:text-[11px] whitespace-nowrap [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:shrink-0"
@@ -1147,8 +1191,8 @@ export const Navbar = () => {
             </a> */}
           </div>
 
-          {/* Middle — marquee offers (constrained to max-w-[50%] on tablet/desktop, full width on mobile) */}
-          <div className="flex-1 flex items-center gap-0 overflow-hidden relative min-w-0 max-w-[50%] max-[480px]:max-w-full">
+          {/* Middle — marquee offers */}
+          <div className="znh-top-marquee-box">
             <div className="inline-flex items-center gap-[5px] bg-[#e85d04] text-white font-bold text-[11px] max-md:text-[10px] py-[3px] px-[10px] max-md:py-[2px] max-md:px-[8px] rounded-full uppercase tracking-[0.5px] whitespace-nowrap shrink-0">
               OFFER
             </div>
