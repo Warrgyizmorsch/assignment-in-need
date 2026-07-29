@@ -817,10 +817,7 @@ export const Navbar = () => {
               <X className="h-7 w-7" />
             </button>
 
-            <div
-              className="znh-desktop-menu-container"
-              style={{ display: "flex", alignItems: "center" }}
-            >
+            <div className="znh-desktop-menu-container">
               <ul className="znh-nav-list">
                 <DesktopDropdown label="Services" items={serviceDropdownItems} />
                 <DesktopDropdown
@@ -850,10 +847,7 @@ export const Navbar = () => {
               </ul>
             </div>
 
-            <div
-              className="znh-mobile-menu-container"
-              style={{ display: "none" }}
-            >
+            <div className="znh-mobile-menu-container">
               <ul className="znh-nav-list w-full">
                 <MobileDropdown
                   label="Services"

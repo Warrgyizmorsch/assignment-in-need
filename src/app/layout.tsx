@@ -9,6 +9,7 @@ import { ChatBot } from "@/components/ui/ChatBot";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { QuoteModal } from "@/components/ui/QuoteModal";
 import "./globals.css";
+import "@/components/layout/navbar.css";
 // import "./blog/blog.css";
 
 const montserrat = Montserrat({
