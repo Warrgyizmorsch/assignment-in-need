@@ -1241,6 +1241,12 @@ export const Navbar = () => {
             <div
               className="flex-1 flex items-center justify-center overflow-hidden relative min-w-0"
               style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                flex: 1,
+                minWidth: 0,
                 maskImage:
                   "linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%)",
                 WebkitMaskImage:
@@ -1249,10 +1255,24 @@ export const Navbar = () => {
             >
               <div
                 className="flex items-center gap-0 w-max hover:[animation-play-state:paused]"
-                style={{ animation: "stripeMarquee 14s linear infinite" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "max-content",
+                  animation: "stripeMarquee 14s linear infinite",
+                }}
               >
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="flex items-center gap-3 pr-10">
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 pr-10"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      paddingRight: "40px",
+                    }}
+                  >
                     <span className="inline-flex items-center gap-[5px] bg-white/[0.12] border border-white/20 text-[#fbbf24] font-bold text-[11px] max-md:text-[10px] py-[3px] px-[10px] max-md:py-[2px] max-md:px-[8px] rounded-full whitespace-nowrap">
                       🎁 Special Offer
                     </span>

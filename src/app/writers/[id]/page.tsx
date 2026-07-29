@@ -39,8 +39,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     console.error("Error generating metadata for writer page:", error);
   }
 
-  // Fallback to static WRITERS list
-  const staticWriter = WRITERS.find((w) => w.id === id);
+  // Fallback to static WRITERS list with clean slug comparison
+  const cleanSlug = (str: string) =>
+    str
+      ?.toLowerCase()
+      ?.replace(/^dr\.?\s*/i, "")
+      ?.replace(/^prof\.?\s*/i, "")
+      ?.replace(/[^a-z0-9]+/g, "-")
+      ?.replace(/^-+|-+$/g, "") || "";
+
+  const targetClean = cleanSlug(id);
+
+  const staticWriter = WRITERS.find((w) => {
+    if (w.id === id || w.id.toLowerCase() === id?.toLowerCase()) return true;
+    const wIdClean = cleanSlug(w.id);
+    const wNameClean = cleanSlug(w.name);
+    return wIdClean === targetClean || wNameClean === targetClean;
+  });
+
   if (staticWriter) {
     return constructMetadata({
       title: `${staticWriter.name} - ${staticWriter.role} | Assignment In Need`,

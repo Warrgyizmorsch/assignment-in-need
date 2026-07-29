@@ -189,17 +189,23 @@ export default function WritersDirectory() {
     return result;
   }, [writers, selectedSubject, selectedQual, selectedExp, selectedSort]);
 
+  // Reset pagination to page 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSubject, selectedQual, selectedExp, selectedSort]);
+
   // Pagination bounds
-  const itemsPerPage = 8;
+  const itemsPerPage = 6;
   const totalPages = Math.max(
     1,
     Math.ceil(filteredWriters.length / itemsPerPage),
   );
 
   const currentWriters = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
+    const safePage = Math.min(Math.max(1, currentPage), totalPages);
+    const start = (safePage - 1) * itemsPerPage;
     return filteredWriters.slice(start, start + itemsPerPage);
-  }, [filteredWriters, currentPage]);
+  }, [filteredWriters, currentPage, totalPages]);
 
   return (
     <div className="znw-page-wrapper">

@@ -39,7 +39,7 @@ export default function WriterProfile() {
       try {
         setLoading(true);
         const baseUrl = getBaseUrl();
-        const res = await fetch(`${baseUrl}/api/experts/${id}`);
+        const res = await fetch(`${baseUrl}/api/experts/${id}`, { cache: "no-store" });
         if (res.ok) {
           const result = await res.json();
           if (result.success && result.data) {
@@ -47,17 +47,29 @@ export default function WriterProfile() {
             return;
           }
         }
-        // Fallback to static if not found or unsuccessful
-        const staticWriter =
-          WRITERS.find((w) => w.id === id) ||
-          WRITERS.find((w) => w.id.toLowerCase() === id?.toLowerCase());
-        setWriter(staticWriter || WRITERS[0]);
+
+        // Smart fallback to static WRITERS list
+        const cleanSlug = (str: string) =>
+          str
+            ?.toLowerCase()
+            ?.replace(/^dr\.?\s*/i, "")
+            ?.replace(/^prof\.?\s*/i, "")
+            ?.replace(/[^a-z0-9]+/g, "-")
+            ?.replace(/^-+|-+$/g, "") || "";
+
+        const targetClean = cleanSlug(id);
+
+        const staticWriter = WRITERS.find((w) => {
+          if (w.id === id || w.id.toLowerCase() === id?.toLowerCase()) return true;
+          const wIdClean = cleanSlug(w.id);
+          const wNameClean = cleanSlug(w.name);
+          return wIdClean === targetClean || wNameClean === targetClean;
+        });
+
+        setWriter(staticWriter || null);
       } catch (err) {
         console.error("Error fetching writer details:", err);
-        const staticWriter =
-          WRITERS.find((w) => w.id === id) ||
-          WRITERS.find((w) => w.id.toLowerCase() === id?.toLowerCase());
-        setWriter(staticWriter || WRITERS[0]);
+        setWriter(null);
       } finally {
         setLoading(false);
       }
@@ -68,9 +80,7 @@ export default function WriterProfile() {
     }
   }, [id]);
 
-
-
-  if (loading || !writer) {
+  if (loading) {
     return (
       <div className="bg-white min-h-[80vh]">
         <SectionContainer className="bg-white pt-2 pb-6 md:pt-4 md:pb-10 lg:pt-4 lg:pb-10">
@@ -166,6 +176,16 @@ export default function WriterProfile() {
             </div>
           </div>
         </SectionContainer>
+      </div>
+    );
+  }
+
+  if (!writer) {
+    return (
+      <div className="bg-white min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">Writer Profile Not Found</h2>
+        <p className="text-slate-600 mb-6">The writer profile you are looking for could not be found.</p>
+        <Button onClick={() => router.push("/writers")}>View All Writers</Button>
       </div>
     );
   }
