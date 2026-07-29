@@ -1,0 +1,502 @@
+.znh-header-wrapper {
+  font-family: var(--font-nunito), sans-serif;
+  background-color: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+.znh-header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.znh-logo img {
+  height: 55px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+.znh-logo img:hover {
+  transform: scale(1.05);
+}
+.znh-nav-drawer {
+  display: flex;
+  align-items: center;
+}
+.znh-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.znh-nav-item {
+  position: relative;
+}
+.znh-nav-link {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+  color: #2d2d2d;
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 0;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.znh-down-icon {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.3s ease;
+}
+.znh-right-icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+.znh-nav-link:hover,
+.znh-nav-item:hover > .znh-nav-link {
+  color: #f06a33;
+}
+.znh-nav-item:hover > .znh-nav-link .znh-down-icon {
+  transform: rotate(180deg);
+}
+.znh-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #ffffff;
+  min-width: 240px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 100;
+  list-style: none;
+  margin: 0;
+}
+.znh-dropdown-scrollable {
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.znh-dropdown-scrollable::-webkit-scrollbar,
+.znh-submenu::-webkit-scrollbar {
+  width: 6px;
+}
+.znh-dropdown-scrollable::-webkit-scrollbar-track,
+.znh-submenu::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+.znh-dropdown-scrollable::-webkit-scrollbar-thumb,
+.znh-submenu::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  border-radius: 4px;
+}
+.znh-dropdown-scrollable::-webkit-scrollbar-thumb:hover,
+.znh-submenu::-webkit-scrollbar-thumb:hover {
+  background: #f06a33;
+}
+.znh-nav-item:hover > .znh-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.znh-dropdown-item {
+  position: relative;
+}
+.znh-dropdown-link {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  text-decoration: none;
+  color: #4a4a4a;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+  text-align: left;
+  cursor: pointer;
+}
+.znh-dropdown-link:hover {
+  background-color: #fdf3f0;
+  color: #f06a33;
+  padding-left: 25px;
+}
+.znh-dropdown-link-disabled,
+.znh-dropdown-link-disabled:hover {
+  color: #8a8a8a;
+  cursor: default;
+  background: transparent;
+  padding-left: 20px;
+}
+.znh-submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background: #ffffff;
+  min-width: 260px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+  list-style: none;
+  margin: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.znh-dropdown-item:hover > .znh-submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+.znh-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.znh-contact-widget {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.znh-contact-icon {
+  background-color: #f4eeff;
+  color: #4a17a3;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.znh-contact-widget:hover .znh-contact-icon {
+  background-color: #4a17a3;
+  color: #ffffff;
+  transform: rotate(15deg) scale(1.1);
+}
+.znh-contact-text {
+  display: flex;
+  flex-direction: column;
+}
+.znh-contact-number {
+  color: #2d2d2d;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+}
+.znh-contact-label {
+  color: #777777;
+  font-size: 12px;
+  font-weight: 500;
+}
+.znh-btn-quote {
+  background: linear-gradient(135deg, #f06a33, #e85a20);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 4px 15px rgba(240, 106, 51, 0.3);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.znh-btn-quote:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(240, 106, 51, 0.4);
+  color: #ffffff;
+}
+.znh-account-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #ece7f7;
+  background: #ffffff;
+  color: #4a17a3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(74, 23, 163, 0.08);
+  transition: all 0.3s ease;
+}
+.znh-account-button:hover {
+  background: #f4eeff;
+  transform: translateY(-1px);
+}
+.znh-mobile-toggle,
+.znh-mobile-close,
+.znh-mobile-only,
+.znh-mobile-overlay {
+  display: none;
+}
+
+.znh-desktop-menu-container {
+  display: flex;
+  align-items: center;
+}
+.znh-mobile-menu-container {
+  display: none;
+}
+
+.znh-top-stripe-wrapper {
+  width: 100%;
+  position: relative;
+  z-index: 10000;
+  color: #ffffff;
+  background: linear-gradient(90deg, #1e3a5f 0%, #0f2a4a 50%, #1e3a5f 100%);
+  font-family: var(--font-nunito), sans-serif;
+}
+.znh-top-stripe-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  overflow: hidden;
+  font-size: 13px;
+  padding: 7px 20px;
+}
+.znh-top-contact {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+.znh-top-marquee-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  position: relative;
+  min-width: 0;
+  max-width: 50%;
+}
+
+@keyframes stripeMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+@media (max-width: 1180px) {
+  .znh-nav {
+    gap: 17px;
+  }
+  .znh-right-actions {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .znh-desktop-menu-container {
+    display: none !important;
+  }
+  .znh-mobile-menu-container {
+    display: block !important;
+    width: 100%;
+  }
+  .znh-contact-text,
+  .znh-btn-quote.desktop-only {
+    display: none;
+  }
+  .znh-right-actions {
+    gap: 15px;
+  }
+  .znh-mobile-toggle {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    color: #2d2d2d;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .znh-nav-drawer {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100vh;
+    background: linear-gradient(145deg, #1a1530 0%, #0f0c1b 100%);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 80px 20px 20px 20px;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.6);
+    transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    z-index: 10001;
+    overflow-y: auto;
+    gap: 0;
+  }
+  .znh-nav-drawer.active {
+    right: 0;
+  }
+  .znh-nav-list {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    width: 100%;
+  }
+  .znh-mobile-overlay.active {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+  }
+  .znh-mobile-close {
+    display: inline-flex;
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+  .znh-mobile-close:hover {
+    transform: rotate(90deg);
+    color: #f06a33;
+  }
+  .znh-mobile-only {
+    display: block;
+    width: 100%;
+  }
+  .znh-dropdown-menu,
+  .znh-submenu {
+    position: static;
+    transform: none;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 0;
+    margin: 0;
+    min-width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease, margin 0.4s ease;
+    display: block;
+  }
+  .znh-submenu {
+    padding-left: 15px;
+    background: transparent;
+  }
+  .znh-dropdown-menu.active,
+  .znh-submenu.active {
+    max-height: 2000px;
+    opacity: 1;
+    visibility: visible;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .znh-nav-item:hover > .znh-dropdown-menu,
+  .znh-dropdown-item:hover > .znh-submenu {
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    margin: 0;
+  }
+  .znh-nav-item:hover > .znh-dropdown-menu.active,
+  .znh-dropdown-item:hover > .znh-submenu.active {
+    max-height: 2000px;
+    opacity: 1;
+    visibility: visible;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .znh-nav-item,
+  .znh-dropdown-item {
+    width: 100%;
+  }
+  .znh-nav-link,
+  .znh-dropdown-link {
+    width: 100%;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+  }
+  .znh-dropdown-link {
+    padding: 12px 15px;
+  }
+  .znh-nav-link:hover,
+  .znh-dropdown-link:hover,
+  .znh-nav-item:hover > .znh-nav-link,
+  .znh-dropdown-item:hover > .znh-dropdown-link {
+    color: #f06a33;
+    background-color: transparent;
+    padding-left: 0;
+  }
+  .znh-dropdown-link:hover {
+    padding-left: 15px;
+  }
+  .znh-mobile-account {
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    margin-top: 18px;
+    padding-top: 18px;
+  }
+  .znh-account-button.desktop-account {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .znh-top-stripe-container {
+    padding: 6px 12px;
+    gap: 8px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .znh-top-contact {
+    display: none !important;
+  }
+  .znh-top-marquee-box {
+    max-width: 100%;
+  }
+}

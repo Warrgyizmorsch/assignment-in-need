@@ -122,73 +122,65 @@ export const Footer = () => {
 
             {/* Payment card row */}
             <div className="flex flex-wrap gap-3 items-center">
-              <Image
+              <img
                 src="/images/badge-visa.png"
                 alt="Visa"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
-              <Image
+              <img
                 src="/images/badge-mastercard.png"
                 alt="Mastercard"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
-              <Image
+              <img
                 src="/images/badge-maestro.png"
                 alt="Maestro"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
-              <Image
+              <img
                 src="/images/badge-amex.png"
                 alt="American Express"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
-              <Image
+              <img
                 src="/images/badge-discover.png"
                 alt="Discover"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
             </div>
 
             {/* Security badges row */}
             <div className="flex flex-wrap gap-3 items-center">
-              <Image
+              <img
                 src="/images/badge-dmca.png"
                 alt="DMCA Protected"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
-              <Image
+              <img
                 src="/images/badge-mcafee.png"
                 alt="McAfee Secure"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
-              <Image
+              <img
                 src="/images/badge-gdpr.png"
                 alt="GDPR Compliant"
-                width={60}
-                height={38}
+                width="60"
+                height="38"
                 className="h-[38px] w-auto object-contain"
-                style={{ width: "auto" }}
               />
             </div>
           </div>

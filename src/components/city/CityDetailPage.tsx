@@ -89,25 +89,29 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
 
   const countryName = pageData?.country || "United Kingdom";
 
-  const rawLongContent =
-    pageData?.long_content ||
-    pageData?.seo_content ||
-    pageData?.content ||
-    pageData?.description ||
-    pageData?.body ||
-    pageData?.section_content ||
-    "";
-
-  const extraSections = [
+  const rawContentParts = [
+    pageData?.long_content,
+    pageData?.seo_content,
+    pageData?.content,
+    pageData?.description,
+    pageData?.body,
+    pageData?.section_content,
+    pageData?.section_one_content,
+    pageData?.section_1_content,
     pageData?.section_two_content,
+    pageData?.section_2_content,
     pageData?.section_three_content,
-  ]
-    .filter(Boolean)
-    .join("<br/><br/>");
+    pageData?.section_3_content,
+    pageData?.long_description,
+    pageData?.main_content,
+    pageData?.details,
+    pageData?.about_content,
+    pageData?.text_content,
+  ].filter((val) => typeof val === "string" && val.trim().length > 0);
 
-  const longContentHtml = rawLongContent
-    ? `${rawLongContent}${extraSections ? `<br/><br/>${extraSections}` : ""}`
-    : extraSections || null;
+  const uniqueContentParts = Array.from(new Set(rawContentParts));
+  const longContentHtml =
+    uniqueContentParts.length > 0 ? uniqueContentParts.join("<br/><br/>") : null;
 
   useEffect(() => {
     const fetchCityPageData = async () => {

@@ -9,56 +9,99 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
+  const { slug } = await params;
+  const pathSlug = Array.isArray(slug) ? slug.join("/") : slug;
+  const lastSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug;
+
+  const cleanSlug = (str: string) =>
+    str
+      ?.toLowerCase()
+      ?.replace(/^assignment-help-/, "")
+      ?.replace(/-assignment-help$/, "")
+      ?.replace(/-assignment-writing-help$/, "")
+      ?.trim() || "";
+
+  const baseClean = cleanSlug(lastSlug);
+
+  const candidateSlugs = Array.from(
+    new Set([
+      pathSlug,
+      lastSlug,
+      baseClean,
+      `assignment-help-${baseClean}`,
+      `${baseClean}-assignment-help`,
+    ].filter(Boolean))
+  );
+
+  const headers = {
+    Accept: "application/json",
+  };
+  const cacheHeaders = {
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+  };
+
   try {
-    const { slug } = await params;
-    const pathSlug = Array.isArray(slug) ? slug.join("/") : slug;
+    for (const cand of candidateSlugs) {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/subject-pages/${cand}`, {
+          headers,
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const json = await res.json().catch(() => null);
+          if (json && (json.success || json.data)) {
+            const pageObj = json?.data?.page || json?.data || json?.page;
+            if (pageObj) {
+              return NextResponse.json(
+                { success: true, data: { page: pageObj } },
+                { headers: cacheHeaders }
+              );
+            }
+          }
+        }
+      } catch (e) {
+        console.warn(`Error fetching candidate subject page ${cand}:`, e);
+      }
+    }
 
-    const targetUrl = `${BACKEND_URL}/api/subject-pages/${pathSlug}`;
-
-    const response = await fetch(targetUrl, {
-      headers: {
-        Accept: "application/json",
-      },
+    // Fallback: search all subject pages list
+    const listRes = await fetch(`${BACKEND_URL}/api/subject-pages`, {
+      headers,
       cache: "no-store",
     });
 
-    const text = await response.text();
+    if (listRes.ok) {
+      const listJson = await listRes.json().catch(() => null);
+      const pagesArray = Array.isArray(listJson?.data)
+        ? listJson.data
+        : Array.isArray(listJson)
+        ? listJson
+        : [];
 
-    if (!response.ok) {
-      try {
-        const parsed = JSON.parse(text);
-        return NextResponse.json(parsed, {
-          status: response.status,
-          headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
-        });
-      } catch {
+      const matchedPage = pagesArray.find((item: any) => {
+        const itemSlug = cleanSlug(item.slug || "");
+        const itemTitle = cleanSlug(item.title || "");
+        return (
+          item.slug === pathSlug ||
+          item.slug === lastSlug ||
+          item.slug === baseClean ||
+          itemSlug === baseClean ||
+          itemTitle === baseClean
+        );
+      });
+
+      if (matchedPage) {
         return NextResponse.json(
-          {
-            success: false,
-            message: `Subject Page detail API responded with status ${response.status}`,
-          },
-          {
-            status: response.status,
-            headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
-          },
+          { success: true, data: { page: matchedPage } },
+          { headers: cacheHeaders }
         );
       }
     }
 
-    try {
-      const parsed = JSON.parse(text);
-      return NextResponse.json(parsed, {
-        headers: { "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0" },
-      });
-    } catch {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Subject Page detail API returned invalid JSON response",
-        },
-        { status: 502 },
-      );
-    }
+    return NextResponse.json(
+      { success: false, message: `Subject page not found for slug: ${pathSlug}` },
+      { status: 404, headers: cacheHeaders }
+    );
   } catch (err: any) {
     return NextResponse.json(
       {
@@ -66,7 +109,7 @@ export async function GET(
         message: "Unable to connect to subject page detail backend service",
         error: err.message,
       },
-      { status: 500 },
+      { status: 500, headers: cacheHeaders }
     );
   }
 }

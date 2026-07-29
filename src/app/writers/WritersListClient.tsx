@@ -53,9 +53,79 @@ export default function WritersDirectory() {
   const [selectedSort, setSelectedSort] = useState("rating-desc");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [writers, setWriters] = useState<Writer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [writers, setWriters] = useState<Writer[]>(WRITERS);
+  const [loading, setLoading] = useState(false);
   const [dynamicSubjects, setDynamicSubjects] = useState<any[]>([]);
+
+  // Sync URL search params on mount (persists page & filter state on hard refresh)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const pageParam = parseInt(params.get("page") || "1");
+      const subjectParam = params.get("subject") || "all";
+      const qualParam = params.get("qual") || "all";
+      const expParam = params.get("exp") || "all";
+      const sortParam = params.get("sort") || "rating-desc";
+
+      if (pageParam > 0) setCurrentPage(pageParam);
+      if (subjectParam) setSelectedSubject(subjectParam);
+      if (qualParam) setSelectedQual(qualParam);
+      if (expParam) setSelectedExp(expParam);
+      if (sortParam) setSelectedSort(sortParam);
+    }
+  }, []);
+
+  const updateUrlParams = (
+    page: number,
+    subject: string,
+    qual: string,
+    exp: string,
+    sort: string,
+  ) => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams();
+      if (page > 1) params.set("page", String(page));
+      if (subject !== "all") params.set("subject", subject);
+      if (qual !== "all") params.set("qual", qual);
+      if (exp !== "all") params.set("exp", exp);
+      if (sort !== "rating-desc") params.set("sort", sort);
+
+      const queryString = params.toString();
+      const newUrl = queryString
+        ? `${window.location.pathname}?${queryString}`
+        : window.location.pathname;
+      window.history.replaceState(null, "", newUrl);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    updateUrlParams(page, selectedSubject, selectedQual, selectedExp, selectedSort);
+  };
+
+  const handleSubjectChange = (val: string) => {
+    setSelectedSubject(val);
+    setCurrentPage(1);
+    updateUrlParams(1, val, selectedQual, selectedExp, selectedSort);
+  };
+
+  const handleQualChange = (val: string) => {
+    setSelectedQual(val);
+    setCurrentPage(1);
+    updateUrlParams(1, selectedSubject, val, selectedExp, selectedSort);
+  };
+
+  const handleExpChange = (val: string) => {
+    setSelectedExp(val);
+    setCurrentPage(1);
+    updateUrlParams(1, selectedSubject, selectedQual, val, selectedSort);
+  };
+
+  const handleSortChange = (val: string) => {
+    setSelectedSort(val);
+    setCurrentPage(1);
+    updateUrlParams(1, selectedSubject, selectedQual, selectedExp, val);
+  };
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -96,7 +166,6 @@ export default function WritersDirectory() {
   useEffect(() => {
     const fetchWriters = async () => {
       try {
-        setLoading(true);
         const baseUrl = getBaseUrl();
         const res = await fetch(`${baseUrl}/api/experts`);
         if (res.ok) {
@@ -113,17 +182,10 @@ export default function WritersDirectory() {
               (w) => !dbNames.has(w.name.toLowerCase()),
             );
             setWriters([...mapped, ...nonDuplicateStatic]);
-          } else {
-            setWriters(WRITERS);
           }
-        } else {
-          setWriters(WRITERS);
         }
       } catch (err) {
         console.error("Error fetching experts:", err);
-        setWriters(WRITERS);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -195,7 +257,7 @@ export default function WritersDirectory() {
   }, [selectedSubject, selectedQual, selectedExp, selectedSort]);
 
   // Pagination bounds
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
   const totalPages = Math.max(
     1,
     Math.ceil(filteredWriters.length / itemsPerPage),
@@ -263,10 +325,7 @@ export default function WritersDirectory() {
                       : SUBJECT_OPTIONS
                   }
                   value={selectedSubject}
-                  onChange={(val) => {
-                    setSelectedSubject(val);
-                    setCurrentPage(1);
-                  }}
+                  onChange={handleSubjectChange}
                   triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
                   dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
                 />
@@ -281,10 +340,7 @@ export default function WritersDirectory() {
                 <CustomDropdown
                   options={QUALIFICATION_OPTIONS}
                   value={selectedQual}
-                  onChange={(val) => {
-                    setSelectedQual(val);
-                    setCurrentPage(1);
-                  }}
+                  onChange={handleQualChange}
                   triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
                   dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
                 />
@@ -299,10 +355,7 @@ export default function WritersDirectory() {
                 <CustomDropdown
                   options={EXPERIENCE_OPTIONS}
                   value={selectedExp}
-                  onChange={(val) => {
-                    setSelectedExp(val);
-                    setCurrentPage(1);
-                  }}
+                  onChange={handleExpChange}
                   triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
                   dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
                 />
@@ -317,10 +370,7 @@ export default function WritersDirectory() {
                 <CustomDropdown
                   options={SORT_OPTIONS}
                   value={selectedSort}
-                  onChange={(val) => {
-                    setSelectedSort(val);
-                    setCurrentPage(1);
-                  }}
+                  onChange={handleSortChange}
                   triggerClassName="!text-[0.95rem] !text-gray-600 !h-[46px] !px-4 bg-white !border !border-solid !border-gray-200 rounded-lg focus:border-purple-600 focus-within:border-purple-600 transition-colors flex items-center justify-between shadow-sm w-full font-medium"
                   dropdownClassName="!text-[0.95rem] shadow-lg rounded-lg border border-gray-150"
                 />
@@ -369,17 +419,23 @@ export default function WritersDirectory() {
                         <div>
                           <div className="znw-card-header">
                             <div className="znw-avatar-wrapper">
-                              <img
-                                src={
-                                  writer.avatar ||
-                                  "/assets/media/avatars/blank.png"
-                                }
-                                alt={writer.name}
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src =
-                                    "/assets/media/avatars/blank.png";
-                                }}
-                              />
+                              {writer.avatar &&
+                              writer.avatar.length > 3 &&
+                              (writer.avatar.startsWith("/") ||
+                                writer.avatar.startsWith("http")) ? (
+                                <img
+                                  src={writer.avatar}
+                                  alt={writer.name}
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src =
+                                      "/assets/media/avatars/blank.png";
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full rounded-full bg-purple-100 text-purple-700 font-extrabold flex items-center justify-center text-lg uppercase">
+                                  {writer.avatar || writer.name.charAt(0)}
+                                </div>
+                              )}
                             </div>
                             <div className="znw-header-info">
                               <h3 className="znw-expert-name">{writer.name}</h3>
@@ -473,8 +529,8 @@ export default function WritersDirectory() {
                 })}
               </StaggerContainer>
 
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
+              {/* Pagination Controls — always visible under writers list */}
+              {totalPages >= 1 && (
                 <div className="znw-pagination-wrapper">
                   <nav>
                     <ul className="pagination">
@@ -483,7 +539,7 @@ export default function WritersDirectory() {
                       >
                         <button
                           onClick={() =>
-                            currentPage > 1 && setCurrentPage(currentPage - 1)
+                            currentPage > 1 && handlePageChange(currentPage - 1)
                           }
                           className="page-link"
                           disabled={currentPage === 1}
@@ -497,7 +553,7 @@ export default function WritersDirectory() {
                           className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
                         >
                           <button
-                            onClick={() => setCurrentPage(i + 1)}
+                            onClick={() => handlePageChange(i + 1)}
                             className="page-link"
                           >
                             {i + 1}
@@ -510,7 +566,7 @@ export default function WritersDirectory() {
                         <button
                           onClick={() =>
                             currentPage < totalPages &&
-                            setCurrentPage(currentPage + 1)
+                            handlePageChange(currentPage + 1)
                           }
                           className="page-link"
                           disabled={currentPage === totalPages}
