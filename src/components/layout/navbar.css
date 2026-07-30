@@ -259,7 +259,8 @@
 .znh-mobile-toggle,
 .znh-mobile-close,
 .znh-mobile-only,
-.znh-mobile-overlay {
+.znh-mobile-overlay,
+.znh-mobile-menu-container {
   display: none !important;
 }
 

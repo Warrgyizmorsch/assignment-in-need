@@ -16,28 +16,27 @@ export async function GET(
   const pathSlug = Array.isArray(slug) ? slug.join("/") : slug;
   const lastSlug = Array.isArray(slug) ? slug[slug.length - 1] : slug;
 
-  const cleanSlug = (str: string) =>
+  const cleanSubjectSlug = (str: string) =>
     str
       ?.toLowerCase()
-      ?.replace(/^assignment-help-/, "")
-      ?.replace(/-assignment-help$/, "")
-      ?.replace(/-assignment-writing-help$/, "")
+      ?.replace(/^subject\//, "")
+      ?.replace(/^\/+/, "")
       ?.trim() || "";
 
-  const baseClean = cleanSlug(lastSlug);
+  const baseSlug = cleanSubjectSlug(pathSlug);
+  const lastBase = cleanSubjectSlug(lastSlug);
 
   const candidateSlugs = Array.from(
     new Set([
-      `subject/${pathSlug}`,
-      `subject/${lastSlug}`,
-      `subject/${baseClean}`,
-      `subject/${baseClean}-assignment-help`,
-      `subject/assignment-help-${baseClean}`,
+      `subject/${baseSlug}`,
+      `subject/${lastBase}`,
+      baseSlug.startsWith("subject/") ? baseSlug : `subject/${baseSlug}`,
       pathSlug,
       lastSlug,
-      baseClean,
-      `assignment-help-${baseClean}`,
-      `${baseClean}-assignment-help`,
+      baseSlug,
+      lastBase,
+      `subject/${baseSlug.replace(/-assignment-help$/, "")}-assignment-help`,
+      `subject/${lastBase.replace(/-assignment-help$/, "")}-assignment-help`,
     ].filter(Boolean))
   );
 
@@ -116,14 +115,14 @@ export async function GET(
         : [];
 
       const matchedPage = pagesArray.find((item: any) => {
-        const itemSlug = cleanSlug(item.slug || "");
-        const itemTitle = cleanSlug(item.title || "");
+        const itemSlug = cleanSubjectSlug(item.slug || "");
+        const itemTitle = cleanSubjectSlug(item.title || "");
         return (
           item.slug === pathSlug ||
           item.slug === lastSlug ||
-          item.slug === baseClean ||
-          itemSlug === baseClean ||
-          itemTitle === baseClean
+          item.slug === baseSlug ||
+          itemSlug === baseSlug ||
+          itemTitle === baseSlug
         );
       });
 

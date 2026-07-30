@@ -417,42 +417,36 @@ export const Navbar = () => {
 
     const fetchSubjects = async () => {
       try {
-        const response = await fetch("/api/subject-pages", {
+        let response = await fetch("/api/subject-pages", {
           headers: { Accept: "application/json" },
           cache: "no-store",
-        });
+        }).catch(() => null);
+
+        if (!response || !response.ok) {
+          response = await fetch("https://ain.warrgyizmorsch.com/api/subject-pages", {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          }).catch(() => null);
+        }
+
+        if (!response || !response.ok) return;
         const payload = await response.json();
-        if (
-          response.ok &&
-          (payload?.success || payload?.status === "success") &&
-          Array.isArray(payload?.data)
-        ) {
-          const mapped = payload.data.map((item: any) => {
-            const cleanSlug = (item.slug || "").replace(/^\/+/, "");
-            const humanized = cleanSlug
-              .replace(/^subject\//, "")
-              .replace(/-/g, " ")
-              .replace(/\b\w/g, (c: string) => c.toUpperCase());
-            const rawName = item.title?.trim() || humanized;
-            const name = /\bassignment help\b/i.test(rawName)
-              ? rawName
-              : `${rawName} Assignment Help`;
+
+        const items = Array.isArray(payload?.data)
+          ? payload.data
+          : Array.isArray(payload)
+          ? payload
+          : [];
+
+        if (items.length > 0) {
+          const mapped = items.map((item: any) => {
+            const rawSlug = (item.slug || "").replace(/^\/+/, "").replace(/^subject\//, "");
+            const name = item.title?.trim() || rawSlug.replace(/-/g, " ");
             return {
               name,
-              path: canonicalSubjectPath(cleanSlug),
+              path: `/subject/${rawSlug}`,
             };
           });
-
-          const hasEconomics = mapped.some((s: any) =>
-            s.path.toLowerCase().includes("economics")
-          );
-          if (!hasEconomics) {
-            mapped.push({
-              name: "Economics Assignment Help",
-              path: canonicalSubjectPath("economics"),
-            });
-          }
-
           setSubjects(mapped);
         }
       } catch (err) {
