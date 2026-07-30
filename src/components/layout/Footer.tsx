@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { canonicalSubjectPath } from "@/lib/utils";
 
 export const Footer = () => {
   const [subjects, setSubjects] = React.useState<any[]>([]);
@@ -269,11 +270,10 @@ export const Footer = () => {
                   const name =
                     sub.title?.split(" Help")[0]?.split(" Assignment")[0] ||
                     humanized.split(" ")[0];
-                  const mappedSlug = finalSlug === "maths" || finalSlug === "math" ? "math" : finalSlug;
                   return (
                     <li key={sub.id}>
                       <Link
-                        href={`/${mappedSlug}-assignment-help`}
+                        href={canonicalSubjectPath(finalSlug)}
                         className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                       >
                         {name}
@@ -285,7 +285,7 @@ export const Footer = () => {
                 <>
                   <li>
                     <Link
-                      href="/business-assignment-help"
+                      href={canonicalSubjectPath("business")}
                       className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                     >
                       Business
@@ -293,7 +293,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/nursing-assignment-help"
+                      href={canonicalSubjectPath("nursing")}
                       className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                     >
                       Nursing
@@ -301,7 +301,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/law-assignment-help"
+                      href={canonicalSubjectPath("law")}
                       className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                     >
                       Law
@@ -309,7 +309,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/economics"
+                      href={canonicalSubjectPath("economics")}
                       className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                     >
                       Economics
@@ -317,7 +317,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/marketing-assignment-help"
+                      href={canonicalSubjectPath("marketing")}
                       className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                     >
                       Marketing
@@ -325,7 +325,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/psychology-assignment-help"
+                      href={canonicalSubjectPath("psychology")}
                       className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                     >
                       Psychology

@@ -128,6 +128,23 @@ async function getAllApiSlugs(): Promise<string[]> {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Keep one production origin for every route. Proxies/CDNs commonly expose
+  // the public host through x-forwarded-host, so prefer it when available.
+  const forwardedHost = request.headers
+    .get("x-forwarded-host")
+    ?.split(",")[0]
+    ?.trim()
+    ?.toLowerCase();
+  const requestHost = (forwardedHost || request.nextUrl.hostname).split(":")[0];
+
+  if (requestHost === "assignmentinneed.co.uk") {
+    const canonicalUrl = request.nextUrl.clone();
+    canonicalUrl.protocol = "https:";
+    canonicalUrl.hostname = "www.assignmentinneed.co.uk";
+    canonicalUrl.port = "";
+    return NextResponse.redirect(canonicalUrl, 308);
+  }
+
   // 1. Ignore files with extensions (e.g. .webp, .png, .jpg, .svg, .js, .css, .json, .ico, etc.)
   if (/\.[a-zA-Z0-9]+$/.test(pathname)) {
     return NextResponse.next();

@@ -62,9 +62,13 @@ const CITIES_LIST = [
 
 export interface CityDetailPageProps {
   slug: string;
+  initialPageData?: any;
 }
 
-export default function CityDetailPage({ slug }: CityDetailPageProps) {
+export default function CityDetailPage({
+  slug,
+  initialPageData = null,
+}: CityDetailPageProps) {
   const requestedSlug = slug.toLowerCase().split("/").pop() || "";
   const citySlug = requestedSlug
     .replace(/^assignment-help-/, "")
@@ -73,10 +77,11 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
 
   // Dynamic experts & page data
   const [expertsList, setExpertsList] = useState<any[]>([]);
-  const [pageData, setPageData] = useState<any>(null);
+  const [pageData, setPageData] = useState<any>(initialPageData);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialPageData);
+  const [loadError, setLoadError] = useState(false);
 
   const fallbackCityName = (citySlug || "london")
     .replace(/-/g, " ")
@@ -116,12 +121,27 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
   useEffect(() => {
     const fetchCityPageData = async () => {
       try {
-        setLoading(true);
+        setLoading(!initialPageData);
+        setLoadError(false);
 
-        const res = await fetch(
-          `/api/city-pages/${encodeURIComponent(requestedSlug)}`,
-          { cache: "no-store" },
-        );
+        let res: Response | null = null;
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          const candidate = await fetch(
+            `/api/city-pages/${encodeURIComponent(requestedSlug)}?_fresh=${Date.now()}-${attempt}`,
+            {
+              cache: "no-store",
+              headers: {
+                "Cache-Control": "no-cache, no-store",
+                Pragma: "no-cache",
+              },
+            },
+          ).catch(() => null);
+
+          if (candidate?.ok) {
+            res = candidate;
+            break;
+          }
+        }
 
         if (res && res.ok) {
           const result = await res.json().catch(() => null);
@@ -129,6 +149,8 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
             const pageObj = result?.data?.page || result?.data || result?.page;
             if (pageObj && typeof pageObj === "object" && !Array.isArray(pageObj)) {
               setPageData(pageObj);
+            } else {
+              throw new Error("City page API did not return a valid page");
             }
 
             const currentCityName =
@@ -164,6 +186,8 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
               return;
             }
           }
+        } else {
+          throw new Error("City page API request failed after retries");
         }
 
         // Fallback: fetch general experts if no city experts returned
@@ -201,6 +225,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
         }
       } catch (err) {
         console.warn("Failed to fetch data for city page:", err);
+        if (!initialPageData) setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -209,7 +234,7 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
     if (requestedSlug) {
       fetchCityPageData();
     }
-  }, [requestedSlug, citySlug]);
+  }, [requestedSlug, citySlug, initialPageData]);
 
 
 
@@ -240,6 +265,28 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
           </div>
         </section>
         <span className="sr-only">Loading city page…</span>
+      </div>
+    );
+  }
+
+  if (loadError || !pageData) {
+    return (
+      <div className="flex min-h-[620px] items-center justify-center bg-white px-4">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-extrabold text-[#0b1f4d]">
+            Content could not be loaded
+          </h1>
+          <p className="mt-3 text-sm text-gray-600">
+            We could not reach the latest city page content. Please try again.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-5 rounded-lg bg-[#4c1d95] px-6 py-3 text-sm font-bold text-white"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }

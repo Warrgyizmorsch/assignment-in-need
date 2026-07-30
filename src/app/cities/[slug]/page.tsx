@@ -73,9 +73,49 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
   });
 }
 
+async function getFreshCityPage(slug: string) {
+  const backendUrl =
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    "https://ain.warrgyizmorsch.com";
+  const citySlug = slug
+    .toLowerCase()
+    .replace(/^assignment-help-/, "")
+    .replace(/-assignment-help$/, "")
+    .replace(/-assignment-writing-help$/, "");
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const response = await fetch(
+      `${backendUrl}/api/city-pages/cities/assignment-help-${encodeURIComponent(citySlug)}?_fresh=${Date.now()}-${attempt}`,
+      {
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+          "Cache-Control": "no-cache, no-store",
+          Pragma: "no-cache",
+        },
+        signal: AbortSignal.timeout(12000),
+      },
+    ).catch(() => null);
+
+    if (response?.ok) {
+      const result = await response.json().catch(() => null);
+      const page = result?.data?.page || result?.data || result?.page;
+      if (page && typeof page === "object" && !Array.isArray(page)) return page;
+    }
+  }
+
+  return null;
+}
+
 export default async function CityRoutePage({ params }: CityRoutePageProps) {
   const resolvedParams = await params;
+  const initialPageData = await getFreshCityPage(resolvedParams.slug);
   return (
-    <CityDetailPage key={resolvedParams.slug} slug={resolvedParams.slug} />
+    <CityDetailPage
+      key={resolvedParams.slug}
+      slug={resolvedParams.slug}
+      initialPageData={initialPageData}
+    />
   );
 }

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import { canonicalSubjectPath } from "@/lib/utils";
 import {
   AnimateIn,
   StaggerContainer,
@@ -197,7 +198,6 @@ export default function ExploreSubjects() {
                     const finalSlug = cleanSlug.startsWith("subject/")
                       ? cleanSlug.replace("subject/", "")
                       : cleanSlug;
-                    const mappedSlug = finalSlug === "maths" || finalSlug === "math" ? "math" : finalSlug;
                     const humanized = finalSlug
                       .replace(/-/g, " ")
                       .replace(/\b\w/g, (c: string) => c.toUpperCase());
@@ -207,7 +207,7 @@ export default function ExploreSubjects() {
                     return (
                       <StaggerItem key={sub.id || i}>
                         <Link
-                          href={`/${mappedSlug}-assignment-help`}
+                          href={canonicalSubjectPath(finalSlug)}
                           className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff] max-md:min-w-0 max-md:p-3 max-md:flex-col max-md:justify-center max-md:items-center max-md:gap-2"
                         >
                           <div
@@ -240,11 +240,10 @@ export default function ExploreSubjects() {
                     );
                   })
                 : fallbackSubjects.map((sub: any, i: number) => {
-                    const mappedSlug = sub.slug === "maths" || sub.slug === "math" ? "math" : sub.slug;
                     return (
                       <StaggerItem key={i}>
                         <Link
-                          href={`/${mappedSlug}-assignment-help`}
+                          href={canonicalSubjectPath(sub.slug)}
                           className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff] max-md:min-w-0 max-md:p-3 max-md:flex-col max-md:justify-center max-md:items-center max-md:gap-2"
                         >
                         <div

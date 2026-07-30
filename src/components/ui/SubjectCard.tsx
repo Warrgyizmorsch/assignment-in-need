@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import * as Icons from "lucide-react";
+import { canonicalSubjectPath } from "@/lib/utils";
 import { Card } from "./Card";
 import { Heading } from "./Heading";
 import { cn } from "@/lib/utils";
@@ -40,8 +41,7 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
   const finalSlug = cleanSlug.startsWith("subject/")
     ? cleanSlug.replace("subject/", "")
     : cleanSlug;
-  const mappedSlug = finalSlug === "maths" || finalSlug === "math" ? "math" : finalSlug;
-  const path = `/${mappedSlug}-assignment-help`;
+  const path = canonicalSubjectPath(finalSlug);
 
   return (
     <Link href={path} className="block">

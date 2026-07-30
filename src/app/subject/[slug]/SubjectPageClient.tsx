@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { useParams, notFound } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
@@ -54,8 +54,12 @@ const TIME_PERIOD_OPTIONS = [
   { label: "16-20 Days", value: "16 to 20" },
   { label: "21+ Days", value: "21+" },
 ];
-import { cn } from "@/lib/utils";
-import { subjectDataSlug } from "@/lib/utils";
+import {
+  canonicalSubjectPath,
+  canonicalSubjectSlug,
+  cn,
+  subjectDataSlug,
+} from "@/lib/utils";
 import { SUBJECTS } from "@/lib/data";
 import {
   Star,
@@ -87,7 +91,11 @@ import { Button } from "@/components/ui/Button";
 import { ExpertCard } from "@/components/ui/ExpertCard";
 import { ExpertSlider } from "@/components/ui/ExpertSlider";
 
-export default function SubjectLanding() {
+export default function SubjectLanding({
+  initialPageData = null,
+}: {
+  initialPageData?: any;
+}) {
   const params = useParams();
   const rawSlug = params?.slug;
   const slug = Array.isArray(rawSlug)
@@ -153,11 +161,11 @@ export default function SubjectLanding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Dynamic States for API data
-  const [pageData, setPageData] = useState<any>(null);
+  const [pageData, setPageData] = useState<any>(initialPageData);
   const [expertsList, setExpertsList] = useState<any[]>([]);
   const [reviewsList, setReviewsList] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isNotFound, setIsNotFound] = useState(false);
+  const [loading, setLoading] = useState(!initialPageData);
+  const [loadError, setLoadError] = useState(false);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
@@ -224,21 +232,38 @@ export default function SubjectLanding() {
     const fetchSubjectPage = async () => {
       if (!slug) return;
       try {
-        setLoading(true);
-        const cleanSlug = subjectDataSlug(slug);
-        const response = await fetch(
-          `/api/subject-pages/subject/${encodeURIComponent(cleanSlug)}`,
-          { cache: "no-store" },
-        );
-        const pageResult = response.ok ? await response.json() : null;
+        setLoading(!initialPageData);
+        setLoadError(false);
+        const canonicalSlug = canonicalSubjectSlug(slug);
+        let pageResult: any = null;
+
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          const response = await fetch(
+            `/api/subject-pages/subject/${encodeURIComponent(canonicalSlug)}?_fresh=${Date.now()}-${attempt}`,
+            {
+              cache: "no-store",
+              headers: {
+                "Cache-Control": "no-cache, no-store",
+                Pragma: "no-cache",
+              },
+            },
+          ).catch(() => null);
+
+          if (response?.ok) {
+            const candidate = await response.json().catch(() => null);
+            if (candidate?.data?.page) {
+              pageResult = candidate;
+              break;
+            }
+          }
+        }
 
         if (
           !pageResult ||
           !pageResult.data ||
           !pageResult.data.page
         ) {
-          setIsNotFound(false);
-          setLoading(false);
+          if (!initialPageData) setLoadError(true);
           return;
         }
 
@@ -358,19 +383,14 @@ export default function SubjectLanding() {
             }
           }
         }
-      } catch (err) {
-        console.error("Failed to fetch subject page data:", err);
-        setIsNotFound(true);
+      } catch {
+        if (!initialPageData) setLoadError(true);
       } finally {
         setLoading(false);
       }
     };
     fetchSubjectPage();
-  }, [slug, subject.name]);
-
-  if (isNotFound) {
-    notFound();
-  }
+  }, [slug, subject.name, initialPageData]);
 
   // Fallbacks if backend data is loading / empty
   const pageTitle =
@@ -669,7 +689,7 @@ export default function SubjectLanding() {
           source_page:
             typeof window !== "undefined"
               ? window.location.href
-              : `https://www.assignmentinneed.co.uk/${subject.slug}-assignment-help`,
+              : `https://www.assignmentinneed.co.uk${canonicalSubjectPath(subject.slug)}`,
         }),
       });
 
@@ -763,6 +783,28 @@ export default function SubjectLanding() {
             </div>
           </div>
         </section>
+      </div>
+    );
+  }
+
+  if (loadError || !pageData) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-white px-4">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-extrabold text-[#0b1f4d]">
+            Content could not be loaded
+          </h1>
+          <p className="mt-3 text-sm text-gray-600">
+            We could not reach the latest page content. Please try again.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-5 rounded-lg bg-[#4c1d95] px-6 py-3 text-sm font-bold text-white"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }

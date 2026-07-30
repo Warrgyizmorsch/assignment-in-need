@@ -444,7 +444,7 @@ export const Navbar = () => {
             const name = item.title?.trim() || rawSlug.replace(/-/g, " ");
             return {
               name,
-              path: `/subject/${rawSlug}`,
+              path: canonicalSubjectPath(rawSlug),
             };
           });
           setSubjects(mapped);

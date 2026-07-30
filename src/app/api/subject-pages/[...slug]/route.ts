@@ -28,7 +28,10 @@ export async function GET(
 
   // The backend list exposes subject slugs as `subject/<slug>`. Use that
   // canonical detail endpoint once; the list lookup below handles legacy slugs.
-  const candidateSlugs = [`subject/${lastBase}`];
+  const shortBase = lastBase.replace(/-assignment-help$/, "");
+  const candidateSlugs = Array.from(
+    new Set([`subject/${lastBase}`, `subject/${shortBase}`]),
+  );
 
   const headers = {
     Accept: "application/json",
@@ -55,8 +58,9 @@ export async function GET(
     );
 
   try {
+    const freshToken = Date.now().toString();
     const fetchPromises = candidateSlugs.map((cand) =>
-      fetch(`${BACKEND_URL}/api/subject-pages/${cand}`, {
+      fetch(`${BACKEND_URL}/api/subject-pages/${cand}?_fresh=${freshToken}`, {
         headers,
         cache: "no-store",
         signal: AbortSignal.timeout(12000),
@@ -92,7 +96,7 @@ export async function GET(
     }
 
     // Fallback: search all subject pages list and fetch full detail for matched page
-    const listRes = await fetch(`${BACKEND_URL}/api/subject-pages`, {
+    const listRes = await fetch(`${BACKEND_URL}/api/subject-pages?_fresh=${freshToken}`, {
       headers,
       cache: "no-store",
       signal: AbortSignal.timeout(12000),
@@ -120,7 +124,7 @@ export async function GET(
 
       if (matchedPage) {
         if (matchedPage.slug) {
-          const detailRes = await fetch(`${BACKEND_URL}/api/subject-pages/${matchedPage.slug}`, {
+          const detailRes = await fetch(`${BACKEND_URL}/api/subject-pages/${matchedPage.slug}?_fresh=${freshToken}`, {
             headers,
             cache: "no-store",
             signal: AbortSignal.timeout(12000),

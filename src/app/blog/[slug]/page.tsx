@@ -6,6 +6,7 @@ import { SectionContainer } from "@/components/ui/SectionContainer";
 import { getBaseUrl, getImageUrl } from "@/lib/api";
 import { AnimateIn } from "@/components/ui/AnimateIn";
 import { SidebarQuoteForm } from "@/components/ui/SidebarQuoteForm";
+import { canonicalSubjectPath } from "@/lib/utils";
 
 import type { Metadata } from "next";
 
@@ -185,14 +186,10 @@ export default async function BlogDetailPage({ params }: Props) {
                       finalSlug = s.slug || "";
                       name = s.name || "";
                     }
-                    const mappedSlug =
-                      finalSlug === "maths" || finalSlug === "math"
-                        ? "math"
-                        : finalSlug;
                     return (
                       <li key={finalSlug || idx}>
                         <Link
-                          href={`/${mappedSlug}-assignment-help`}
+                          href={canonicalSubjectPath(finalSlug)}
                           className="block rounded-xl px-4 py-2.5 border border-slate-200 text-sm font-semibold text-text-heading bg-white hover:bg-primary-700 hover:text-white hover:border-primary-700 transition duration-300"
                         >
                           {name}

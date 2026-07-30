@@ -52,9 +52,10 @@ export async function GET(
     );
 
   try {
+    const freshToken = Date.now().toString();
     // 1. Parallelize candidate fetches against single-item endpoint
     const fetchPromises = candidateSlugs.map((cand) =>
-      fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(cand)}`, {
+      fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(cand)}?_fresh=${freshToken}`, {
         headers,
         cache: "no-store",
         signal: AbortSignal.timeout(12000),
@@ -90,7 +91,7 @@ export async function GET(
     }
 
     // 2. Fallback: Fetch all city-pages list, match slug in list, and fetch full detail page
-    const listRes = await fetch(`${BACKEND_URL}/api/city-pages`, {
+    const listRes = await fetch(`${BACKEND_URL}/api/city-pages?_fresh=${freshToken}`, {
       headers,
       cache: "no-store",
       signal: AbortSignal.timeout(12000),
@@ -119,7 +120,7 @@ export async function GET(
 
       if (matchedPage) {
         if (matchedPage.slug) {
-          const detailRes = await fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(matchedPage.slug)}`, {
+          const detailRes = await fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(matchedPage.slug)}?_fresh=${freshToken}`, {
             headers,
             cache: "no-store",
             signal: AbortSignal.timeout(12000),

@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import SubjectPageClient from "./SubjectPageClient";
 import { constructMetadata } from "@/lib/metadata";
 import { SUBJECTS } from "@/lib/data";
-import { canonicalSubjectPath, subjectDataSlug } from "@/lib/utils";
+import {
+  canonicalSubjectPath,
+  canonicalSubjectSlug,
+  subjectDataSlug,
+} from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -70,6 +74,48 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default function SubjectPage() {
-  return <SubjectPageClient />;
+async function getFreshSubjectPage(slug: string) {
+  const backendUrl =
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    "https://ain.warrgyizmorsch.com";
+  const candidateSlugs = Array.from(
+    new Set([canonicalSubjectSlug(slug), subjectDataSlug(slug)]),
+  );
+
+  for (const candidateSlug of candidateSlugs) {
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const response = await fetch(
+        `${backendUrl}/api/subject-pages/subject/${encodeURIComponent(candidateSlug)}?_fresh=${Date.now()}-${attempt}`,
+        {
+          cache: "no-store",
+          headers: {
+            Accept: "application/json",
+            "Cache-Control": "no-cache, no-store",
+            Pragma: "no-cache",
+          },
+          signal: AbortSignal.timeout(12000),
+        },
+      ).catch(() => null);
+
+      if (response?.ok) {
+        const result = await response.json().catch(() => null);
+        const page = result?.data?.page || result?.data || result?.page;
+        if (page && typeof page === "object" && !Array.isArray(page)) return page;
+      }
+    }
+  }
+
+  return null;
+}
+
+export default async function SubjectPage({ params }: Props) {
+  const { slug } = await params;
+  const initialPageData = await getFreshSubjectPage(slug);
+  return (
+    <SubjectPageClient
+      key={canonicalSubjectPath(slug)}
+      initialPageData={initialPageData}
+    />
+  );
 }
