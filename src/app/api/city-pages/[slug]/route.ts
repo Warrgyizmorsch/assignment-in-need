@@ -47,6 +47,21 @@ export async function GET(
     "Expires": "0",
   };
 
+  const isRealPage = (p: any) =>
+    p &&
+    typeof p === "object" &&
+    !Array.isArray(p) &&
+    Boolean(
+      p.hero_heading ||
+      p.long_content ||
+      p.hero_content ||
+      p.content ||
+      p.description ||
+      p.meta_title ||
+      p.title ||
+      p.seo_content
+    );
+
   try {
     // 1. Parallelize candidate fetches against single-item endpoint
     const fetchPromises = candidateSlugs.map((cand) =>
@@ -58,10 +73,11 @@ export async function GET(
           if (res && res.ok) {
             const json = await res.json().catch(() => null);
             if (json && (json.success || json.data)) {
-              const pageObj = json?.data?.page || json?.data || json?.page;
-              if (pageObj && typeof pageObj === "object") {
+              const rawPage = json?.data?.page ?? (json?.page && typeof json?.page === "object" ? json.page : null);
+              const targetPage = isRealPage(rawPage) ? rawPage : isRealPage(json?.data) ? json.data : null;
+              if (targetPage) {
                 return {
-                  page: pageObj,
+                  page: targetPage,
                   experts: json?.data?.experts || json?.experts || [],
                   faqs: json?.data?.faqs || json?.faqs || [],
                 };

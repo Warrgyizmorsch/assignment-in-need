@@ -243,23 +243,47 @@ export default function SubjectLanding() {
           `/api/service-pages/${slug}`,
         ];
 
+        const isRealPage = (p: any) =>
+          p &&
+          typeof p === "object" &&
+          !Array.isArray(p) &&
+          Boolean(
+            p.hero_heading ||
+            p.long_content ||
+            p.hero_content ||
+            p.content ||
+            p.description ||
+            p.meta_title ||
+            p.title ||
+            p.seo_content
+          );
+
         for (const endpoint of endpointsToTry) {
-          if (pageResult && pageResult.data && pageResult.data.page && (pageResult.data.page.long_content || pageResult.data.page.hero_heading || pageResult.data.page.content)) break;
+          if (pageResult && pageResult.data && isRealPage(pageResult.data.page)) break;
           try {
             const res = await fetch(endpoint, { cache: "no-store" });
             if (res.ok) {
               const temp = await res.json();
               if (temp) {
-                const pageObj = temp?.data?.page || temp?.data || temp?.page;
-                if (pageObj && typeof pageObj === "object") {
+                const rawPage =
+                  temp?.data?.page ??
+                  (temp?.page && typeof temp?.page === "object" ? temp.page : null);
+                const targetPage = isRealPage(rawPage)
+                  ? rawPage
+                  : isRealPage(temp?.data)
+                  ? temp.data
+                  : null;
+
+                if (targetPage) {
                   pageResult = {
                     success: true,
                     data: {
-                      page: pageObj,
+                      page: targetPage,
                       experts: temp?.data?.experts || temp?.experts || [],
                       reviews: temp?.data?.reviews || temp?.reviews || [],
                     },
                   };
+                  break;
                 }
               }
             }
