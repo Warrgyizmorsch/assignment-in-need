@@ -849,11 +849,11 @@ export default function SubjectLanding() {
               {/* Description */}
               {pageData?.hero_content ? (
                 <div
-                  className="text-gray-600 w-full max-w-[450px] text-sm md:text-[15px] font-semibold leading-relaxed mb-6 html-desc line-clamp-4"
+                  className="text-gray-600 w-full max-w-[500px] text-sm md:text-[15px] font-semibold leading-relaxed mb-6 html-desc"
                   dangerouslySetInnerHTML={{ __html: pageData.hero_content }}
                 />
               ) : (
-                <p className="text-gray-600 w-full max-w-[450px] text-sm md:text-[15px] font-semibold leading-relaxed mb-6">
+                <p className="text-gray-600 w-full max-w-[500px] text-sm md:text-[15px] font-semibold leading-relaxed mb-6">
                   Get accurate, well-researched and plagiarism-free{" "}
                   {subject.name.toLowerCase()} assignments helped by qualified
                   experts to achieve top grades.
@@ -1285,7 +1285,7 @@ export default function SubjectLanding() {
                 "relative transition-all duration-500 ease-in-out",
                 seoExpanded
                   ? "max-h-none overflow-visible"
-                  : "max-h-[260px] overflow-hidden",
+                  : "max-h-[220px] overflow-hidden",
               )}
             >
               <div
@@ -1302,7 +1302,7 @@ export default function SubjectLanding() {
                 onClick={() => setSeoExpanded(!seoExpanded)}
                 className="py-2.5 px-6 rounded-full border border-solid border-purple-200 text-[#3f159a] bg-[#faf9fe] hover:bg-purple-50 transition-colors font-extrabold text-[12px] shadow-sm select-none cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none"
               >
-                <span>{seoExpanded ? "Read Less" : "Load More"}</span>
+                <span>{seoExpanded ? "Read Less" : "Read More"}</span>
                 <ChevronDown
                   className={cn(
                     "w-4 h-4 transition-transform duration-300",

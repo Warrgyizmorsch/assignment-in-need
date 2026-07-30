@@ -50,34 +50,37 @@ export async function GET(
   };
 
   try {
-    for (const cand of candidateSlugs) {
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/service-pages/${cand}`, {
-          headers,
-          cache: "no-store",
-        }).catch(() => null);
-
-        if (res && res.ok) {
-          const json = await res.json().catch(() => null);
-          if (json && (json.success || json.data)) {
-            const pageObj = json?.data?.page || json?.data || json?.page;
-            if (pageObj && typeof pageObj === "object") {
-              return NextResponse.json(
-                {
-                  success: true,
-                  data: {
-                    page: pageObj,
-                    experts: json?.data?.experts || json?.experts || [],
-                    reviews: json?.data?.reviews || json?.reviews || [],
-                  },
-                },
-                { headers: cacheHeaders }
-              );
+    const fetchPromises = candidateSlugs.map((cand) =>
+      fetch(`${BACKEND_URL}/api/service-pages/${cand}`, {
+        headers,
+        cache: "no-store",
+      })
+        .then(async (res) => {
+          if (res && res.ok) {
+            const json = await res.json().catch(() => null);
+            if (json && (json.success || json.data)) {
+              const pageObj = json?.data?.page || json?.data || json?.page;
+              if (pageObj && typeof pageObj === "object") {
+                return {
+                  page: pageObj,
+                  experts: json?.data?.experts || json?.experts || [],
+                  reviews: json?.data?.reviews || json?.reviews || [],
+                };
+              }
             }
           }
-        }
-      } catch (e) {
-        console.warn(`Error fetching candidate service page ${cand}:`, e);
+          return null;
+        })
+        .catch(() => null)
+    );
+
+    const results = await Promise.allSettled(fetchPromises);
+    for (const r of results) {
+      if (r.status === "fulfilled" && r.value) {
+        return NextResponse.json(
+          { success: true, data: r.value },
+          { headers: cacheHeaders }
+        );
       }
     }
 

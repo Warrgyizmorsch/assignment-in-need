@@ -1050,7 +1050,7 @@ export default function ServiceLanding() {
           <div
             className={cn(
               "block text-[15px] text-text-body leading-relaxed transition-all duration-300 space-y-3 rich-text-content",
-              seoExpanded ? "max-h-none overflow-visible" : "max-h-[140px] overflow-hidden relative",
+              seoExpanded ? "max-h-none overflow-visible" : "max-h-[220px] overflow-hidden relative",
             )}
             dangerouslySetInnerHTML={{ __html: longContentHtml }}
           />
@@ -1058,12 +1058,20 @@ export default function ServiceLanding() {
             <div className="h-16 -mt-16 bg-gradient-to-t from-surface-lavender to-transparent pointer-events-none" />
           )}
 
-          <button
-            onClick={() => setSeoExpanded(!seoExpanded)}
-            className="text-xs font-bold text-primary-700 hover:text-primary-600 transition-colors flex items-center gap-1 mt-1 underline"
-          >
-            {seoExpanded ? "Show Less \u25B2" : "Read More \u25BC"}
-          </button>
+          <div className="w-full flex justify-center mt-2 z-10">
+            <button
+              onClick={() => setSeoExpanded(!seoExpanded)}
+              className="py-2.5 px-6 rounded-full border border-solid border-purple-200 text-[#3f159a] bg-[#faf9fe] hover:bg-purple-50 transition-colors font-extrabold text-[12px] shadow-sm select-none cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none"
+            >
+              <span>{seoExpanded ? "Read Less" : "Read More"}</span>
+              <ChevronDown
+                className={cn(
+                  "w-4 h-4 transition-transform duration-300",
+                  seoExpanded && "rotate-180",
+                )}
+              />
+            </button>
+          </div>
         </div>
       </SectionContainer>
 
