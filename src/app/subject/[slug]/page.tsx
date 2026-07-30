@@ -98,7 +98,14 @@ async function getFreshSubjectPage(slug: string) {
       if (response?.ok) {
         const result = await response.json().catch(() => null);
         const page = result?.data?.page || result?.data || result?.page;
-        if (page && typeof page === "object" && !Array.isArray(page)) return page;
+        if (page && typeof page === "object" && !Array.isArray(page)) {
+          return {
+            page,
+            experts: Array.isArray(result?.data?.experts)
+              ? result.data.experts
+              : [],
+          };
+        }
       }
     }
   }
@@ -108,11 +115,12 @@ async function getFreshSubjectPage(slug: string) {
 
 export default async function SubjectPage({ params }: Props) {
   const { slug } = await params;
-  const initialPageData = await getFreshSubjectPage(slug);
+  const initialData = await getFreshSubjectPage(slug);
   return (
     <SubjectPageClient
       key={canonicalSubjectPath(slug)}
-      initialPageData={initialPageData}
+      initialPageData={initialData?.page || null}
+      initialExperts={initialData?.experts || []}
     />
   );
 }

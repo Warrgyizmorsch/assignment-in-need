@@ -63,11 +63,13 @@ const CITIES_LIST = [
 export interface CityDetailPageProps {
   slug: string;
   initialPageData?: any;
+  initialExperts?: any[];
 }
 
 export default function CityDetailPage({
   slug,
   initialPageData = null,
+  initialExperts = [],
 }: CityDetailPageProps) {
   const requestedSlug = slug.toLowerCase().split("/").pop() || "";
   const citySlug = requestedSlug
@@ -76,7 +78,27 @@ export default function CityDetailPage({
     .replace(/-assignment-writing-help$/, "");
 
   // Dynamic experts & page data
-  const [expertsList, setExpertsList] = useState<any[]>([]);
+  const initialCityName = (citySlug || "london")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const [expertsList, setExpertsList] = useState<any[]>(() =>
+    initialExperts.map((item: any) => {
+      const parsed = mapExpertToWriter(item);
+      return {
+        id: parsed.id,
+        name: parsed.name,
+        role: `${initialCityName} Expert`,
+        qual: parsed.qualifications,
+        exp: parsed.experience.includes("Years")
+          ? parsed.experience
+          : `${parsed.experience} Experience`,
+        rating: parsed.rating,
+        orders: parsed.ordersCompleted,
+        img: parsed.avatar,
+        expertise: parsed.expertise,
+      };
+    }),
+  );
   const [pageData, setPageData] = useState<any>(initialPageData);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
@@ -118,8 +140,6 @@ export default function CityDetailPage({
     uniqueContentParts.length > 0 ? uniqueContentParts.join("<br/><br/>") : null;
 
   useEffect(() => {
-    if (initialPageData) return;
-
     const fetchCityPageData = async () => {
       try {
         setLoading(!initialPageData);

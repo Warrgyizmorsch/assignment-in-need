@@ -98,7 +98,14 @@ async function getFreshCityPage(slug: string) {
     if (response?.ok) {
       const result = await response.json().catch(() => null);
       const page = result?.data?.page || result?.data || result?.page;
-      if (page && typeof page === "object" && !Array.isArray(page)) return page;
+      if (page && typeof page === "object" && !Array.isArray(page)) {
+        return {
+          page,
+          experts: Array.isArray(result?.data?.experts)
+            ? result.data.experts
+            : [],
+        };
+      }
     }
   }
 
@@ -107,12 +114,13 @@ async function getFreshCityPage(slug: string) {
 
 export default async function CityRoutePage({ params }: CityRoutePageProps) {
   const resolvedParams = await params;
-  const initialPageData = await getFreshCityPage(resolvedParams.slug);
+  const initialData = await getFreshCityPage(resolvedParams.slug);
   return (
     <CityDetailPage
       key={resolvedParams.slug}
       slug={resolvedParams.slug}
-      initialPageData={initialPageData}
+      initialPageData={initialData?.page || null}
+      initialExperts={initialData?.experts || []}
     />
   );
 }

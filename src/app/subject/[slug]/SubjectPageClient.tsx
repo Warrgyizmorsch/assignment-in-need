@@ -93,8 +93,10 @@ import { ExpertSlider } from "@/components/ui/ExpertSlider";
 
 export default function SubjectLanding({
   initialPageData = null,
+  initialExperts = [],
 }: {
   initialPageData?: any;
+  initialExperts?: any[];
 }) {
   const params = useParams();
   const rawSlug = params?.slug;
@@ -162,7 +164,24 @@ export default function SubjectLanding({
 
   // Dynamic States for API data
   const [pageData, setPageData] = useState<any>(initialPageData);
-  const [expertsList, setExpertsList] = useState<any[]>([]);
+  const [expertsList, setExpertsList] = useState<any[]>(() =>
+    initialExperts.map((item: any) => {
+      const parsed = mapExpertToWriter(item);
+      return {
+        id: parsed.id,
+        name: parsed.name,
+        role: `${subject.name} Expert`,
+        qual: parsed.qualifications,
+        exp: parsed.experience.includes("Years")
+          ? parsed.experience
+          : `${parsed.experience} Experience`,
+        rating: parsed.rating,
+        orders: parsed.ordersCompleted,
+        img: parsed.avatar,
+        expertise: parsed.expertise,
+      };
+    }),
+  );
   const [reviewsList, setReviewsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(!initialPageData);
   const [seoExpanded, setSeoExpanded] = useState(false);
@@ -228,8 +247,6 @@ export default function SubjectLanding({
   };
 
   useEffect(() => {
-    if (initialPageData) return;
-
     const fetchSubjectPage = async () => {
       if (!slug) return;
       try {
