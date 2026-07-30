@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { canonicalSubjectPath } from "@/lib/utils";
+import { dedupedFetch } from "@/lib/client-fetch";
 
 export const Footer = () => {
   const [subjects, setSubjects] = React.useState<any[]>([]);
@@ -12,7 +13,7 @@ export const Footer = () => {
   React.useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const res = await fetch("/api/subject-pages");
+        const res = await dedupedFetch("/api/subject-pages");
         if (res.ok) {
           const payload = await res.json();
           if (

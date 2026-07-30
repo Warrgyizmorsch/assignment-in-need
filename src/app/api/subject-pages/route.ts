@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { fetchBackend } from "@/lib/backend-fetch";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
       targetUrl += `?prefix=${encodeURIComponent(prefix)}`;
     }
 
-    const response = await fetch(targetUrl, {
+    const response = await fetchBackend(targetUrl, {
       headers: {
         Accept: "application/json",
       },

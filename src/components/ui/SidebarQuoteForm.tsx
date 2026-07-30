@@ -19,6 +19,7 @@ import {
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
+import { dedupedFetch } from "@/lib/client-fetch";
 
 const COUNTRY_CODES = getCountries()
   .map((country) => {
@@ -103,10 +104,10 @@ export function SidebarQuoteForm({ sourceName = "Blog Page" }: SidebarQuoteFormP
     const fetchAppConfigs = async () => {
       try {
         const [servicesRes, urgRes, subRes, wcRes] = await Promise.all([
-          fetch("/api/services"),
-          fetch("/api/urgencies"),
-          fetch("/api/subjects"),
-          fetch("/api/word-count"),
+          dedupedFetch("/api/services"),
+          dedupedFetch("/api/urgencies"),
+          dedupedFetch("/api/subjects"),
+          dedupedFetch("/api/word-count"),
         ]);
 
         if (servicesRes.ok) {

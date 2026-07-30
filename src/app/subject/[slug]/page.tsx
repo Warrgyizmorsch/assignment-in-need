@@ -4,9 +4,9 @@ import { constructMetadata } from "@/lib/metadata";
 import { SUBJECTS } from "@/lib/data";
 import {
   canonicalSubjectPath,
-  canonicalSubjectSlug,
   subjectDataSlug,
 } from "@/lib/utils";
+import { getFreshSubjectPage } from "@/lib/content-pages";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,40 +18,21 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
-  const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
-
   try {
-    if (baseUrl) {
-      const cleanSlug = subjectDataSlug(slug);
+    const pageData = (await getFreshSubjectPage(slug))?.page;
+    if (pageData && (pageData.meta_title || pageData.hero_heading)) {
+      const title = pageData.meta_title || pageData.hero_heading;
+      const description =
+        pageData.meta_description ||
+        (pageData.hero_content
+          ? pageData.hero_content.replace(/<[^>]*>/g, "").slice(0, 160)
+          : "");
 
-      const endpoints = [
-        `/api/subject-pages/${slug}`,
-        `/api/subject-pages/subject/${slug}`,
-        `/api/subject-pages/subject/${cleanSlug}`,
-        `/api/subject-pages/${cleanSlug}`,
-      ];
-
-      for (const endpoint of endpoints) {
-        try {
-          const res = await fetch(`${baseUrl}${endpoint}`);
-          if (res.ok) {
-            const json = await res.json();
-            const pageData = json?.data?.page;
-
-            if (pageData && (pageData.meta_title || pageData.hero_heading)) {
-              const title = pageData.meta_title || pageData.hero_heading;
-              const description = pageData.meta_description || 
-                (pageData.hero_content ? pageData.hero_content.replace(/<[^>]*>/g, "").slice(0, 160) : "");
-                
-              return constructMetadata({
-                title,
-                description,
-                canonicalUrl: canonicalSubjectPath(slug),
-              });
-            }
-          }
-        } catch (e) {}
-      }
+      return constructMetadata({
+        title,
+        description,
+        canonicalUrl: canonicalSubjectPath(slug),
+      });
     }
   } catch (error) {
     console.error("Error generating metadata for subject page:", error);
@@ -74,45 +55,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-async function getFreshSubjectPage(slug: string) {
-  const backendUrl = "https://ain.warrgyizmorsch.com";
-  const candidateSlugs = Array.from(
-    new Set([canonicalSubjectSlug(slug), subjectDataSlug(slug)]),
-  );
-
-  for (const candidateSlug of candidateSlugs) {
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      const response = await fetch(
-        `${backendUrl}/api/subject-pages/subject/${encodeURIComponent(candidateSlug)}?_fresh=${Date.now()}-${attempt}`,
-        {
-          cache: "no-store",
-          headers: {
-            Accept: "application/json",
-            "Cache-Control": "no-cache, no-store",
-            Pragma: "no-cache",
-          },
-          signal: AbortSignal.timeout(12000),
-        },
-      ).catch(() => null);
-
-      if (response?.ok) {
-        const result = await response.json().catch(() => null);
-        const page = result?.data?.page || result?.data || result?.page;
-        if (page && typeof page === "object" && !Array.isArray(page)) {
-          return {
-            page,
-            experts: Array.isArray(result?.data?.experts)
-              ? result.data.experts
-              : [],
-          };
-        }
-      }
-    }
-  }
-
-  return null;
-}
-
 export default async function SubjectPage({ params }: Props) {
   const { slug } = await params;
   const initialData = await getFreshSubjectPage(slug);
@@ -121,6 +63,7 @@ export default async function SubjectPage({ params }: Props) {
       key={canonicalSubjectPath(slug)}
       initialPageData={initialData?.page || null}
       initialExperts={initialData?.experts || []}
+      initialReviews={initialData?.reviews || []}
     />
   );
 }

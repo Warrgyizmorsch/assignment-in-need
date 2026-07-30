@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
+import { fetchBackend } from "@/lib/backend-fetch";
 
-const BACKEND_URL =
-  process.env.BACKEND_INTERNAL_URL ||
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "https://ain.warrgyizmorsch.com";
+const BACKEND_URL = "https://ain.warrgyizmorsch.com";
 
 const cacheHeaders = {
   "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, s-maxage=0",
@@ -20,7 +18,7 @@ export async function GET(request: Request) {
     targetUrl.searchParams.set("page", String(page));
     targetUrl.searchParams.set("limit", String(limit));
 
-    const response = await fetch(targetUrl, {
+    const response = await fetchBackend(targetUrl, {
       headers: {
         Accept: "application/json",
       },

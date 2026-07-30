@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
+import { fetchBackend } from "@/lib/backend-fetch";
 
-const BACKEND_URL =
-  process.env.BACKEND_INTERNAL_URL ||
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "https://ain.warrgyizmorsch.com";
+const BACKEND_URL = "https://ain.warrgyizmorsch.com";
 
 export async function GET(request: Request) {
   try {
@@ -15,7 +13,7 @@ export async function GET(request: Request) {
       targetUrl += `?prefix=${encodeURIComponent(prefix)}`;
     }
 
-    const response = await fetch(targetUrl, {
+    const response = await fetchBackend(targetUrl, {
       headers: {
         Accept: "application/json",
       },

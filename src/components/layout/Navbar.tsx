@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { canonicalSubjectPath, cn } from "@/lib/utils";
+import { dedupedFetch } from "@/lib/client-fetch";
 import "./navbar.css";
 
 type NavLinkItem = {
@@ -397,7 +398,7 @@ export const Navbar = () => {
   useEffect(() => {
     const fetchServiceMenu = async () => {
       try {
-        const response = await fetch(SERVICE_PAGES_API_URL, {
+        const response = await dedupedFetch(SERVICE_PAGES_API_URL, {
           headers: { Accept: "application/json" },
           cache: "no-store",
         });
@@ -417,17 +418,10 @@ export const Navbar = () => {
 
     const fetchSubjects = async () => {
       try {
-        let response = await fetch("/api/subject-pages", {
+        const response = await dedupedFetch("/api/subject-pages", {
           headers: { Accept: "application/json" },
           cache: "no-store",
         }).catch(() => null);
-
-        if (!response || !response.ok) {
-          response = await fetch("https://ain.warrgyizmorsch.com/api/subject-pages", {
-            headers: { Accept: "application/json" },
-            cache: "no-store",
-          }).catch(() => null);
-        }
 
         if (!response || !response.ok) return;
         const payload = await response.json();
@@ -456,17 +450,10 @@ export const Navbar = () => {
 
     const fetchCities = async () => {
       try {
-        let response = await fetch("/api/city-pages", {
+        const response = await dedupedFetch("/api/city-pages", {
           headers: { Accept: "application/json" },
           cache: "no-store",
         }).catch(() => null);
-
-        if (!response || !response.ok) {
-          response = await fetch("https://ain.warrgyizmorsch.com/api/city-pages", {
-            headers: { Accept: "application/json" },
-            cache: "no-store",
-          }).catch(() => null);
-        }
 
         if (!response || !response.ok) return;
         const payload = await response.json();

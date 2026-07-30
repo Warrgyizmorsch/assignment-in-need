@@ -140,6 +140,8 @@ export default function CityDetailPage({
     uniqueContentParts.length > 0 ? uniqueContentParts.join("<br/><br/>") : null;
 
   useEffect(() => {
+    if (initialPageData) return;
+
     const fetchCityPageData = async () => {
       try {
         setLoading(!initialPageData);

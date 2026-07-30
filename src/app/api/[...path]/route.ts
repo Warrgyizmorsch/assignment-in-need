@@ -1,3 +1,5 @@
+import { fetchBackend } from "@/lib/backend-fetch";
+
 const BACKEND_URL = "https://ain.warrgyizmorsch.com";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +43,7 @@ async function forward(request: Request, { params }: RouteContext) {
   requestHeaders.set("Pragma", "no-cache");
 
   const hasBody = request.method !== "GET" && request.method !== "HEAD";
-  const response = await fetch(targetUrl, {
+  const response = await fetchBackend(targetUrl, {
     method: request.method,
     headers: requestHeaders,
     body: hasBody ? await request.arrayBuffer() : undefined,

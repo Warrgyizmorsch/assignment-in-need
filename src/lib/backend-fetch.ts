@@ -1,0 +1,48 @@
+const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
+
+const wait = (milliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+export async function fetchBackend(
+  input: string | URL,
+  init: RequestInit = {},
+  maxAttempts = 4,
+): Promise<Response> {
+  let lastResponse: Response | null = null;
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(input, {
+        ...init,
+        cache: "no-store",
+        headers: {
+          ...Object.fromEntries(new Headers(init.headers).entries()),
+          "Cache-Control": "no-cache, no-store",
+          Pragma: "no-cache",
+        },
+      });
+
+      if (!RETRYABLE_STATUSES.has(response.status) || attempt === maxAttempts - 1) {
+        return response;
+      }
+
+      lastResponse = response;
+      await response.arrayBuffer().catch(() => null);
+      const retryAfter = Number(response.headers.get("retry-after"));
+      const delay = Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1000, 5000)
+        : 300 * 2 ** attempt;
+      await wait(delay);
+    } catch (error) {
+      lastError = error;
+      if (attempt === maxAttempts - 1) throw error;
+      await wait(300 * 2 ** attempt);
+    }
+  }
+
+  if (lastResponse) return lastResponse;
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Backend request failed");
+}

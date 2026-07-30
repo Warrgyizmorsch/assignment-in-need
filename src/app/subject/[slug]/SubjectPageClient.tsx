@@ -94,9 +94,11 @@ import { ExpertSlider } from "@/components/ui/ExpertSlider";
 export default function SubjectLanding({
   initialPageData = null,
   initialExperts = [],
+  initialReviews = [],
 }: {
   initialPageData?: any;
   initialExperts?: any[];
+  initialReviews?: any[];
 }) {
   const params = useParams();
   const rawSlug = params?.slug;
@@ -182,7 +184,16 @@ export default function SubjectLanding({
       };
     }),
   );
-  const [reviewsList, setReviewsList] = useState<any[]>([]);
+  const [reviewsList, setReviewsList] = useState<any[]>(() =>
+    initialReviews.map((item: any) => ({
+      name: item.name,
+      uni: item.location || "UK University",
+      text: item.description,
+      img: item.name
+        ? `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=f3e8ff&color=6b21a8`
+        : "/assets/media/avatars/blank.png",
+    })),
+  );
   const [loading, setLoading] = useState(!initialPageData);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -247,6 +258,8 @@ export default function SubjectLanding({
   };
 
   useEffect(() => {
+    if (initialPageData) return;
+
     const fetchSubjectPage = async () => {
       if (!slug) return;
       try {

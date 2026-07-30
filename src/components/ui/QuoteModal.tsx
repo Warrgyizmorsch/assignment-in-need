@@ -23,6 +23,7 @@ import {
   CheckCircle2,
   Edit3,
 } from "lucide-react";
+import { dedupedFetch } from "@/lib/client-fetch";
 import { CustomDropdown, CustomDropdownOption } from "./CustomDropdown";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -104,8 +105,8 @@ export function QuoteModal() {
     const fetchApiOptions = async () => {
       try {
         const [subRes, urgRes] = await Promise.all([
-          fetch("/api/subjects"),
-          fetch("/api/urgencies"),
+          dedupedFetch("/api/subjects"),
+          dedupedFetch("/api/urgencies"),
         ]);
 
         if (subRes.ok) {

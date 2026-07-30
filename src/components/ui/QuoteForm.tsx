@@ -6,6 +6,7 @@ import { CustomDropdown } from "./CustomDropdown";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { CheckCircle2, Mail, Phone } from "lucide-react";
+import { dedupedFetch } from "@/lib/client-fetch";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -103,10 +104,10 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
     const fetchConfigs = async () => {
       try {
         const [servicesRes, urgenciesRes, subjectsRes, wcRes] = await Promise.all([
-          fetch("/api/services"),
-          fetch("/api/urgencies"),
-          fetch("/api/subjects"),
-          fetch("/api/word-count"),
+          dedupedFetch("/api/services"),
+          dedupedFetch("/api/urgencies"),
+          dedupedFetch("/api/subjects"),
+          dedupedFetch("/api/word-count"),
         ]);
 
         if (servicesRes.ok) {
