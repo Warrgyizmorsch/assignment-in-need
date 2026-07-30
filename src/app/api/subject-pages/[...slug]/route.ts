@@ -26,19 +26,9 @@ export async function GET(
   const baseSlug = cleanSubjectSlug(pathSlug);
   const lastBase = cleanSubjectSlug(lastSlug);
 
-  const candidateSlugs = Array.from(
-    new Set([
-      `subject/${baseSlug}`,
-      `subject/${lastBase}`,
-      baseSlug.startsWith("subject/") ? baseSlug : `subject/${baseSlug}`,
-      pathSlug,
-      lastSlug,
-      baseSlug,
-      lastBase,
-      `subject/${baseSlug.replace(/-assignment-help$/, "")}-assignment-help`,
-      `subject/${lastBase.replace(/-assignment-help$/, "")}-assignment-help`,
-    ].filter(Boolean))
-  );
+  // The backend list exposes subject slugs as `subject/<slug>`. Use that
+  // canonical detail endpoint once; the list lookup below handles legacy slugs.
+  const candidateSlugs = [`subject/${lastBase}`];
 
   const headers = {
     Accept: "application/json",
@@ -69,6 +59,7 @@ export async function GET(
       fetch(`${BACKEND_URL}/api/subject-pages/${cand}`, {
         headers,
         cache: "no-store",
+        signal: AbortSignal.timeout(12000),
       })
         .then(async (res) => {
           if (res && res.ok) {
@@ -104,6 +95,7 @@ export async function GET(
     const listRes = await fetch(`${BACKEND_URL}/api/subject-pages`, {
       headers,
       cache: "no-store",
+      signal: AbortSignal.timeout(12000),
     }).catch(() => null);
 
     if (listRes && listRes.ok) {
@@ -131,6 +123,7 @@ export async function GET(
           const detailRes = await fetch(`${BACKEND_URL}/api/subject-pages/${matchedPage.slug}`, {
             headers,
             cache: "no-store",
+            signal: AbortSignal.timeout(12000),
           }).catch(() => null);
 
           if (detailRes && detailRes.ok) {

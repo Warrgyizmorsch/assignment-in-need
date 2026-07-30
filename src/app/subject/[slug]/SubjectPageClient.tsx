@@ -225,70 +225,12 @@ export default function SubjectLanding() {
       if (!slug) return;
       try {
         setLoading(true);
-        let pageResult: any = null;
         const cleanSlug = subjectDataSlug(slug);
-
-        const endpointsToTry = [
-          `/api/subject-pages/subject/${cleanSlug}`,
-          `/api/subject-pages/subject/${slug}`,
-          `/api/subject-pages/${slug}`,
-          `/api/subject-pages/${cleanSlug}`,
-          `https://ain.warrgyizmorsch.com/api/subject-pages/subject/${cleanSlug}`,
-          `https://ain.warrgyizmorsch.com/api/subject-pages/subject/${slug}`,
-          `https://ain.warrgyizmorsch.com/api/subject-pages/${cleanSlug}`,
-          `/api/service-pages/service/assignment/${cleanSlug}`,
-          `/api/service-pages/service/${cleanSlug}`,
-          `/api/service-pages/${cleanSlug}`,
-          `/api/service-pages/subject/${cleanSlug}`,
-          `/api/service-pages/${slug}`,
-        ];
-
-        const isRealPage = (p: any) =>
-          p &&
-          typeof p === "object" &&
-          !Array.isArray(p) &&
-          Boolean(
-            p.hero_heading ||
-            p.long_content ||
-            p.hero_content ||
-            p.content ||
-            p.description ||
-            p.meta_title ||
-            p.title ||
-            p.seo_content
-          );
-
-        for (const endpoint of endpointsToTry) {
-          if (pageResult && pageResult.data && isRealPage(pageResult.data.page)) break;
-          try {
-            const res = await fetch(endpoint, { cache: "no-store" });
-            if (res.ok) {
-              const temp = await res.json();
-              if (temp) {
-                const rawPage =
-                  temp?.data?.page ??
-                  (temp?.page && typeof temp?.page === "object" ? temp.page : null);
-                const targetPage = isRealPage(rawPage)
-                  ? rawPage
-                  : isRealPage(temp?.data)
-                  ? temp.data
-                  : null;
-
-                if (targetPage) {
-                  pageResult = {
-                    success: true,
-                    data: {
-                      page: targetPage,
-                      experts: temp?.data?.experts || temp?.experts || [],
-                      reviews: temp?.data?.reviews || temp?.reviews || [],
-                    },
-                  };
-                  break;
-                }
-              }
-            }
-          } catch (e) {}
-        }
+        const response = await fetch(
+          `/api/subject-pages/subject/${encodeURIComponent(cleanSlug)}`,
+          { cache: "no-store" },
+        );
+        const pageResult = response.ok ? await response.json() : null;
 
         if (
           !pageResult ||
@@ -345,7 +287,9 @@ export default function SubjectLanding() {
             setExpertsList(mapped);
           } else {
             // Fetch from global experts API and filter
-            const resExp = await fetch("/api/experts");
+            const resExp = await fetch("/api/experts?page=1&limit=8", {
+              cache: "no-store",
+            });
             if (resExp.ok) {
               const result = await resExp.json();
               if (result.success && Array.isArray(result.data)) {

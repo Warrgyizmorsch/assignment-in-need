@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { WRITERS, Writer } from "@/lib/data";
-import { getBaseUrl, mapExpertToWriter } from "@/lib/api";
+import { mapExpertToWriter } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import {
@@ -53,8 +53,9 @@ export default function WritersDirectory() {
   const [selectedSort, setSelectedSort] = useState("rating-desc");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [writers, setWriters] = useState<Writer[]>(WRITERS);
-  const [loading, setLoading] = useState(false);
+  const [writers, setWriters] = useState<Writer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [remoteTotalPages, setRemoteTotalPages] = useState(1);
   const [dynamicSubjects, setDynamicSubjects] = useState<any[]>([]);
 
   // Sync URL search params on mount (persists page & filter state on hard refresh)
@@ -130,7 +131,7 @@ export default function WritersDirectory() {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const res = await fetch("/api/subject-pages");
+        const res = await fetch("/api/subject-pages", { cache: "no-store" });
         if (res.ok) {
           const payload = await res.json();
           if (
@@ -166,8 +167,10 @@ export default function WritersDirectory() {
   useEffect(() => {
     const fetchWriters = async () => {
       try {
-        const baseUrl = getBaseUrl();
-        const res = await fetch(`${baseUrl}/api/experts`);
+        setLoading(true);
+        const res = await fetch(`/api/experts?page=${currentPage}&limit=8`, {
+          cache: "no-store",
+        });
         if (res.ok) {
           const result = await res.json();
 
@@ -175,22 +178,23 @@ export default function WritersDirectory() {
             const mapped = result.data.map((item: any) =>
               mapExpertToWriter(item),
             );
-            const dbNames = new Set(
-              mapped.map((w: any) => w.name.toLowerCase()),
+            setWriters(mapped);
+            setRemoteTotalPages(
+              Math.max(1, Number(result.pagination?.lastPage) || 1),
             );
-            const nonDuplicateStatic = WRITERS.filter(
-              (w) => !dbNames.has(w.name.toLowerCase()),
-            );
-            setWriters([...mapped, ...nonDuplicateStatic]);
           }
         }
       } catch (err) {
         console.error("Error fetching experts:", err);
+        setWriters(WRITERS.slice(0, 8));
+        setRemoteTotalPages(Math.max(1, Math.ceil(WRITERS.length / 8)));
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchWriters();
-  }, []);
+  }, [currentPage]);
 
 
   // Filter and sort logic
@@ -251,23 +255,13 @@ export default function WritersDirectory() {
     return result;
   }, [writers, selectedSubject, selectedQual, selectedExp, selectedSort]);
 
-  // Reset pagination to page 1 whenever filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedSubject, selectedQual, selectedExp, selectedSort]);
-
   // Pagination bounds
   const itemsPerPage = 8;
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredWriters.length / itemsPerPage),
-  );
+  const totalPages = remoteTotalPages;
 
   const currentWriters = useMemo(() => {
-    const safePage = Math.min(Math.max(1, currentPage), totalPages);
-    const start = (safePage - 1) * itemsPerPage;
-    return filteredWriters.slice(start, start + itemsPerPage);
-  }, [filteredWriters, currentPage, totalPages]);
+    return filteredWriters.slice(0, itemsPerPage);
+  }, [filteredWriters]);
 
   return (
     <div className="znw-page-wrapper">

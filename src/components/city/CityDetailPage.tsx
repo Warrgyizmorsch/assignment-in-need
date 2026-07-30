@@ -118,38 +118,10 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
       try {
         setLoading(true);
 
-        const endpointsToTry = Array.from(
-          new Set([
-            `/api/city-pages/cities/assignment-help-${citySlug}`,
-            `/api/city-pages/cities/${citySlug}`,
-            `/api/city-pages/assignment-help-${citySlug}`,
-            `/api/city-pages/${requestedSlug}`,
-            `/api/city-pages/${citySlug}`,
-            `https://ain.warrgyizmorsch.com/api/city-pages/cities/assignment-help-${citySlug}`,
-            `https://ain.warrgyizmorsch.com/api/city-pages/cities/${citySlug}`,
-            `https://ain.warrgyizmorsch.com/api/city-pages/assignment-help-${citySlug}`,
-          ]),
-        ).filter(Boolean);
-
-        let res: Response | null = null;
-        for (const ep of endpointsToTry) {
-          try {
-            const fetchUrl = ep.startsWith("http") ? ep : ep;
-            const fetchRes = await fetch(fetchUrl, {
-              cache: "no-store",
-            });
-            if (fetchRes.ok) {
-              const clone = fetchRes.clone();
-              const tempJson = await clone.json().catch(() => null);
-              const p = tempJson?.data?.page || tempJson?.data || tempJson?.page;
-              if (p && typeof p === "object" && (p.long_content || p.hero_content || p.hero_heading || p.description)) {
-                res = fetchRes;
-                break;
-              }
-              if (!res) res = fetchRes;
-            }
-          } catch (e) {}
-        }
+        const res = await fetch(
+          `/api/city-pages/${encodeURIComponent(requestedSlug)}`,
+          { cache: "no-store" },
+        );
 
         if (res && res.ok) {
           const result = await res.json().catch(() => null);
@@ -195,7 +167,9 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
         }
 
         // Fallback: fetch general experts if no city experts returned
-        const expRes = await fetch("/api/experts", { cache: "no-store" });
+        const expRes = await fetch("/api/experts?page=1&limit=8", {
+          cache: "no-store",
+        });
         if (expRes.ok) {
           const result = await expRes.json().catch(() => null);
           const expData = Array.isArray(result?.data) ? result.data : Array.isArray(result) ? result : [];

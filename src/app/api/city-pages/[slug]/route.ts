@@ -23,20 +23,9 @@ export async function GET(
       ?.trim() || "";
 
   const baseClean = cleanSlug(slug);
-  const candidateSlugs = Array.from(
-    new Set([
-      `cities/assignment-help-${baseClean}`,
-      `cities/${baseClean}`,
-      `cities/${slug}`,
-      `assignment-help-${baseClean}`,
-      slug,
-      baseClean,
-      `${baseClean}-assignment-help`,
-      `assignment-writing-help-${baseClean}`,
-      `uk/assignment-help-${baseClean}`,
-      `uk/${baseClean}`,
-    ].filter(Boolean))
-  );
+  // The backend list exposes city slugs as
+  // `cities/assignment-help-<city>`. Avoid a fan-out of ten slow requests.
+  const candidateSlugs = [`cities/assignment-help-${baseClean}`];
 
   const headers = {
     Accept: "application/json",
@@ -68,6 +57,7 @@ export async function GET(
       fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(cand)}`, {
         headers,
         cache: "no-store",
+        signal: AbortSignal.timeout(12000),
       })
         .then(async (res) => {
           if (res && res.ok) {
@@ -103,6 +93,7 @@ export async function GET(
     const listRes = await fetch(`${BACKEND_URL}/api/city-pages`, {
       headers,
       cache: "no-store",
+      signal: AbortSignal.timeout(12000),
     }).catch(() => null);
 
     if (listRes && listRes.ok) {
@@ -131,6 +122,7 @@ export async function GET(
           const detailRes = await fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(matchedPage.slug)}`, {
             headers,
             cache: "no-store",
+            signal: AbortSignal.timeout(12000),
           }).catch(() => null);
 
           if (detailRes && detailRes.ok) {
