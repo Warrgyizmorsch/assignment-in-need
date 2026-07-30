@@ -200,7 +200,15 @@ const FALLBACK_SERVICES: NavLinkItem[] = [
   },
 ];
 
-const CITIES: NavLinkItem[] = [];
+const CITIES: NavLinkItem[] = [
+  { name: "Assignment Help London", path: "/cities/assignment-help-london" },
+  { name: "Assignment Help Birmingham", path: "/cities/assignment-help-birmingham" },
+  { name: "Assignment Help Cardiff", path: "/cities/assignment-help-cardiff" },
+  { name: "Assignment Help Leeds", path: "/cities/assignment-help-leeds" },
+  { name: "Assignment Help Oxford", path: "/cities/assignment-help-oxford" },
+  { name: "Assignment Help Liverpool", path: "/cities/assignment-help-liverpool" },
+  { name: "Assignment Help Manchester", path: "/cities/assignment-help-manchester" },
+];
 
 
 const DesktopDropdown = ({

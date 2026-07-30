@@ -120,22 +120,33 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
 
         const endpointsToTry = Array.from(
           new Set([
-            requestedSlug,
-            `assignment-help-${citySlug}`,
-            citySlug,
-            `uk/assignment-help-${citySlug}`,
+            `/api/city-pages/cities/assignment-help-${citySlug}`,
+            `/api/city-pages/cities/${citySlug}`,
+            `/api/city-pages/assignment-help-${citySlug}`,
+            `/api/city-pages/${requestedSlug}`,
+            `/api/city-pages/${citySlug}`,
+            `https://ain.warrgyizmorsch.com/api/city-pages/cities/assignment-help-${citySlug}`,
+            `https://ain.warrgyizmorsch.com/api/city-pages/cities/${citySlug}`,
+            `https://ain.warrgyizmorsch.com/api/city-pages/assignment-help-${citySlug}`,
           ]),
         ).filter(Boolean);
 
         let res: Response | null = null;
         for (const ep of endpointsToTry) {
           try {
-            const fetchRes = await fetch(`/api/city-pages/${ep}`, {
+            const fetchUrl = ep.startsWith("http") ? ep : ep;
+            const fetchRes = await fetch(fetchUrl, {
               cache: "no-store",
             });
             if (fetchRes.ok) {
-              res = fetchRes;
-              break;
+              const clone = fetchRes.clone();
+              const tempJson = await clone.json().catch(() => null);
+              const p = tempJson?.data?.page || tempJson?.data || tempJson?.page;
+              if (p && typeof p === "object" && (p.long_content || p.hero_content || p.hero_heading || p.description)) {
+                res = fetchRes;
+                break;
+              }
+              if (!res) res = fetchRes;
             }
           } catch (e) {}
         }

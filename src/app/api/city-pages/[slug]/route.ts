@@ -25,8 +25,11 @@ export async function GET(
   const baseClean = cleanSlug(slug);
   const candidateSlugs = Array.from(
     new Set([
-      slug,
+      `cities/assignment-help-${baseClean}`,
+      `cities/${baseClean}`,
+      `cities/${slug}`,
       `assignment-help-${baseClean}`,
+      slug,
       baseClean,
       `${baseClean}-assignment-help`,
       `assignment-writing-help-${baseClean}`,
@@ -39,41 +42,54 @@ export async function GET(
     Accept: "application/json",
   };
   const cacheHeaders = {
-    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, s-maxage=0",
+    "Pragma": "no-cache",
+    "Expires": "0",
   };
 
   try {
-    // 1. Try candidates in order against single-item endpoint
-    for (const cand of candidateSlugs) {
-      try {
-        const res = await fetch(
-          `${BACKEND_URL}/api/city-pages/${encodeURIComponent(cand)}`,
-          { headers, cache: "no-store" }
-        );
-        if (res.ok) {
-          const json = await res.json().catch(() => null);
-          if (json && (json.success || json.data)) {
-            const pageObj = json?.data?.page || json?.data || json?.page;
-            if (pageObj) {
-              return NextResponse.json(
-                { success: true, data: { page: pageObj, experts: json?.data?.experts || [] } },
-                { headers: cacheHeaders }
-              );
+    // 1. Parallelize candidate fetches against single-item endpoint
+    const fetchPromises = candidateSlugs.map((cand) =>
+      fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(cand)}`, {
+        headers,
+        cache: "no-store",
+      })
+        .then(async (res) => {
+          if (res && res.ok) {
+            const json = await res.json().catch(() => null);
+            if (json && (json.success || json.data)) {
+              const pageObj = json?.data?.page || json?.data || json?.page;
+              if (pageObj && typeof pageObj === "object") {
+                return {
+                  page: pageObj,
+                  experts: json?.data?.experts || json?.experts || [],
+                  faqs: json?.data?.faqs || json?.faqs || [],
+                };
+              }
             }
           }
-        }
-      } catch (e) {
-        console.warn(`Error fetching candidate ${cand}:`, e);
+          return null;
+        })
+        .catch(() => null)
+    );
+
+    const results = await Promise.allSettled(fetchPromises);
+    for (const r of results) {
+      if (r.status === "fulfilled" && r.value) {
+        return NextResponse.json(
+          { success: true, data: r.value },
+          { headers: cacheHeaders }
+        );
       }
     }
 
-    // 2. Fallback: Fetch all city-pages list and match slug in list
+    // 2. Fallback: Fetch all city-pages list, match slug in list, and fetch full detail page
     const listRes = await fetch(`${BACKEND_URL}/api/city-pages`, {
       headers,
       cache: "no-store",
-    });
+    }).catch(() => null);
 
-    if (listRes.ok) {
+    if (listRes && listRes.ok) {
       const listJson = await listRes.json().catch(() => null);
       const staticCities = Array.isArray(listJson?.static_cities) ? listJson.static_cities : [];
       const dynamicData = Array.isArray(listJson?.data)
@@ -95,6 +111,33 @@ export async function GET(
       });
 
       if (matchedPage) {
+        if (matchedPage.slug) {
+          const detailRes = await fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(matchedPage.slug)}`, {
+            headers,
+            cache: "no-store",
+          }).catch(() => null);
+
+          if (detailRes && detailRes.ok) {
+            const detailJson = await detailRes.json().catch(() => null);
+            if (detailJson && (detailJson.success || detailJson.data)) {
+              const fullPage = detailJson?.data?.page || detailJson?.data || detailJson?.page;
+              if (fullPage) {
+                return NextResponse.json(
+                  {
+                    success: true,
+                    data: {
+                      page: fullPage,
+                      experts: detailJson?.data?.experts || detailJson?.experts || [],
+                      faqs: detailJson?.data?.faqs || detailJson?.faqs || [],
+                    },
+                  },
+                  { headers: cacheHeaders }
+                );
+              }
+            }
+          }
+        }
+
         return NextResponse.json(
           { success: true, data: { page: matchedPage, experts: [] } },
           { headers: cacheHeaders }
