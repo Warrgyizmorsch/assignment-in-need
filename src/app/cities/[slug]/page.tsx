@@ -74,10 +74,7 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
 }
 
 async function getFreshCityPage(slug: string) {
-  const backendUrl =
-    process.env.BACKEND_INTERNAL_URL ||
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    "https://ain.warrgyizmorsch.com";
+  const backendUrl = "https://ain.warrgyizmorsch.com";
   const citySlug = slug
     .toLowerCase()
     .replace(/^assignment-help-/, "")

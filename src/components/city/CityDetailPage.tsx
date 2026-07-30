@@ -81,7 +81,6 @@ export default function CityDetailPage({
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [loading, setLoading] = useState(!initialPageData);
-  const [loadError, setLoadError] = useState(false);
 
   const fallbackCityName = (citySlug || "london")
     .replace(/-/g, " ")
@@ -119,10 +118,11 @@ export default function CityDetailPage({
     uniqueContentParts.length > 0 ? uniqueContentParts.join("<br/><br/>") : null;
 
   useEffect(() => {
+    if (initialPageData) return;
+
     const fetchCityPageData = async () => {
       try {
         setLoading(!initialPageData);
-        setLoadError(false);
 
         let res: Response | null = null;
         for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -225,7 +225,6 @@ export default function CityDetailPage({
         }
       } catch (err) {
         console.warn("Failed to fetch data for city page:", err);
-        if (!initialPageData) setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -238,7 +237,7 @@ export default function CityDetailPage({
 
 
 
-  if (loading) {
+  if (loading || !pageData) {
     return (
       <div
         className="min-h-[620px] bg-white"
@@ -265,28 +264,6 @@ export default function CityDetailPage({
           </div>
         </section>
         <span className="sr-only">Loading city page…</span>
-      </div>
-    );
-  }
-
-  if (loadError || !pageData) {
-    return (
-      <div className="flex min-h-[620px] items-center justify-center bg-white px-4">
-        <div className="max-w-md text-center">
-          <h1 className="text-2xl font-extrabold text-[#0b1f4d]">
-            Content could not be loaded
-          </h1>
-          <p className="mt-3 text-sm text-gray-600">
-            We could not reach the latest city page content. Please try again.
-          </p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="mt-5 rounded-lg bg-[#4c1d95] px-6 py-3 text-sm font-bold text-white"
-          >
-            Retry
-          </button>
-        </div>
       </div>
     );
   }

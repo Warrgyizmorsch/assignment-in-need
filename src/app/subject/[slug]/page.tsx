@@ -75,10 +75,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function getFreshSubjectPage(slug: string) {
-  const backendUrl =
-    process.env.BACKEND_INTERNAL_URL ||
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    "https://ain.warrgyizmorsch.com";
+  const backendUrl = "https://ain.warrgyizmorsch.com";
   const candidateSlugs = Array.from(
     new Set([canonicalSubjectSlug(slug), subjectDataSlug(slug)]),
   );

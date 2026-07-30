@@ -165,7 +165,6 @@ export default function SubjectLanding({
   const [expertsList, setExpertsList] = useState<any[]>([]);
   const [reviewsList, setReviewsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(!initialPageData);
-  const [loadError, setLoadError] = useState(false);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
@@ -229,11 +228,12 @@ export default function SubjectLanding({
   };
 
   useEffect(() => {
+    if (initialPageData) return;
+
     const fetchSubjectPage = async () => {
       if (!slug) return;
       try {
         setLoading(!initialPageData);
-        setLoadError(false);
         const canonicalSlug = canonicalSubjectSlug(slug);
         let pageResult: any = null;
 
@@ -263,7 +263,6 @@ export default function SubjectLanding({
           !pageResult.data ||
           !pageResult.data.page
         ) {
-          if (!initialPageData) setLoadError(true);
           return;
         }
 
@@ -384,7 +383,6 @@ export default function SubjectLanding({
           }
         }
       } catch {
-        if (!initialPageData) setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -711,7 +709,7 @@ export default function SubjectLanding({
     }
   };
 
-  if (loading) {
+  if (loading || !pageData) {
     return (
       <div className="bg-white min-h-[60vh] font-sans text-[#111827] overflow-hidden">
         {/* Skeleton Hero Section */}
@@ -783,28 +781,6 @@ export default function SubjectLanding({
             </div>
           </div>
         </section>
-      </div>
-    );
-  }
-
-  if (loadError || !pageData) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-white px-4">
-        <div className="max-w-md text-center">
-          <h1 className="text-2xl font-extrabold text-[#0b1f4d]">
-            Content could not be loaded
-          </h1>
-          <p className="mt-3 text-sm text-gray-600">
-            We could not reach the latest page content. Please try again.
-          </p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="mt-5 rounded-lg bg-[#4c1d95] px-6 py-3 text-sm font-bold text-white"
-          >
-            Retry
-          </button>
-        </div>
       </div>
     );
   }
