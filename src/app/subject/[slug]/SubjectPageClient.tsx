@@ -16,11 +16,16 @@ const COUNTRY_CODES = getCountries()
     const code = getCountryCallingCode(country);
     const name = (en as any)[country] || country;
     return {
-      label: `${name} (+${code})`,
+      label: `+${code} (${country === "GB" ? "UK" : name})`,
       value: `+${code}`,
+      country,
     };
   })
-  .sort((a, b) => a.label.localeCompare(b.label));
+  .sort((a, b) => {
+    if (a.country === "GB") return -1;
+    if (b.country === "GB") return 1;
+    return a.label.localeCompare(b.label);
+  });
 
 const PROJECT_TYPE_OPTIONS = [
   { label: "Assignment", value: "Assignment" },

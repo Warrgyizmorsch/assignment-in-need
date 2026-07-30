@@ -11,14 +11,21 @@ import { ForgotPasswordForm } from "./ForgotPasswordForm";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
 
-const COUNTRY_CODES = getCountries().map((country) => {
-  const code = getCountryCallingCode(country);
-  const name = (en as any)[country] || country;
-  return {
-    label: `${name} (+${code})`,
-    value: `+${code}`
-  };
-}).sort((a, b) => a.label.localeCompare(b.label));
+const COUNTRY_CODES = getCountries()
+  .map((country) => {
+    const code = getCountryCallingCode(country);
+    const name = (en as any)[country] || country;
+    return {
+      label: `+${code} (${country === "GB" ? "UK" : name})`,
+      value: `+${code}`,
+      country,
+    };
+  })
+  .sort((a, b) => {
+    if (a.country === "GB") return -1;
+    if (b.country === "GB") return 1;
+    return a.label.localeCompare(b.label);
+  });
 
 import {
   ArrowRight,

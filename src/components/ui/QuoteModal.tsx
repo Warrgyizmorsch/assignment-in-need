@@ -33,11 +33,15 @@ const COUNTRY_CODES: CustomDropdownOption[] = getCountries()
     const code = getCountryCallingCode(country);
     const name = (en as any)[country] || country;
     return {
-      label: `${name} (+${code})`,
+      label: `+${code} (${country === "GB" ? "UK" : name})`,
       value: `+${code}`,
     };
   })
-  .sort((a, b) => a.label.localeCompare(b.label));
+  .sort((a, b) => {
+    if (a.value === "+44" && a.label.includes("UK")) return -1;
+    if (b.value === "+44" && b.label.includes("UK")) return 1;
+    return a.label.localeCompare(b.label);
+  });
 
 const DEFAULT_SUBJECT_OPTIONS: CustomDropdownOption[] = [
   { label: "Accountancy / Accounting", value: "Accountancy / Accounting" },
