@@ -345,9 +345,17 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
               </h1>
 
               {/* Description */}
-              <p className="text-gray-600 w-full max-w-[450px] text-sm md:text-[15px] font-semibold leading-relaxed mb-6 line-clamp-4">
-                Get accurate, well-researched and plagiarism-free {cityName.toLowerCase()} assignments helped by qualified experts to achieve top grades.
-              </p>
+              <div className="text-gray-600 w-full max-w-[500px] text-sm md:text-[15px] font-semibold leading-relaxed mb-6">
+                {pageData?.hero_content ? (
+                  <div dangerouslySetInnerHTML={{ __html: pageData.hero_content }} />
+                ) : pageData?.description ? (
+                  <p>{pageData.description}</p>
+                ) : (
+                  <p>
+                    Get accurate, well-researched and plagiarism-free {cityName.toLowerCase()} assignments helped by qualified experts to achieve top grades.
+                  </p>
+                )}
+              </div>
 
               {/* 4 Stats Row */}
               <div className="grid grid-cols-4 md:flex md:flex-wrap items-center gap-x-2 gap-y-4 mb-8 max-w-[500px] w-full border-t border-b border-gray-100 py-3 md:border-none md:py-0">
@@ -653,37 +661,9 @@ export default function CityDetailPage({ slug }: CityDetailPageProps) {
       {longContentHtml && (
         <section className="py-8 md:py-10 bg-white border-b border-gray-50">
           <div className="max-w-[1000px] mx-auto px-4 flex flex-col gap-4">
-            <div
-              className={cn(
-                "relative transition-all duration-500 ease-in-out",
-                seoExpanded
-                  ? "max-h-none overflow-visible"
-                  : "max-h-[260px] overflow-hidden",
-              )}
-            >
-              <div
-                className="block text-[14.5px] text-gray-700 leading-relaxed max-w-4xl mx-auto text-left space-y-3 rich-text-content html-desc select-text"
-                dangerouslySetInnerHTML={{ __html: longContentHtml }}
-              />
-              {!seoExpanded && (
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
-              )}
-            </div>
-            <div className="w-full flex justify-center mt-3 z-10">
-              <button
-                type="button"
-                onClick={() => setSeoExpanded(!seoExpanded)}
-                className="py-2.5 px-6 rounded-full border border-solid border-purple-200 text-[#3f159a] bg-[#faf9fe] hover:bg-purple-50 transition-colors font-extrabold text-[12px] shadow-sm select-none cursor-pointer flex items-center justify-center gap-1.5 focus:outline-none"
-              >
-                <span>{seoExpanded ? "Read Less" : "Load More"}</span>
-                <ChevronDown
-                  className={cn(
-                    "w-4 h-4 transition-transform duration-300",
-                    seoExpanded && "rotate-180",
-                  )}
-                />
-              </button>
-            </div>
+            <div className="block text-[14.5px] text-gray-700 leading-relaxed max-w-4xl mx-auto text-left space-y-3 rich-text-content html-desc select-text"
+              dangerouslySetInnerHTML={{ __html: longContentHtml }}
+            />
           </div>
         </section>
       )}

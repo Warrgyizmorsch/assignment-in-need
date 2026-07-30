@@ -100,12 +100,17 @@ export default function WriterProfile() {
           const wIdClean = cleanSlug(w.id);
           const wNameClean = cleanSlug(w.name);
           return wIdClean === targetClean || wNameClean === targetClean;
-        });
+        }) || WRITERS.find((w) => {
+          const wIdClean = cleanSlug(w.id);
+          const wNameClean = cleanSlug(w.name);
+          return (targetClean && (wIdClean.includes(targetClean) || targetClean.includes(wIdClean))) ||
+                 (targetClean && (wNameClean.includes(targetClean) || targetClean.includes(wNameClean)));
+        }) || WRITERS[0];
 
-        setWriter(staticWriter || null);
+        setWriter(staticWriter);
       } catch (err) {
         console.error("Error fetching writer details:", err);
-        setWriter(null);
+        setWriter(WRITERS[0]);
       } finally {
         setLoading(false);
       }

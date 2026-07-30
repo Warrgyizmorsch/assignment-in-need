@@ -224,10 +224,13 @@ export default function SubjectLanding() {
         const cleanSlug = subjectDataSlug(slug);
 
         const endpointsToTry = [
-          `/api/subject-pages/${slug}`,
-          `/api/subject-pages/subject/${slug}`,
           `/api/subject-pages/subject/${cleanSlug}`,
+          `/api/subject-pages/subject/${slug}`,
+          `/api/subject-pages/${slug}`,
           `/api/subject-pages/${cleanSlug}`,
+          `https://ain.warrgyizmorsch.com/api/subject-pages/subject/${cleanSlug}`,
+          `https://ain.warrgyizmorsch.com/api/subject-pages/subject/${slug}`,
+          `https://ain.warrgyizmorsch.com/api/subject-pages/${cleanSlug}`,
           `/api/service-pages/service/assignment/${cleanSlug}`,
           `/api/service-pages/service/${cleanSlug}`,
           `/api/service-pages/${cleanSlug}`,
@@ -236,7 +239,7 @@ export default function SubjectLanding() {
         ];
 
         for (const endpoint of endpointsToTry) {
-          if (pageResult && pageResult.data && pageResult.data.page) break;
+          if (pageResult && pageResult.data && pageResult.data.page && (pageResult.data.page.long_content || pageResult.data.page.hero_heading || pageResult.data.page.content)) break;
           try {
             const res = await fetch(endpoint, { cache: "no-store" });
             if (res.ok) {

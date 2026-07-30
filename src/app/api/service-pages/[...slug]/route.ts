@@ -28,6 +28,10 @@ export async function GET(
 
   const candidateSlugs = Array.from(
     new Set([
+      `service/${pathSlug}`,
+      `service/${lastSlug}`,
+      `service/assignment/${baseClean}`,
+      `service/${baseClean}`,
       pathSlug,
       lastSlug,
       baseClean,
@@ -40,7 +44,9 @@ export async function GET(
     Accept: "application/json",
   };
   const cacheHeaders = {
-    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, s-maxage=0",
+    "Pragma": "no-cache",
+    "Expires": "0",
   };
 
   try {
@@ -49,14 +55,22 @@ export async function GET(
         const res = await fetch(`${BACKEND_URL}/api/service-pages/${cand}`, {
           headers,
           cache: "no-store",
-        });
-        if (res.ok) {
+        }).catch(() => null);
+
+        if (res && res.ok) {
           const json = await res.json().catch(() => null);
           if (json && (json.success || json.data)) {
             const pageObj = json?.data?.page || json?.data || json?.page;
-            if (pageObj) {
+            if (pageObj && typeof pageObj === "object") {
               return NextResponse.json(
-                { success: true, data: { page: pageObj } },
+                {
+                  success: true,
+                  data: {
+                    page: pageObj,
+                    experts: json?.data?.experts || json?.experts || [],
+                    reviews: json?.data?.reviews || json?.reviews || [],
+                  },
+                },
                 { headers: cacheHeaders }
               );
             }
@@ -67,13 +81,13 @@ export async function GET(
       }
     }
 
-    // Fallback: search all service pages list
+    // Fallback: search all service pages list and fetch full detail for matched page
     const listRes = await fetch(`${BACKEND_URL}/api/service-pages`, {
       headers,
       cache: "no-store",
-    });
+    }).catch(() => null);
 
-    if (listRes.ok) {
+    if (listRes && listRes.ok) {
       const listJson = await listRes.json().catch(() => null);
       const pagesArray = Array.isArray(listJson?.data)
         ? listJson.data
@@ -94,6 +108,33 @@ export async function GET(
       });
 
       if (matchedPage) {
+        if (matchedPage.slug) {
+          const detailRes = await fetch(`${BACKEND_URL}/api/service-pages/${matchedPage.slug}`, {
+            headers,
+            cache: "no-store",
+          }).catch(() => null);
+
+          if (detailRes && detailRes.ok) {
+            const detailJson = await detailRes.json().catch(() => null);
+            if (detailJson && (detailJson.success || detailJson.data)) {
+              const fullPage = detailJson?.data?.page || detailJson?.data || detailJson?.page;
+              if (fullPage) {
+                return NextResponse.json(
+                  {
+                    success: true,
+                    data: {
+                      page: fullPage,
+                      experts: detailJson?.data?.experts || detailJson?.experts || [],
+                      reviews: detailJson?.data?.reviews || detailJson?.reviews || [],
+                    },
+                  },
+                  { headers: cacheHeaders }
+                );
+              }
+            }
+          }
+        }
+
         return NextResponse.json(
           { success: true, data: { page: matchedPage } },
           { headers: cacheHeaders }

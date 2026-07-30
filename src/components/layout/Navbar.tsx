@@ -454,14 +454,25 @@ export const Navbar = () => {
 
     const fetchCities = async () => {
       try {
-        const response = await fetch("/api/city-pages", {
+        let response = await fetch("/api/city-pages", {
           headers: { Accept: "application/json" },
           cache: "no-store",
-        });
-        if (!response.ok) return;
+        }).catch(() => null);
+
+        if (!response || !response.ok) {
+          response = await fetch("https://ain.warrgyizmorsch.com/api/city-pages", {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          }).catch(() => null);
+        }
+
+        if (!response || !response.ok) return;
         const payload = await response.json();
-        const dynamicBackendCities =
-          Array.isArray(payload?.data) && payload.data.length > 0
+
+        const backendItems: any[] =
+          Array.isArray(payload) && payload.length > 0
+            ? payload
+            : Array.isArray(payload?.data) && payload.data.length > 0
             ? payload.data
             : Array.isArray(payload?.data?.pages) && payload.data.pages.length > 0
             ? payload.data.pages
@@ -476,8 +487,9 @@ export const Navbar = () => {
         const seenPaths = new Set<string>();
         const completeCities: NavLinkItem[] = [];
 
-        if (dynamicBackendCities.length > 0) {
-          for (const c of dynamicBackendCities) {
+        if (backendItems.length > 0) {
+          for (const c of backendItems) {
+            if (!c) continue;
             const rawTitle = c.title || c.city || c.hero_heading || c.meta_title || c.name || c.id || "";
             let rawSlug = (c.slug || c.url || c.id || rawTitle).toString().trim().replace(/^\/+/, "").replace(/^cities\//, "").replace(/^uk\//, "");
 
@@ -600,7 +612,7 @@ export const Navbar = () => {
     serviceMenu.length > 0 ? serviceMenu : FALLBACK_SERVICES;
 
   const subjectsDropdownItems = subjects.length > 0 ? subjects : SUBJECTS;
-  const citiesDropdownItems = citiesMenu;
+  const citiesDropdownItems = citiesMenu.length > 0 ? citiesMenu : CITIES;
 
   return (
     <>
