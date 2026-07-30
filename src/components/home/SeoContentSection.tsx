@@ -74,10 +74,10 @@ export default function SeoContentSection() {
         <div className="space-y-4 text-slate-600 leading-relaxed text-[16px] lg:text-[17px]">
           <p>
             Struggling with a deadline, a confusing brief, or a subject you just can't get your head around?
-            <strong className="text-gray-900 font-bold"> AssignmentInNeed (AIN)</strong> offers assignment help UK students rely on when things get tight. Whether you need an assignment helper for a single tricky chapter or full help with assignments online from start to finish, our UK-based writers work directly with your module requirements—no generic templates, no copy-paste answers.
+            <strong className="text-gray-900 font-bold"> AssignmentInNeed (AIN)</strong> offers assignment help UK students rely on when things get tight. Whether you need an assignment helper for a single tricky chapter or full help with assignments online from start to finish, our UK-based writers work directly with your module requirements no generic templates, no copy-paste answers.
           </p>
           <p>
-            We built AIN around one idea: help with assignments should mean real subject knowledge, real referencing accuracy, and real deadlines met—not a rushed, AI-generated draft with your name on it.
+            We built AIN around one idea: help with assignments should mean real subject knowledge, real referencing accuracy, and real deadlines met not a rushed, AI-generated draft with your name on it.
           </p>
         </div>
       ),
@@ -93,7 +93,7 @@ export default function SeoContentSection() {
             {[
               {
                 title: "Subject-matched writers",
-                desc: "Every assignment helper on our team is matched to your course level and subject—not a generalist writing outside their field.",
+                desc: "Every assignment helper on our team is matched to your course level and subject not a generalist writing outside their field.",
               },
               {
                 title: "100% human-written work",
@@ -113,7 +113,7 @@ export default function SeoContentSection() {
               },
               {
                 title: "Direct communication",
-                desc: "You can talk to your assigned writer throughout the process—not a support ticket that goes nowhere.",
+                desc: "You can talk to your assigned writer throughout the process not a support ticket that goes nowhere.",
               },
             ].map((item, idx) => (
               <li key={idx} className="bg-slate-50/80 rounded-2xl p-4 border border-slate-100 flex items-start gap-3">
@@ -161,7 +161,7 @@ export default function SeoContentSection() {
           <div className="mt-6 pt-6 border-t border-slate-100">
             <h3 className="text-xl font-bold text-gray-900 mb-3">An Honest Note on Academic Integrity</h3>
             <p>
-              We're not going to pretend this is a grey area. Assignment help exists to support your understanding—model answers, structural guidance, and properly researched drafts you can learn from and build on.
+              We're not going to pretend this is a grey area. Assignment help exists to support your understanding model answers, structural guidance, and properly researched drafts you can learn from and build on.
             </p>
             <p className="mt-3">
               What you submit and how you use what we provide is your responsibility under your university's academic integrity policy. We'd rather say that plainly than dodge it in a footnote.
@@ -178,10 +178,10 @@ export default function SeoContentSection() {
       content: (
         <div className="space-y-4 text-slate-600 leading-relaxed text-[16px] lg:text-[17px]">
           <p>
-            From business and law to nursing, computer science, and the humanities, our assignment help services cover undergraduate and postgraduate work across UK universities. If you need help on assignments in a subject that isn't listed here, ask—we'll tell you honestly if we have the right expertise before you commit, not after.
+            From business and law to nursing, computer science, and the humanities, our assignment help services cover undergraduate and postgraduate work across UK universities. If you need help on assignments in a subject that isn't listed here, ask we'll tell you honestly if we have the right expertise before you commit, not after.
           </p>
           <p>
-            We don't stretch writers across subjects they're unfamiliar with just to say yes to every request. If a topic falls outside what we can genuinely support well, we'll tell you upfront rather than delivering weak work and hoping you don't notice. That's a deliberate trade-off—we'd rather turn down a request than damage the trust that makes people come back for assignment help online again.
+            We don't stretch writers across subjects they're unfamiliar with just to say yes to every request. If a topic falls outside what we can genuinely support well, we'll tell you upfront rather than delivering weak work and hoping you don't notice. That's a deliberate trade-off we'd rather turn down a request than damage the trust that makes people come back for assignment help online again.
           </p>
           <p>
             For students juggling multiple modules, this also means consistency. You're not getting a different quality standard depending on which writer happens to be free. Whether it's a single essay or ongoing assignment services across a term, the same subject-matching process applies every time.
@@ -191,10 +191,10 @@ export default function SeoContentSection() {
           <div className="mt-6 pt-6 border-t border-slate-100">
             <h3 className="text-xl font-bold text-gray-900 mb-3">Assignment Helper UK: Who Actually Writes Your Work</h3>
             <p>
-              A lot of assignment help services in the UK outsource to whoever is available that day. We don't work that way. When you come to AIN for assignment writing help, you get a writer who has actually studied and worked in your subject area—not a generalist assigned based on availability.
+              A lot of assignment help services in the UK outsource to whoever is available that day. We don't work that way. When you come to AIN for assignment writing help, you get a writer who has actually studied and worked in your subject area not a generalist assigned based on availability.
             </p>
             <p className="mt-3">
-              This matters more than most students realise. An assignment helper who understands your subject can catch gaps in your brief, flag where your argument is weak, and structure the work the way your marker expects it—not just fill word count. That's the difference between assignment assistance that gets you a pass and assignment assistance online that gets you a strong grade.
+              This matters more than most students realise. An assignment helper who understands your subject can catch gaps in your brief, flag where your argument is weak, and structure the work the way your marker expects it not just fill word count. That's the difference between assignment assistance that gets you a pass and assignment assistance online that gets you a strong grade.
             </p>
           </div>
 
@@ -214,10 +214,10 @@ export default function SeoContentSection() {
               <li>A process where you can ask questions and request changes before you submit anything</li>
             </ul>
             <p className="mt-4">
-              This is assignment help online the way it should work—transparent, subject-matched, and built around your actual course, not a one-size-fits-all template.
+              This is assignment help online the way it should work transparent, subject-matched, and built around your actual course, not a one-size-fits-all template.
             </p>
             <p className="font-bold text-[#3f159a] border-l-4 border-[#3f159a] pl-4 py-1.5 mt-6">
-              Need help with an assignment today? Get in touch and tell us your deadline, subject, and requirements—we'll match you with the right assignment helper and give you a straight answer on turnaround before you commit to anything.
+              Need help with an assignment today? Get in touch and tell us your deadline, subject, and requirements we'll match you with the right assignment helper and give you a straight answer on turnaround before you commit to anything.
             </p>
           </div>
         </div>
