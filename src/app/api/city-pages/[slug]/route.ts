@@ -14,6 +14,8 @@ export async function GET(
   const cleanSlug = (str: string) =>
     str
       ?.toLowerCase()
+      ?.replace(/^cities\//, "")
+      ?.replace(/^uk\//, "")
       ?.replace(/^assignment-help-/, "")
       ?.replace(/-assignment-help$/, "")
       ?.replace(/-assignment-writing-help$/, "")
@@ -52,7 +54,7 @@ export async function GET(
     const freshToken = Date.now().toString();
     // 1. Parallelize candidate fetches against single-item endpoint
     const fetchPromises = candidateSlugs.map((cand) =>
-      fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(cand)}?_fresh=${freshToken}`, {
+      fetch(`${BACKEND_URL}/api/city-pages/${cand.split("/").map(encodeURIComponent).join("/")}?_fresh=${freshToken}`, {
         headers,
         cache: "no-store",
         signal: AbortSignal.timeout(12000),
@@ -117,7 +119,11 @@ export async function GET(
 
       if (matchedPage) {
         if (matchedPage.slug) {
-          const detailRes = await fetch(`${BACKEND_URL}/api/city-pages/${encodeURIComponent(matchedPage.slug)}?_fresh=${freshToken}`, {
+          const detailPath = String(matchedPage.slug)
+            .split("/")
+            .map(encodeURIComponent)
+            .join("/");
+          const detailRes = await fetch(`${BACKEND_URL}/api/city-pages/${detailPath}?_fresh=${freshToken}`, {
             headers,
             cache: "no-store",
             signal: AbortSignal.timeout(12000),
