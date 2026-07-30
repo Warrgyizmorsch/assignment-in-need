@@ -1,7 +1,32 @@
 const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
+const MIN_REQUEST_INTERVAL_MS = 350;
 
 const wait = (milliseconds: number) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+let backendRequestQueue: Promise<void> = Promise.resolve();
+let lastBackendRequestStartedAt = 0;
+
+function scheduleBackendRequest(
+  input: string | URL,
+  init: RequestInit,
+): Promise<Response> {
+  const request = backendRequestQueue.then(async () => {
+    const elapsed = Date.now() - lastBackendRequestStartedAt;
+    const delay = Math.max(0, MIN_REQUEST_INTERVAL_MS - elapsed);
+    if (delay > 0) await wait(delay);
+
+    lastBackendRequestStartedAt = Date.now();
+    return fetch(input, init);
+  });
+
+  backendRequestQueue = request.then(
+    () => undefined,
+    () => undefined,
+  );
+
+  return request;
+}
 
 export async function fetchBackend(
   input: string | URL,
@@ -13,7 +38,7 @@ export async function fetchBackend(
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
-      const response = await fetch(input, {
+      const response = await scheduleBackendRequest(input, {
         ...init,
         cache: "no-store",
         headers: {

@@ -1,11 +1,15 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import NextLink from "next/link";
 import Image from "next/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { canonicalSubjectPath } from "@/lib/utils";
 import { dedupedFetch } from "@/lib/client-fetch";
+
+const Link = (props: React.ComponentProps<typeof NextLink>) => (
+  <NextLink {...props} prefetch={false} />
+);
 
 export const Footer = () => {
   const [subjects, setSubjects] = React.useState<any[]>([]);

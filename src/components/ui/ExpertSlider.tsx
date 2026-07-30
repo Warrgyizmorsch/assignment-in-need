@@ -1,10 +1,14 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import Link from "next/link";
+import NextLink from "next/link";
 import { ExpertCard } from "./ExpertCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const Link = (props: React.ComponentProps<typeof NextLink>) => (
+  <NextLink {...props} prefetch={false} />
+);
 
 export interface ExpertItem {
   id?: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import NextLink from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -17,6 +17,10 @@ import {
 import { canonicalSubjectPath, cn } from "@/lib/utils";
 import { dedupedFetch } from "@/lib/client-fetch";
 import "./navbar.css";
+
+const Link = (props: React.ComponentProps<typeof NextLink>) => (
+  <NextLink {...props} prefetch={false} />
+);
 
 type NavLinkItem = {
   name: string;
