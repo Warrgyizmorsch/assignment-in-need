@@ -182,10 +182,6 @@ const FALLBACK_SERVICES: NavLinkItem[] = [
     name: "Assignment Writing Help UK",
     path: "/assignment-writing-uk",
     children: [
-      { name: "Essay Writing", path: "/essay-writing-help-services" },
-      { name: "Coursework Help", path: "/coursework-writing-help" },
-      { name: "Case Study Help", path: "/case-study-dissertation-help-uk" },
-      { name: "Report Writing", path: "/report-writing" },
       ...ASSIGNMENT_SERVICE_SUBJECTS,
     ],
   },
