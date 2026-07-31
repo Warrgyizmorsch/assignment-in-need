@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Nunito, Roboto } from "next/font/google";
+import { Roboto } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import Script from "next/script";
@@ -11,20 +11,6 @@ import { QuoteModal } from "@/components/ui/QuoteModal";
 import "./globals.css";
 import "@/components/layout/navbar.css";
 // import "./blog/blog.css";
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  display: "swap",
-});
-
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800", "900", "1000"],
-  display: "swap",
-});
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -103,7 +89,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${montserrat.variable} ${nunito.variable} ${roboto.variable}`}
+      className={`${roboto.variable} ${roboto.className}`}
     >
       <head>
         <CanonicalHeader />

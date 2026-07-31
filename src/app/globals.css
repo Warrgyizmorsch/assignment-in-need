@@ -457,7 +457,7 @@
 .rich-text-content h2,
 .rich-text-content h3,
 .rich-text-content h4 {
-  font-family: var(--font-montserrat), sans-serif !important;
+  font-family: var(--font-roboto), sans-serif !important;
   color: #0f1b3d !important;
   font-weight: 700 !important;
   margin-top: 1.75rem !important;

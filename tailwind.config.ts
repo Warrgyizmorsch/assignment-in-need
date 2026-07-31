@@ -60,8 +60,10 @@ const config: Config = {
         "gradient-logo": "linear-gradient(135deg, #4a17a3 0%, #F97316 100%)",
       },
       fontFamily: {
-        sans: ["var(--font-nunito)", "sans-serif"],
+        sans: ["var(--font-roboto)", "sans-serif"],
         heading: ["var(--font-roboto)", "sans-serif"],
+        serif: ["var(--font-roboto)", "sans-serif"],
+        mono: ["var(--font-roboto)", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
