@@ -25,6 +25,15 @@
     font-size: 15px;
   }
 
+  p {
+    font-weight: 400 !important;
+  }
+
+  p strong,
+  p b {
+    font-weight: 600 !important;
+  }
+
   h1,
   h2,
   h3,
@@ -41,6 +50,7 @@
 }
 
 @layer utilities {
+
   /* Dynamic two-tone gradient text utility */
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-accent-600;
@@ -48,6 +58,7 @@
 }
 
 @layer components {
+
   /* CMS / API-rendered content containers — ensure 15px body text */
   .prose p,
   .prose li,
@@ -72,8 +83,10 @@
   .btn-shutter-primary {
     position: relative;
     overflow: hidden;
-    background-color: #4a17a3 !important; /* normal state purple background */
-    color: #ffffff !important; /* normal state white text color */
+    background-color: #4a17a3 !important;
+    /* normal state purple background */
+    color: #ffffff !important;
+    /* normal state white text color */
     border: 1px solid #4a17a3 !important;
     z-index: 1;
     transition:
@@ -89,7 +102,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #fbf2fe; /* lavender shutter slides in on hover */
+    background-color: #fbf2fe;
+    /* lavender shutter slides in on hover */
     z-index: -1;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -103,7 +117,8 @@
   }
 
   .btn-shutter-primary:hover {
-    color: #222222 !important; /* text becomes dark charcoal on hover */
+    color: #222222 !important;
+    /* text becomes dark charcoal on hover */
     border-color: #4a17a3 !important;
   }
 
@@ -119,8 +134,10 @@
   .btn-shutter-secondary {
     position: relative;
     overflow: hidden;
-    background-color: #f97316 !important; /* underlay background is orange */
-    color: #4a17a3 !important; /* normal text is main brand purple */
+    background-color: #f97316 !important;
+    /* underlay background is orange */
+    color: #4a17a3 !important;
+    /* normal text is main brand purple */
     border: 1px solid #4a17a3 !important;
     z-index: 1;
     transition:
@@ -136,7 +153,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ffffff; /* shutter cover is white by default */
+    background-color: #ffffff;
+    /* shutter cover is white by default */
     z-index: -1;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -151,7 +169,8 @@
   }
 
   .btn-shutter-secondary:hover {
-    color: #ffffff !important; /* text becomes white on hover */
+    color: #ffffff !important;
+    /* text becomes white on hover */
     border-color: #f97316 !important;
   }
 
@@ -173,7 +192,8 @@
   }
 
   .link-slide-hover:hover {
-    color: #f97316 !important; /* accent orange text */
+    color: #f97316 !important;
+    /* accent orange text */
     transform: translateX(4px) !important;
   }
 
@@ -207,6 +227,7 @@
     width: 30px;
     z-index: 10;
   }
+
   /* ==========================================================================
      4 NEW CUSTOM BUTTON SHUTTER VARIANTS
      ========================================================================== */
@@ -223,6 +244,7 @@
       color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       border-color 0.3s ease;
   }
+
   .btn-shutter-orange-open::before,
   .btn-shutter-orange-open::after {
     content: "";
@@ -231,25 +253,31 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ffffff; /* white shutter slides in on hover */
+    background-color: #ffffff;
+    /* white shutter slides in on hover */
     z-index: -1;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .btn-shutter-orange-open::before {
     transform: translateY(-110%);
     will-change: transform;
   }
+
   .btn-shutter-orange-open::after {
     transform: translateY(110%);
     will-change: transform;
   }
+
   .btn-shutter-orange-open:hover {
     color: #ff5722 !important;
     border-color: #ff5722 !important;
   }
+
   .btn-shutter-orange-open:hover::before {
     transform: translateY(-50%);
   }
+
   .btn-shutter-orange-open:hover::after {
     transform: translateY(50%);
   }
@@ -266,6 +294,7 @@
       color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       border-color 0.3s ease;
   }
+
   .btn-shutter-orange-close::before,
   .btn-shutter-orange-close::after {
     content: "";
@@ -274,25 +303,31 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ff5722; /* orange shutter slides in on hover */
+    background-color: #ff5722;
+    /* orange shutter slides in on hover */
     z-index: -1;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .btn-shutter-orange-close::before {
     transform: translateY(-110%);
     will-change: transform;
   }
+
   .btn-shutter-orange-close::after {
     transform: translateY(110%);
     will-change: transform;
   }
+
   .btn-shutter-orange-close:hover {
     color: #ffffff !important;
     border-color: #ff5722 !important;
   }
+
   .btn-shutter-orange-close:hover::before {
     transform: translateY(-50%);
   }
+
   .btn-shutter-orange-close:hover::after {
     transform: translateY(50%);
   }
@@ -309,6 +344,7 @@
       color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       border-color 0.3s ease;
   }
+
   .btn-shutter-blue-open::before,
   .btn-shutter-blue-open::after {
     content: "";
@@ -317,25 +353,31 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ffffff; /* white shutter slides in on hover */
+    background-color: #ffffff;
+    /* white shutter slides in on hover */
     z-index: -1;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .btn-shutter-blue-open::before {
     transform: translateY(-110%);
     will-change: transform;
   }
+
   .btn-shutter-blue-open::after {
     transform: translateY(110%);
     will-change: transform;
   }
+
   .btn-shutter-blue-open:hover {
     color: #3f159a !important;
     border-color: #3f159a !important;
   }
+
   .btn-shutter-blue-open:hover::before {
     transform: translateY(-50%);
   }
+
   .btn-shutter-blue-open:hover::after {
     transform: translateY(50%);
   }
@@ -352,6 +394,7 @@
       color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       border-color 0.3s ease;
   }
+
   .btn-shutter-blue-close::before,
   .btn-shutter-blue-close::after {
     content: "";
@@ -360,25 +403,31 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #3f159a; /* blue shutter slides in on hover */
+    background-color: #3f159a;
+    /* blue shutter slides in on hover */
     z-index: -1;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .btn-shutter-blue-close::before {
     transform: translateY(-110%);
     will-change: transform;
   }
+
   .btn-shutter-blue-close::after {
     transform: translateY(110%);
     will-change: transform;
   }
+
   .btn-shutter-blue-close:hover {
     color: #ffffff !important;
     border-color: #3f159a !important;
   }
+
   .btn-shutter-blue-close:hover::before {
     transform: translateY(-50%);
   }
+
   .btn-shutter-blue-close:hover::after {
     transform: translateY(50%);
   }
@@ -387,11 +436,9 @@
 @layer utilities {
   .bg-hero {
     background-image:
-      linear-gradient(
-        180deg,
+      linear-gradient(180deg,
         rgba(255, 255, 255, 0.92),
-        rgba(255, 255, 255, 0.85)
-      ),
+        rgba(255, 255, 255, 0.85)),
       linear-gradient(135deg, #eef2ff 0%, #f7f3ff 42%, #fff5f8 100%),
       url("/new-home-page-images/New-Hero-Bg.webp");
     background-size: cover, cover, cover;
@@ -409,11 +456,9 @@
   .hero-shape-1 {
     width: 360px;
     height: 360px;
-    background: radial-gradient(
-      circle at center,
-      rgba(99, 102, 241, 0.45),
-      transparent 60%
-    );
+    background: radial-gradient(circle at center,
+        rgba(99, 102, 241, 0.45),
+        transparent 60%);
     top: -80px;
     left: -80px;
   }
@@ -421,11 +466,9 @@
   .hero-shape-2 {
     width: 260px;
     height: 260px;
-    background: radial-gradient(
-      circle at center,
-      rgba(236, 72, 153, 0.35),
-      transparent 60%
-    );
+    background: radial-gradient(circle at center,
+        rgba(236, 72, 153, 0.35),
+        transparent 60%);
     top: 120px;
     right: -60px;
   }
@@ -433,11 +476,9 @@
   .hero-shape-3 {
     width: 220px;
     height: 220px;
-    background: radial-gradient(
-      circle at center,
-      rgba(79, 70, 229, 0.3),
-      transparent 60%
-    );
+    background: radial-gradient(circle at center,
+        rgba(79, 70, 229, 0.3),
+        transparent 60%);
     bottom: -80px;
     left: 15%;
   }
@@ -537,6 +578,72 @@
   color: #ea580c !important;
 }
 
+/* Mobile Table Slider / Horizontal Scroll for 3, 4+ Column Tables in Long Content */
+@media (max-width: 768px) {
+
+  .rich-text-content table,
+  .prose-content table,
+  .html-desc table,
+  .blog-content-container table {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+    border-radius: 8px !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .rich-text-content figure,
+  .prose-content figure {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    margin: 1rem 0 !important;
+  }
+
+  .rich-text-content th,
+  .rich-text-content td,
+  .prose-content th,
+  .prose-content td,
+  .html-desc th,
+  .html-desc td,
+  .blog-content-container th,
+  .blog-content-container td {
+    min-width: 130px !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    padding: 0.6rem 0.75rem !important;
+    font-size: 13px !important;
+  }
+
+  /* Touch slide scrollbar styling */
+  .rich-text-content table::-webkit-scrollbar,
+  .prose-content table::-webkit-scrollbar,
+  .html-desc table::-webkit-scrollbar,
+  .blog-content-container table::-webkit-scrollbar {
+    height: 5px !important;
+  }
+
+  .rich-text-content table::-webkit-scrollbar-track,
+  .prose-content table::-webkit-scrollbar-track,
+  .html-desc table::-webkit-scrollbar-track,
+  .blog-content-container table::-webkit-scrollbar-track {
+    background: #f1f5f9 !important;
+    border-radius: 4px !important;
+  }
+
+  .rich-text-content table::-webkit-scrollbar-thumb,
+  .prose-content table::-webkit-scrollbar-thumb,
+  .html-desc table::-webkit-scrollbar-thumb,
+  .blog-content-container table::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 4px !important;
+  }
+}
+
 /* Writer profile promo alarm */
 .writer-promo-clock {
   position: absolute;
@@ -559,6 +666,7 @@
 }
 
 @keyframes writer-promo-clock-ring {
+
   0%,
   4%,
   8%,
