@@ -652,13 +652,13 @@ export default function CityDetailPage({
               </div>
             </div>
 
-            {/* 3D Gift Box Graphic */}
-            <div className="w-[120px] h-[120px] lg:w-[190px] lg:h-[190px] shrink-0 relative lg:absolute lg:right-6 lg:top-1/2 lg:-translate-y-1/2 flex items-center justify-center z-10 mt-6 lg:mt-0 mx-auto">
+            {/* Promo Illustration */}
+            <div className="w-[140px] h-[140px] lg:w-[170px] lg:h-[170px] shrink-0 relative lg:absolute lg:right-6 lg:top-1/2 lg:-translate-y-1/2 flex items-center justify-center z-10 mt-6 lg:mt-0 mx-auto">
               <Image
                 src="/images/gift.png"
-                alt="3D Gift Box"
+                alt="Gift Box"
                 fill
-                sizes="(min-width: 1024px) 190px, 120px"
+                sizes="(min-width: 1024px) 170px, 140px"
                 className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
               />
             </div>

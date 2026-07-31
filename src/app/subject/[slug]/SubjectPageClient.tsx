@@ -1186,15 +1186,17 @@ export default function SubjectLanding({
                 </em>
               </div>
 
-              {/* Rotated gift emoji */}
+              {/* Promo Illustration */}
               <div
-                className="text-[64px] md:text-[80px] select-none pointer-events-none z-10 shrink-0 leading-none"
-                style={{
-                  filter: "drop-shadow(0 8px 12px rgba(0,0,0,0.15))",
-                  transform: "rotate(-7deg)",
-                }}
+                className="w-[130px] h-[130px] md:w-[150px] md:h-[150px] select-none pointer-events-none z-10 shrink-0 leading-none relative"
               >
-                🎁
+                <Image
+                  src="/images/gift.png"
+                  alt="Gift Box"
+                  fill
+                  sizes="120px"
+                  className="object-contain drop-shadow-[0_8px_12px_rgba(0,0,0,0.15)]"
+                />
               </div>
             </div>
 
