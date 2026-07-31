@@ -699,15 +699,15 @@ export const Navbar = () => {
               flex: 1,
             }}
           >
-            <div className="inline-flex items-center gap-[5px] bg-[#e85d04] text-white font-bold text-[11px] max-md:text-[10px] py-[3px] px-[10px] max-md:py-[2px] max-md:px-[8px] rounded-full uppercase tracking-[0.5px] whitespace-nowrap shrink-0">
+            <div className="hidden sm:inline-flex items-center gap-[5px] bg-[#e85d04] text-white font-bold text-[11px] max-md:text-[10px] py-[3px] px-[10px] max-md:py-[2px] max-md:px-[8px] rounded-full uppercase tracking-[0.5px] whitespace-nowrap shrink-0">
               OFFER
             </div>
             <div
-              className="flex-1 flex items-center justify-center overflow-hidden relative min-w-0"
+              className="flex-1 flex items-center justify-start overflow-hidden relative min-w-0"
               style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
+                justifyContent: "flex-start",
                 overflow: "hidden",
                 flex: 1,
                 minWidth: 0,

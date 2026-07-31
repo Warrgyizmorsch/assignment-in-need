@@ -751,3 +751,15 @@
 .animate-scaleUp {
   animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* SVG global safety styles - prevent any unstyled SVG or Star from expanding to screen width */
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 100%;
+}
+
+svg:not([width]):not([class*="w-"]) {
+  width: 24px !important;
+  height: 24px !important;
+}

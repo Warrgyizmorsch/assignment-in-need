@@ -24,12 +24,52 @@ export function PromoModal() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    // Show popup 12 seconds after page load / refresh
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 12000);
+    let triggered = false;
+    let timer: NodeJS.Timeout | null = null;
 
-    return () => clearTimeout(timer);
+    const triggerPopup = () => {
+      if (triggered) return;
+      triggered = true;
+      setIsOpen(true);
+      cleanup();
+    };
+
+    // Desktop: Trigger on mouse cursor movement or exit intent
+    const handleMouseMove = () => {
+      if (!timer) {
+        timer = setTimeout(triggerPopup, 1000);
+      }
+    };
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 15) {
+        triggerPopup();
+      }
+    };
+
+    // Mobile: Trigger when user scrolls or touches page
+    const handleScrollOrTouch = () => {
+      if (window.scrollY > 30 || window.pageYOffset > 30) {
+        if (!timer) {
+          timer = setTimeout(triggerPopup, 800);
+        }
+      }
+    };
+
+    const cleanup = () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("scroll", handleScrollOrTouch);
+      window.removeEventListener("touchmove", handleScrollOrTouch);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("scroll", handleScrollOrTouch, { passive: true });
+    window.addEventListener("touchmove", handleScrollOrTouch, { passive: true });
+
+    return cleanup;
   }, []);
 
   const handleClose = () => {
