@@ -89,12 +89,13 @@ export const PromoBanner: React.FC<PromoBannerProps> = ({
               </div>
             </div>
 
-            {/* Gift Box graphic representation */}
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-sm flex items-center justify-center shrink-0 relative animate-pulse shadow-inner">
-              <div className="text-4xl">🎁</div>
-              <div className="absolute -top-1 -right-1 bg-accent-600 text-white font-heading font-extrabold text-[10px] px-1.5 py-0.5 rounded-full uppercase shadow">
-                FREE
-              </div>
+            {/* Promo Illustration */}
+            <div className="w-28 h-28 sm:w-32 sm:h-32 shrink-0 relative">
+              <img
+                src="/images/gift.png"
+                alt="Gift Box"
+                className="w-full h-full object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.25)]"
+              />
             </div>
           </div>
         </div>

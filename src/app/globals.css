@@ -706,3 +706,29 @@
     animation: none;
   }
 }
+
+/* Promo illustration floating animation */
+@keyframes promo-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(0.5deg);
+  }
+}
+
+.animate-promo-float {
+  animation: promo-float 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-promo-float {
+    animation: none;
+  }
+}
