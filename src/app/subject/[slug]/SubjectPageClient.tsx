@@ -132,8 +132,8 @@ export default function SubjectLanding({
       cleanSlugForSubject === "math"
         ? "Maths"
         : cleanSlugForSubject
-            .replace(/-/g, " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase());
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
     subject = {
       slug: cleanSlugForSubject,
       name: humanName,
@@ -229,7 +229,7 @@ export default function SubjectLanding({
               ratings.length;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Get image
@@ -366,17 +366,17 @@ export default function SubjectLanding({
                   subjectMatched.length > 0
                     ? []
                     : result.data.filter((item: any) => {
-                        const skills = Array.isArray(item.skills)
-                          ? item.skills.join(" ").toLowerCase()
-                          : "";
-                        const content = (item.content || "").toLowerCase();
-                        return (
-                          skills.includes(subjectLower) ||
-                          skills.includes(slugLower) ||
-                          content.includes(subjectLower) ||
-                          content.includes(slugLower)
-                        );
-                      });
+                      const skills = Array.isArray(item.skills)
+                        ? item.skills.join(" ").toLowerCase()
+                        : "";
+                      const content = (item.content || "").toLowerCase();
+                      return (
+                        skills.includes(subjectLower) ||
+                        skills.includes(slugLower) ||
+                        content.includes(subjectLower) ||
+                        content.includes(slugLower)
+                      );
+                    });
 
                 const bestMatches =
                   subjectMatched.length > 0 ? subjectMatched : keywordMatched;
@@ -566,13 +566,13 @@ export default function SubjectLanding({
   const choiceFeaturesToRender =
     dynamicWhyItems.length > 0
       ? dynamicWhyItems.map((item: any, idx: number) => {
-          const match = choiceFeatures[idx % choiceFeatures.length];
-          return {
-            icon: match ? match.icon : choiceFeatures[0].icon,
-            title: item.title,
-            desc: item.desc,
-          };
-        })
+        const match = choiceFeatures[idx % choiceFeatures.length];
+        return {
+          icon: match ? match.icon : choiceFeatures[0].icon,
+          title: item.title,
+          desc: item.desc,
+        };
+      })
       : choiceFeatures;
 
   // Dynamic promo banner inclusions row (6 items on mobile: 3 top + 3 bottom, 7 items on desktop)
@@ -1047,14 +1047,6 @@ export default function SubjectLanding({
               }))}
             />
           </div>
-          <div className="relative">
-            {/* Visual Dot pagination for mobile to match design spec */}
-            <div className="flex md:hidden justify-center gap-2 mt-6">
-              <span className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-              <span className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#3f159a]" />
-            </div>
-          </div>
         </div>
       </section>
 
@@ -1241,23 +1233,20 @@ export default function SubjectLanding({
               return (
                 <div
                   key={i}
-                  className={`rounded-2xl p-7 relative flex flex-col justify-between text-left transition-all duration-300 hover:scale-[1.02] ${
-                    isFeatured
+                  className={`rounded-2xl p-7 relative flex flex-col justify-between text-left transition-all duration-300 hover:scale-[1.02] ${isFeatured
                       ? "bg-[#3f159a] shadow-2xl text-white md:-translate-y-4"
                       : "bg-white shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-gray-150"
-                  }`}
+                    }`}
                 >
                   <span
-                    className={`text-[80px] leading-[0.1] select-none font-serif opacity-20 absolute top-10 left-5 ${
-                      isFeatured ? "text-purple-300" : "text-[#3f159a]"
-                    }`}
+                    className={`text-[80px] leading-[0.1] select-none font-serif opacity-20 absolute top-10 left-5 ${isFeatured ? "text-purple-300" : "text-[#3f159a]"
+                      }`}
                   >
                     “
                   </span>
                   <p
-                    className={`text-[15px] md:text-[15px] leading-relaxed mb-8 relative z-10 pt-4 font-semibold ${
-                      isFeatured ? "text-white" : "text-gray-650"
-                    }`}
+                    className={`text-[15px] md:text-[15px] leading-relaxed mb-8 relative z-10 pt-4 font-semibold ${isFeatured ? "text-white" : "text-gray-650"
+                      }`}
                   >
                     {review.text}
                   </p>
@@ -1288,13 +1277,6 @@ export default function SubjectLanding({
                 </div>
               );
             })}
-          </div>
-
-          {/* Visual Dot pagination for mobile to match design spec */}
-          <div className="flex md:hidden justify-center gap-2 mt-6">
-            <span className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#3f159a]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-gray-300" />
           </div>
         </div>
       </section>
@@ -1395,23 +1377,23 @@ export default function SubjectLanding({
           parsedFaqs.length > 0
             ? parsedFaqs
             : [
-                {
-                  question: `Why should I choose your ${subject.name} assignment help?`,
-                  answer: `Our ${subject.name} experts hold advanced Master's and Ph.D. degrees. They write plagiarism-free assignments adhering strictly to UK university guidelines.`,
-                },
-                {
-                  question: `Are your ${subject.name} assignments 100% original?`,
-                  answer: `Yes, every paper is written from scratch. We provide free plagiarism and AI-check reports with every completed assignment.`,
-                },
-                {
-                  question: `Can I request revisions for my ${subject.name} coursework?`,
-                  answer: `We offer unlimited free revisions until you are completely satisfied with your ${subject.name} paper.`,
-                },
-                {
-                  question: `How quickly can an expert deliver my ${subject.name} assignment?`,
-                  answer: `We accommodate urgent requests with turnarounds starting as fast as 24 hours while maintaining exceptional quality.`,
-                },
-              ];
+              {
+                question: `Why should I choose your ${subject.name} assignment help?`,
+                answer: `Our ${subject.name} experts hold advanced Master's and Ph.D. degrees. They write plagiarism-free assignments adhering strictly to UK university guidelines.`,
+              },
+              {
+                question: `Are your ${subject.name} assignments 100% original?`,
+                answer: `Yes, every paper is written from scratch. We provide free plagiarism and AI-check reports with every completed assignment.`,
+              },
+              {
+                question: `Can I request revisions for my ${subject.name} coursework?`,
+                answer: `We offer unlimited free revisions until you are completely satisfied with your ${subject.name} paper.`,
+              },
+              {
+                question: `How quickly can an expert deliver my ${subject.name} assignment?`,
+                answer: `We accommodate urgent requests with turnarounds starting as fast as 24 hours while maintaining exceptional quality.`,
+              },
+            ];
 
         return (
           <section className="py-10 md:py-14 bg-[#faf9fe] border-b border-gray-50">
@@ -1442,9 +1424,8 @@ export default function SubjectLanding({
                           {faq.question}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${
-                            isOpen ? "rotate-180 text-[#3f159a]" : ""
-                          }`}
+                          className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180 text-[#3f159a]" : ""
+                            }`}
                         />
                       </button>
                       {isOpen && (

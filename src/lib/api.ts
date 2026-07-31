@@ -23,7 +23,7 @@ export const mapExpertToWriter = (expert: any): Writer => {
   const name = expert.name || "Academic Expert";
   const isDrOrProf = name.includes("Dr.") || name.includes("Prof.");
   const calculatedQualifications = isDrOrProf ? "Ph.D. Qualified" : "Master's Qualified";
-  
+
   // Calculate experience based on finished orders as a stable heuristic
   let calculatedExperience = "5+ Years";
   const finishOrder = parseInt(expert.finish_order) || 0;
@@ -40,8 +40,8 @@ export const mapExpertToWriter = (expert: any): Writer => {
   let reviewsArray = [];
   if (expert.customer_review) {
     try {
-      reviewsArray = typeof expert.customer_review === "string" 
-        ? JSON.parse(expert.customer_review) 
+      reviewsArray = typeof expert.customer_review === "string"
+        ? JSON.parse(expert.customer_review)
         : expert.customer_review;
     } catch (e) {
       console.error("Error parsing customer reviews:", e);
@@ -56,28 +56,28 @@ export const mapExpertToWriter = (expert: any): Writer => {
   }
 
   // Map customer_review objects from database to frontend reviews format
-  const mappedReviews = Array.isArray(reviewsArray) 
+  const mappedReviews = Array.isArray(reviewsArray)
     ? reviewsArray.map((r: any) => {
-        const namePart = r.name || "Student";
-        const parts = namePart.split(",");
-        const reviewerName = parts[0].trim();
-        const institution = parts[1] ? parts[1].trim() : "UK University";
-        
-        return {
-          name: reviewerName,
-          institution: institution,
-          rating: parseFloat(r.rating) || 5,
-          quote: r.review || r.quote || "",
-          avatar: reviewerName.charAt(0)
-        };
-      })
+      const namePart = r.name || "Student";
+      const parts = namePart.split(",");
+      const reviewerName = parts[0].trim();
+      const institution = parts[1] ? parts[1].trim() : "UK University";
+
+      return {
+        name: reviewerName,
+        institution: institution,
+        rating: parseFloat(r.rating) || 5,
+        quote: r.review || r.quote || "",
+        avatar: reviewerName.charAt(0)
+      };
+    })
     : [];
 
   let skillsArray = [];
   if (expert.skills) {
     try {
-      skillsArray = typeof expert.skills === "string" 
-        ? JSON.parse(expert.skills) 
+      skillsArray = typeof expert.skills === "string"
+        ? JSON.parse(expert.skills)
         : expert.skills;
     } catch (e) {
       console.error("Error parsing skills:", e);
@@ -87,8 +87,8 @@ export const mapExpertToWriter = (expert: any): Writer => {
   let helpsWithArray = [];
   if (expert.helpus) {
     try {
-      helpsWithArray = typeof expert.helpus === "string" 
-        ? JSON.parse(expert.helpus) 
+      helpsWithArray = typeof expert.helpus === "string"
+        ? JSON.parse(expert.helpus)
         : expert.helpus;
     } catch (e) {
       console.error("Error parsing helpus:", e);

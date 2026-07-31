@@ -137,7 +137,7 @@ export default function ServiceLanding() {
         // FIX: hit the real detail endpoint shape (/api/service-pages/:slug)
         // instead of the old admin query-string variant.
         let pageResult: any = null;
-        
+
         // Try 0: Full original slug with service/ or subject/ prefix
         try {
           const pageRes0 = await fetch(`/api/service-pages/service/${fullSlug}`, { cache: "no-store" });
@@ -147,7 +147,7 @@ export default function ServiceLanding() {
               pageResult = temp;
             }
           }
-        } catch (e) {}
+        } catch (e) { }
 
         if (!pageResult || !pageResult.success || !pageResult.data || !pageResult.data.page) {
           try {
@@ -158,7 +158,7 @@ export default function ServiceLanding() {
                 pageResult = temp;
               }
             }
-          } catch (e) {}
+          } catch (e) { }
         }
 
         // Try 1: Cleaned/extracted apiSlug
@@ -307,17 +307,17 @@ export default function ServiceLanding() {
               subjectMatched.length > 0
                 ? []
                 : result.data.filter((item: any) => {
-                    const skills = Array.isArray(item.skills)
-                      ? item.skills.join(" ").toLowerCase()
-                      : "";
-                    const content = (item.content || "").toLowerCase();
-                    return (
-                      skills.includes(titleLower) ||
-                      skills.includes(slugLower) ||
-                      content.includes(titleLower) ||
-                      content.includes(slugLower)
-                    );
-                  });
+                  const skills = Array.isArray(item.skills)
+                    ? item.skills.join(" ").toLowerCase()
+                    : "";
+                  const content = (item.content || "").toLowerCase();
+                  return (
+                    skills.includes(titleLower) ||
+                    skills.includes(slugLower) ||
+                    content.includes(titleLower) ||
+                    content.includes(slugLower)
+                  );
+                });
 
             const bestMatches =
               subjectMatched.length > 0 ? subjectMatched : keywordMatched;
@@ -527,31 +527,41 @@ export default function ServiceLanding() {
   const hasCta = Boolean(pageData.cta_content);
 
   const steps = [
-    { number: 1, icon: (
+    {
+      number: 1, icon: (
         <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
         </svg>
-      ), title: "Submit Requirements", description: "Share your assignment details and upload instructions." },
-    { number: 2, icon: (
+      ), title: "Submit Requirements", description: "Share your assignment details and upload instructions."
+    },
+    {
+      number: 2, icon: (
         <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
         </svg>
-      ), title: "Choose Writer", description: "We assign the best suitable expert for your task." },
-    { number: 3, icon: (
+      ), title: "Choose Writer", description: "We assign the best suitable expert for your task."
+    },
+    {
+      number: 3, icon: (
         <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-      ), title: "Track Progress", description: "Track the progress and stay updated at every step." },
-    { number: 4, icon: (
+      ), title: "Track Progress", description: "Track the progress and stay updated at every step."
+    },
+    {
+      number: 4, icon: (
         <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
         </svg>
-      ), title: "Receive Draft", description: "Review the draft and request any changes if needed." },
-    { number: 5, icon: (
+      ), title: "Receive Draft", description: "Review the draft and request any changes if needed."
+    },
+    {
+      number: 5, icon: (
         <svg className="w-5.5 h-5.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.62 48.62 0 0112 20.9c2.785 0 5.43-.233 8.01-.683a60.43 60.43 0 00-.49-6.347m-15.26 0A12.01 12.01 0 0112 4.5c2.978 0 5.679 1.085 7.74 2.873m-15.26 2.774L12 14l7.74-4.227m0 0a12.01 12.01 0 003.74-8.273" />
         </svg>
-      ), title: "Final Delivery", description: "Get the final assignment on time and score higher." },
+      ), title: "Final Delivery", description: "Get the final assignment on time and score higher."
+    },
   ];
 
   return (
@@ -575,7 +585,7 @@ export default function ServiceLanding() {
               variant="fadeUp"
               className="lg:col-span-7 flex flex-col justify-start items-start text-left z-20 pb-4 lg:pb-0 order-1 relative pt-2"
             >
-              <div className="max-w-[75%] lg:max-w-[560px] xl:max-w-[600px] w-full flex flex-col items-start relative z-20">
+              <div className="w-full max-w-full lg:max-w-[560px] xl:max-w-[600px] flex flex-col items-start relative z-20">
                 <h1
                   className="text-[34px] sm:text-[40px] lg:text-[42px] font-black text-[#0f1b3d] leading-[1.12] tracking-[-0.02em] mb-4"
                   style={{ fontFamily: "var(--font-roboto), sans-serif" }}
@@ -816,13 +826,10 @@ export default function ServiceLanding() {
       {/* 4. FREE With Every Order Banner (unchanged - static perk list, not backend-driven) */}
       <section className="bg-white py-2 md:py-3 w-full">
         <div className="max-w-7xl mx-auto px-4 md:px-8 w-full">
-          <div className="w-full rounded-2xl py-4 px-5 md:py-4 md:px-6 lg:pr-[190px] text-white bg-gradient-to-r from-[#0b0742] via-[#1a0f69] to-[#3b1793] border border-purple-500/25 shadow-xl relative overflow-hidden select-none">
-            <div className="absolute right-0 top-0 bottom-0 w-[40%] pointer-events-none select-none z-0 overflow-hidden">
-              <div className="absolute top-[-30px] right-[-40px] w-[180px] h-[180px] rounded-full bg-purple-600/10 border border-purple-500/10" />
-              <div className="absolute top-[20px] right-[40px] w-[130px] h-[130px] rounded-full bg-indigo-500/15 border border-indigo-400/15" />
-              <div className="absolute bottom-[-30px] right-[-20px] w-[200px] h-[200px] rounded-full bg-purple-500/10 border border-purple-400/10" />
-              <div className="absolute bottom-[30px] right-[80px] w-[100px] h-[100px] rounded-full bg-indigo-600/15 border border-indigo-500/15" />
-            </div>
+          <div className="w-full rounded-3xl py-6 px-4 sm:px-6 lg:pr-[190px] text-white bg-gradient-to-br from-[#1a0b58] via-[#2b107c] to-[#4518a0] border border-purple-400/20 shadow-xl relative overflow-hidden select-none">
+            {/* Soft ambient radial glow over entire card - no vertical split */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.2),transparent_70%)] pointer-events-none z-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.15),transparent_70%)] pointer-events-none z-0" />
 
             <div className="text-center mb-3.5 z-10 relative">
               <h2 className="text-lg md:text-xl font-extrabold tracking-tight text-white leading-tight">
@@ -832,7 +839,7 @@ export default function ServiceLanding() {
             </div>
 
             <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-5 z-10 relative px-2 lg:px-4">
-              <div className="grid grid-cols-3 lg:grid-cols-7 gap-y-3 gap-x-2 flex-1 w-full text-center items-start">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-y-4 gap-x-2 flex-1 w-full text-center items-start">
                 {[
                   {
                     name: "Turnitin Report",
@@ -917,7 +924,7 @@ export default function ServiceLanding() {
               </div>
             </div>
 
-            <div className="w-[140px] h-[140px] lg:w-[170px] lg:h-[170px] shrink-0 relative lg:absolute lg:right-6 lg:top-1/2 lg:-translate-y-1/2 flex items-center justify-center z-10 mt-4 lg:mt-0">
+            <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] lg:w-[170px] lg:h-[170px] shrink-0 relative lg:absolute lg:right-6 lg:top-1/2 lg:-translate-y-1/2 flex items-center justify-center z-10 mx-auto mt-4 lg:mt-0">
               <Image src="/images/gift.png" alt="Gift Box" fill sizes="(min-width: 1024px) 170px, 140px" className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]" />
             </div>
           </div>
