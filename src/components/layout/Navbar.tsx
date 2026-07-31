@@ -925,7 +925,7 @@ export const Navbar = () => {
                 <li className="znh-mobile-only mt-4">
                   <Link
                     href="/order"
-                    className="btn-shutter-orange-open text-white lg:py-3! py-2! lg:px-6! px-2! rounded-lg font-semibold inline-flex items-center justify-center w-56px! lg:w-full!"
+                    className="btn-shutter-orange-open text-white py-3 px-6 rounded-lg font-bold text-sm inline-flex items-center justify-center w-full shadow-md"
                     onClick={closeMobileMenu}
                   >
                     Get Free Quote
