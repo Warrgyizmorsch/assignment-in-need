@@ -279,12 +279,21 @@
   margin: 0 auto;
   display: flex !important;
   flex-direction: row !important;
+  flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: 28px;
   overflow: hidden;
   font-size: 13px;
   padding: 7px 20px;
+  height: 38px;
+}
+@media (max-width: 768px) {
+  .znh-top-stripe-container {
+    padding: 3px 10px !important;
+    gap: 6px !important;
+    height: 32px !important;
+  }
 }
 .znh-top-contact {
   display: flex !important;
