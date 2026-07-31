@@ -8,9 +8,9 @@ import { CanonicalHeader } from "@/components/layout/CanonicalHeader";
 import { ChatBot } from "@/components/ui/ChatBot";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { QuoteModal } from "@/components/ui/QuoteModal";
+import { PromoModal } from "@/components/ui/PromoModal";
 import "./globals.css";
 import "@/components/layout/navbar.css";
-// import "./blog/blog.css";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -183,6 +183,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <WhatsAppButton />
         <ChatBot />
         <QuoteModal />
+        <PromoModal />
         <Toaster
           position="top-center"
           reverseOrder={false}
