@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
@@ -60,6 +60,49 @@ export default function PricingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [subjectsOptions, setSubjectsOptions] = useState<any[]>([]);
+  const pricingScrollRef = useRef<HTMLDivElement>(null);
+  const [activePricingIndex, setActivePricingIndex] = useState(0);
+
+  const handlePricingScroll = () => {
+    if (!pricingScrollRef.current) return;
+    const { scrollLeft } = pricingScrollRef.current;
+    const firstChild = pricingScrollRef.current.children[0] as HTMLElement;
+    if (!firstChild) return;
+    const cardWidth = firstChild.offsetWidth + 16;
+    const newIdx = Math.round(scrollLeft / cardWidth);
+    if (newIdx >= 0 && newIdx < testimonials.length) {
+      setActivePricingIndex(newIdx);
+    }
+  };
+
+  const scrollToPricingTestimonial = (idx: number) => {
+    if (!pricingScrollRef.current) return;
+    const firstChild = pricingScrollRef.current.children[0] as HTMLElement;
+    if (!firstChild) return;
+    const cardWidth = firstChild.offsetWidth + 16;
+    pricingScrollRef.current.scrollTo({
+      left: idx * cardWidth,
+      behavior: "smooth",
+    });
+    setActivePricingIndex(idx);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (pricingScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = pricingScrollRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 20) {
+          pricingScrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          const firstChild = pricingScrollRef.current.children[0] as HTMLElement;
+          const step = firstChild ? firstChild.offsetWidth + 16 : 280;
+          pricingScrollRef.current.scrollBy({ left: step, behavior: "smooth" });
+        }
+      }
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -695,11 +738,16 @@ export default function PricingPage() {
           </div>
 
           <div className="lg:w-3/4 w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6 w-full">
+            <div
+              ref={pricingScrollRef}
+              onScroll={handlePricingScroll}
+              className="flex lg:grid lg:grid-cols-3 gap-4 xl:gap-6 w-full overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
               {testimonials.map((t, idx) => (
                 <div
                   key={idx}
-                  className="w-full bg-[#fbfcff] p-4 xl:p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer"
+                  className="shrink-0 w-[88%] lg:w-auto snap-center bg-[#fbfcff] p-4 xl:p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
                 >
                   <div>
                     <div className="text-purple-600 text-3xl mb-4 opacity-80 group-hover:text-purple-800 transition-colors duration-300 group-hover:scale-110 transform origin-left">
@@ -731,9 +779,16 @@ export default function PricingPage() {
               ))}
             </div>
             <div className="flex justify-center gap-2 mt-4">
-              <span className="w-2 h-2 rounded-full bg-purple-700"></span>
-              <span className="w-2 h-2 rounded-full bg-gray-300"></span>
-              <span className="w-2 h-2 rounded-full bg-gray-300"></span>
+              {testimonials.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => scrollToPricingTestimonial(idx)}
+                  aria-label={`Go to testimonial ${idx + 1}`}
+                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer border-none p-0 focus:outline-none ${
+                    activePricingIndex === idx ? "w-6 bg-purple-700 shadow-sm" : "w-2.5 bg-gray-300 hover:bg-gray-400"
+                  }`}
+                />
+              ))}
             </div>
           </div>
         </div>

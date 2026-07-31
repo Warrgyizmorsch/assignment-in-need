@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   AnimateIn,
@@ -256,6 +256,50 @@ export default function SamplesPage() {
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
+
+  const testimonialScrollRef = useRef<HTMLDivElement>(null);
+  const [activeTestimonialIndex, setActiveTestimonialIndex] = useState(0);
+
+  const handleTestimonialScroll = () => {
+    if (!testimonialScrollRef.current) return;
+    const { scrollLeft } = testimonialScrollRef.current;
+    const firstChild = testimonialScrollRef.current.children[0] as HTMLElement;
+    if (!firstChild) return;
+    const cardWidth = firstChild.offsetWidth + 16;
+    const newIdx = Math.round(scrollLeft / cardWidth);
+    if (newIdx >= 0 && newIdx < TESTIMONIALS.length) {
+      setActiveTestimonialIndex(newIdx);
+    }
+  };
+
+  const scrollToTestimonial = (idx: number) => {
+    if (!testimonialScrollRef.current) return;
+    const firstChild = testimonialScrollRef.current.children[0] as HTMLElement;
+    if (!firstChild) return;
+    const cardWidth = firstChild.offsetWidth + 16;
+    testimonialScrollRef.current.scrollTo({
+      left: idx * cardWidth,
+      behavior: "smooth",
+    });
+    setActiveTestimonialIndex(idx);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (testimonialScrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = testimonialScrollRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 20) {
+          testimonialScrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          const firstChild = testimonialScrollRef.current.children[0] as HTMLElement;
+          const step = firstChild ? firstChild.offsetWidth + 16 : 280;
+          testimonialScrollRef.current.scrollBy({ left: step, behavior: "smooth" });
+        }
+      }
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const activeCategories =
     categoriesList.length > 0
@@ -590,15 +634,23 @@ export default function SamplesPage() {
         </p>
 
         <div className="relative flex items-center justify-center">
-          <button className="hidden lg:flex w-12 h-12 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-400 hover:text-purple-700 absolute -left-6 z-10">
+          <button
+            onClick={() => scrollToTestimonial(Math.max(0, activeTestimonialIndex - 1))}
+            className="hidden lg:flex w-12 h-12 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-400 hover:text-purple-700 absolute -left-6 z-10 cursor-pointer"
+          >
             &lt;
           </button>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+          <div
+            ref={testimonialScrollRef}
+            onScroll={handleTestimonialScroll}
+            className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 w-full overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             {TESTIMONIALS.map((test, idx) => (
               <div
                 key={idx}
-                className="bg-[#fafaff] border border-gray-100 rounded-2xl p-4 text-left shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+                className="shrink-0 w-[88%] md:w-auto snap-center bg-[#fafaff] border border-gray-100 rounded-2xl p-4 text-left shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
               >
                 <div>
                   <div className="text-purple-600 text-3xl mb-4 opacity-80 group-hover:text-purple-800 group-hover:scale-110 transform origin-left transition-all duration-300">
@@ -626,16 +678,25 @@ export default function SamplesPage() {
             ))}
           </div>
 
-          <button className="hidden lg:flex w-12 h-12 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-400 hover:text-purple-700 absolute -right-6 z-10">
+          <button
+            onClick={() => scrollToTestimonial(Math.min(TESTIMONIALS.length - 1, activeTestimonialIndex + 1))}
+            className="hidden lg:flex w-12 h-12 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-400 hover:text-purple-700 absolute -right-6 z-10 cursor-pointer"
+          >
             &gt;
           </button>
         </div>
 
         <div className="flex justify-center gap-2 mt-8">
-          <span className="w-2.5 h-2.5 rounded-full bg-purple-700"></span>
-          <span className="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-          <span className="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-          <span className="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+          {TESTIMONIALS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => scrollToTestimonial(idx)}
+              aria-label={`Go to testimonial ${idx + 1}`}
+              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer border-none p-0 focus:outline-none ${
+                activeTestimonialIndex === idx ? "w-6 bg-purple-700 shadow-sm" : "w-2.5 bg-gray-300 hover:bg-gray-400"
+              }`}
+            />
+          ))}
         </div>
       </section>
 

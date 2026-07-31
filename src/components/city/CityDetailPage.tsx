@@ -293,12 +293,12 @@ export default function CityDetailPage({
   const expertsToRender = expertsList.length > 0
     ? expertsList
     : [
-        { name: "Emma Taylor", role: `${cityName} Expert`, qual: "Master's Qualified", exp: "8+ Years", rating: 4.9, orders: "1200+", img: "https://ui-avatars.com/api/?name=Emma+Taylor&background=f3e8ff&color=6b21a8" },
-        { name: "Daniel Harris", role: `${cityName} Expert`, qual: "Ph.D. Qualified", exp: "10+ Years", rating: 4.9, orders: "1900+", img: "https://ui-avatars.com/api/?name=Daniel+Harris&background=ede9fe&color=4c1d95" },
-        { name: "Sophia Martinez", role: `${cityName} Expert`, qual: "Ph.D. Qualified", exp: "7+ Years", rating: 4.8, orders: "980+", img: "https://ui-avatars.com/api/?name=Sophia+Martinez&background=fae8ff&color=86198f" },
-        { name: "James Anderson", role: `${cityName} Expert`, qual: "Master's Qualified", exp: "12+ Years", rating: 4.9, orders: "1500+", img: "https://ui-avatars.com/api/?name=James+Anderson&background=e0f2fe&color=0369a1" },
-        { name: "Olivia Bennett", role: `${cityName} Expert`, qual: "Master's Qualified", exp: "6+ Years", rating: 4.8, orders: "860+", img: "https://ui-avatars.com/api/?name=Olivia+Bennett&background=f0fdf4&color=166534" },
-      ];
+      { name: "Emma Taylor", role: `${cityName} Expert`, qual: "Master's Qualified", exp: "8+ Years", rating: 4.9, orders: "1200+", img: "https://ui-avatars.com/api/?name=Emma+Taylor&background=f3e8ff&color=6b21a8" },
+      { name: "Daniel Harris", role: `${cityName} Expert`, qual: "Ph.D. Qualified", exp: "10+ Years", rating: 4.9, orders: "1900+", img: "https://ui-avatars.com/api/?name=Daniel+Harris&background=ede9fe&color=4c1d95" },
+      { name: "Sophia Martinez", role: `${cityName} Expert`, qual: "Ph.D. Qualified", exp: "7+ Years", rating: 4.8, orders: "980+", img: "https://ui-avatars.com/api/?name=Sophia+Martinez&background=fae8ff&color=86198f" },
+      { name: "James Anderson", role: `${cityName} Expert`, qual: "Master's Qualified", exp: "12+ Years", rating: 4.9, orders: "1500+", img: "https://ui-avatars.com/api/?name=James+Anderson&background=e0f2fe&color=0369a1" },
+      { name: "Olivia Bennett", role: `${cityName} Expert`, qual: "Master's Qualified", exp: "6+ Years", rating: 4.8, orders: "860+", img: "https://ui-avatars.com/api/?name=Olivia+Bennett&background=f0fdf4&color=166534" },
+    ];
 
   // Dynamic choice features
   const choiceFeatures = [
@@ -522,11 +522,6 @@ export default function CityDetailPage({
                 slug: expert.slug,
               }))}
             />
-            <div className="flex md:hidden justify-center gap-2 mt-6">
-              <span className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-              <span className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#3f159a]" />
-            </div>
           </div>
         </div>
       </section>
@@ -763,9 +758,8 @@ export default function CityDetailPage({
                         {faq.question}
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${
-                          isOpen ? "rotate-180 text-[#3f159a]" : ""
-                        }`}
+                        className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180 text-[#3f159a]" : ""
+                          }`}
                       />
                     </button>
                     {isOpen && (

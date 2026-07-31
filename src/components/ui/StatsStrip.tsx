@@ -37,7 +37,7 @@ export const StatsStrip: React.FC<StatsStripProps> = ({
     return (
       <div
         className={cn(
-          "w-full rounded-3xl p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden select-none",
+          "w-full rounded-3xl p-4 sm:p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden select-none",
           bgClass,
           className
         )}
@@ -45,25 +45,25 @@ export const StatsStrip: React.FC<StatsStripProps> = ({
         {/* Decorative blurs */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4 w-full">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-5 gap-x-2 sm:gap-x-4 w-full">
           {stats.map((stat, idx, arr) => {
             const Icon = stat.icon;
             return (
               <div
                 key={stat.label}
-                className="flex items-center justify-start md:justify-center relative px-4"
+                className="flex items-center justify-start md:justify-center relative px-1 sm:px-2"
               >
                 {/* White Circle Icon Container */}
-                <div className="w-[50px] h-[50px] rounded-full bg-white flex items-center justify-center text-[#3f159a] shrink-0 shadow-md">
-                  <Icon className="w-5.5 h-5.5 stroke-[2]" />
+                <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] rounded-full bg-white flex items-center justify-center text-[#3f159a] shrink-0 shadow-md">
+                  <Icon className="w-4 h-4 sm:w-5.5 sm:h-5.5 stroke-[2]" />
                 </div>
                 
                 {/* Text Block */}
-                <div className="flex flex-col text-left justify-center pl-3.5">
-                  <span className="font-heading font-extrabold text-[18px] md:text-[20px] text-white leading-none mb-1 tracking-tight">
+                <div className="flex flex-col text-left justify-center pl-2 sm:pl-3.5">
+                  <span className="font-heading font-extrabold text-[15px] sm:text-[18px] md:text-[20px] text-white leading-none mb-1 tracking-tight">
                     {stat.value}
                   </span>
-                  <span className="text-white/85 text-[11.5px] md:text-[12px] font-semibold tracking-wide whitespace-nowrap">
+                  <span className="text-white/85 text-[10px] sm:text-[11.5px] md:text-[12px] font-semibold tracking-wide whitespace-nowrap">
                     {stat.label}
                   </span>
                 </div>
