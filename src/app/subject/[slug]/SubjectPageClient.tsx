@@ -575,7 +575,7 @@ export default function SubjectLanding({
         })
       : choiceFeatures;
 
-  // Dynamic promo banner inclusions row
+  // Dynamic promo banner inclusions row (6 items on mobile: 3 top + 3 bottom, 7 items on desktop)
   const promoInclusions = [
     {
       icon: <FileCheck2 className="w-6 h-6" />,
@@ -595,21 +595,21 @@ export default function SubjectLanding({
     {
       icon: <BookOpen className="w-6 h-6" />,
       label: "Bibliography",
-      visibility: "hidden sm:flex",
+      visibility: "flex",
     },
     {
       icon: <RefreshCw className="w-6 h-6" />,
       label: "Unlimited\nRevisions",
-      visibility: "hidden lg:flex",
-    },
-    {
-      icon: <PaintRoller className="w-6 h-6" />,
-      label: "Formatting",
-      visibility: "hidden lg:flex",
+      visibility: "flex",
     },
     {
       icon: <Headset className="w-6 h-6" />,
       label: "24/7\nSupport",
+      visibility: "flex",
+    },
+    {
+      icon: <PaintRoller className="w-6 h-6" />,
+      label: "Formatting",
       visibility: "hidden lg:flex",
     },
   ];
@@ -1200,12 +1200,12 @@ export default function SubjectLanding({
               </div>
             </div>
 
-            {/* Middle benefits column */}
-            <div className="lg:flex-1 w-full grid grid-cols-4 lg:grid-cols-7 gap-y-4 gap-x-2 text-center lg:pl-6">
+            {/* Middle benefits column (6 items on mobile: 3 top + 3 bottom, 7 on desktop) */}
+            <div className="lg:flex-1 w-full grid grid-cols-3 lg:grid-cols-7 gap-y-4 gap-x-2 text-center lg:pl-6">
               {promoInclusions.map((item, i) => (
                 <div
                   key={i}
-                  className={`min-h-[74px] flex flex-col items-center justify-center gap-2 px-[9px] text-center lg:border-l lg:border-white/13 lg:first:border-l-0 ${item.visibility}`}
+                  className={`min-h-[74px] flex-col items-center justify-center gap-2 px-[4px] text-center lg:border-l lg:border-white/13 lg:first:border-l-0 ${item.visibility}`}
                 >
                   <div className="text-white">
                     {React.cloneElement(item.icon, {
