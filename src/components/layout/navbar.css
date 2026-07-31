@@ -1,5 +1,5 @@
 .znh-header-wrapper {
-  font-family: var(--font-nunito), sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   background-color: #ffffff;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   position: sticky;
@@ -271,7 +271,7 @@
   z-index: 10000;
   color: #ffffff;
   background: linear-gradient(90deg, #1e3a5f 0%, #0f2a4a 50%, #1e3a5f 100%);
-  font-family: var(--font-nunito), sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   display: block !important;
 }
 .znh-top-stripe-container {

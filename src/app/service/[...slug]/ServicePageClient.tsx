@@ -578,7 +578,7 @@ export default function ServiceLanding() {
               <div className="max-w-[75%] lg:max-w-[560px] xl:max-w-[600px] w-full flex flex-col items-start relative z-20">
                 <h1
                   className="text-[34px] sm:text-[40px] lg:text-[42px] font-black text-[#0f1b3d] leading-[1.12] tracking-[-0.02em] mb-4"
-                  style={{ fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif" }}
+                  style={{ fontFamily: "var(--font-roboto), sans-serif" }}
                 >
                   {title}
                   <br />
