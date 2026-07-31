@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -478,8 +479,8 @@ export default function WriterProfile() {
             <Card className="p-5 bg-gradient-to-br from-primary-800 to-primary-650 text-white flex flex-col gap-4 text-left relative overflow-hidden">
               <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-full blur-xl pointer-events-none" />
 
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex flex-col">
+              <div className="flex items-start">
+                <div className="flex flex-col max-w-[68%]">
                   <span className="text-[9px] font-extrabold tracking-wider bg-white/15 px-2 py-0.5 rounded-pill w-fit uppercase mb-1.5">
                     First Order Offer
                   </span>
@@ -494,20 +495,16 @@ export default function WriterProfile() {
                   </p>
                 </div>
 
-                {/* Clock 3D logo representation */}
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-xl shrink-0 animate-bounce">
-                  ⏰
-                </div>
               </div>
 
-              <ul className="flex flex-col gap-1.5 text-[10px] text-primary-100 font-medium">
+              <ul className="flex flex-col gap-1.5 text-[10px] text-primary-100 font-medium max-w-[66%]">
                 <li>✓ Lightning-Fast Delivery</li>
                 <li>✓ Guaranteed Originality</li>
                 <li>✓ Subject Experts</li>
                 <li>✓ Always Available</li>
               </ul>
 
-              <div className="flex flex-col border-t border-white/10 pt-3">
+              <div className="flex flex-col border-t border-white/10 pt-3 relative z-10">
                 <span className="text-[10px] text-primary-200">Get Up To</span>
                 <span className="font-heading font-black text-2xl text-accent-400">
                   40% OFF
@@ -520,6 +517,17 @@ export default function WriterProfile() {
                     included in the offer
                   </span>
                 </div>
+              </div>
+
+              <div className="writer-promo-clock" aria-hidden="true">
+                <Image
+                  src="/images/clock-ain.png"
+                  alt=""
+                  width={256}
+                  height={256}
+                  className="writer-promo-clock-image"
+                  sizes="(max-width: 1023px) 120px, 135px"
+                />
               </div>
             </Card>
 
