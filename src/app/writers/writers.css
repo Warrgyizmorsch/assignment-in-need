@@ -502,62 +502,8 @@
 @media (max-width: 576px) {
   .znw-experts-grid {
     grid-template-columns: 1fr;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 0.25rem;
   }
-}
-
-/* Pagination Wrapper */
-.znw-pagination-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  margin-bottom: 3rem;
-}
-
-.znw-pagination-wrapper nav ul.pagination {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.znw-pagination-wrapper nav ul.pagination li.page-item .page-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: #6b7280;
-  font-weight: 700;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.znw-pagination-wrapper nav ul.pagination li.page-item.active .page-link {
-  background: #4b23b3;
-  color: #ffffff;
-}
-
-.znw-pagination-wrapper
-  nav
-  ul.pagination
-  li.page-item
-  .page-link:hover:not(.active) {
-  background: #f3efff;
-  color: #4b23b3;
-}
-
-.znw-pagination-wrapper nav ul.pagination li.page-item.disabled .page-link {
-  color: #d1d5db;
-  cursor: not-allowed;
-  background: transparent;
 }
 
 /* Stats Banner Section */

@@ -353,12 +353,15 @@ export function ChatBot() {
   };
 
   return (
-    <div id="ain-chat-widget" className="fixed bottom-[25px] right-[25px] z-[9999] font-sans">
+    <div
+      id="ain-chat-widget"
+      className="fixed bottom-3 right-3 z-[9999] font-sans sm:bottom-[25px] sm:right-[25px]"
+    >
       {/* Chat Window */}
       {isOpen && (
         <div
           id="ain-chat-box"
-          className="flex flex-col w-[350px] sm:w-[380px] h-[520px] sm:h-[550px] bg-[#f9faff] rounded-[20px] shadow-2xl overflow-hidden mb-5 border border-white/80 transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
+          className="flex h-[min(520px,calc(100dvh-48px))] w-[calc(100vw-24px)] flex-col overflow-hidden rounded-[20px] border border-white/80 bg-[#f9faff] shadow-2xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-5 sm:mb-5 sm:h-[550px] sm:w-[380px]"
         >
           {/* Header */}
           <div

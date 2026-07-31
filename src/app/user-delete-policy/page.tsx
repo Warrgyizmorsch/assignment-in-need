@@ -261,7 +261,7 @@ Thank you.`;
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <p className="text-xs sm:text-base text-gray-900 font-semibold leading-relaxed m-0">
-                We will process your request and delete your account within <strong className="text-[#3f159a] font-black">24 working hours</strong> after verifying your identity.
+                We will process your request and delete your account within <strong className="text-[#3f159a] font-black">24-48 working hours</strong> after verifying your identity.
               </p>
             </div>
           </section>

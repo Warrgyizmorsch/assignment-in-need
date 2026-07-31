@@ -6,6 +6,7 @@ import { WRITERS, Writer } from "@/lib/data";
 import { mapExpertToWriter } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
+import { Button } from "@/components/ui/Button";
 import {
   AnimateIn,
   StaggerContainer,
@@ -46,6 +47,33 @@ const SORT_OPTIONS = [
   { label: "Newest Experts", value: "orders-desc" },
 ];
 
+const sortWriters = (writers: Writer[], sort: string) =>
+  [...writers].sort((a, b) => {
+    if (sort === "rating-desc" || sort === "rating-desc-high") {
+      return b.rating - a.rating;
+    }
+
+    if (sort === "orders-desc") {
+      const aCount =
+        typeof a.ordersCompleted === "number"
+          ? a.ordersCompleted
+          : parseInt(a.ordersCompleted) || 0;
+      const bCount =
+        typeof b.ordersCompleted === "number"
+          ? b.ordersCompleted
+          : parseInt(b.ordersCompleted) || 0;
+      return bCount - aCount;
+    }
+
+    return 0;
+  });
+
+const getWriterIdentity = (writer: Writer) => {
+  const id = `${writer.id ?? ""}`.trim().toLowerCase();
+  if (id && id !== "undefined" && id !== "null") return `id:${id}`;
+  return `name:${writer.name.trim().toLowerCase().replace(/\s+/g, "-")}`;
+};
+
 export default function WritersDirectory() {
   const [selectedSubject, setSelectedSubject] = useState("all");
   const [selectedQual, setSelectedQual] = useState("all");
@@ -55,20 +83,19 @@ export default function WritersDirectory() {
 
   const [writers, setWriters] = useState<Writer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [remoteTotalPages, setRemoteTotalPages] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreWriters, setHasMoreWriters] = useState(true);
   const [dynamicSubjects, setDynamicSubjects] = useState<any[]>([]);
 
   // Sync URL search params on mount (persists page & filter state on hard refresh)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      const pageParam = parseInt(params.get("page") || "1");
       const subjectParam = params.get("subject") || "all";
       const qualParam = params.get("qual") || "all";
       const expParam = params.get("exp") || "all";
       const sortParam = params.get("sort") || "rating-desc";
 
-      if (pageParam > 0) setCurrentPage(pageParam);
       if (subjectParam) setSelectedSubject(subjectParam);
       if (qualParam) setSelectedQual(qualParam);
       if (expParam) setSelectedExp(expParam);
@@ -77,7 +104,6 @@ export default function WritersDirectory() {
   }, []);
 
   const updateUrlParams = (
-    page: number,
     subject: string,
     qual: string,
     exp: string,
@@ -85,7 +111,6 @@ export default function WritersDirectory() {
   ) => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams();
-      if (page > 1) params.set("page", String(page));
       if (subject !== "all") params.set("subject", subject);
       if (qual !== "all") params.set("qual", qual);
       if (exp !== "all") params.set("exp", exp);
@@ -99,33 +124,28 @@ export default function WritersDirectory() {
     }
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    updateUrlParams(page, selectedSubject, selectedQual, selectedExp, selectedSort);
-  };
-
   const handleSubjectChange = (val: string) => {
     setSelectedSubject(val);
     setCurrentPage(1);
-    updateUrlParams(1, val, selectedQual, selectedExp, selectedSort);
+    updateUrlParams(val, selectedQual, selectedExp, selectedSort);
   };
 
   const handleQualChange = (val: string) => {
     setSelectedQual(val);
     setCurrentPage(1);
-    updateUrlParams(1, selectedSubject, val, selectedExp, selectedSort);
+    updateUrlParams(selectedSubject, val, selectedExp, selectedSort);
   };
 
   const handleExpChange = (val: string) => {
     setSelectedExp(val);
     setCurrentPage(1);
-    updateUrlParams(1, selectedSubject, selectedQual, val, selectedSort);
+    updateUrlParams(selectedSubject, selectedQual, val, selectedSort);
   };
 
   const handleSortChange = (val: string) => {
     setSelectedSort(val);
     setCurrentPage(1);
-    updateUrlParams(1, selectedSubject, selectedQual, selectedExp, val);
+    updateUrlParams(selectedSubject, selectedQual, selectedExp, val);
   };
 
   useEffect(() => {
@@ -167,7 +187,12 @@ export default function WritersDirectory() {
   useEffect(() => {
     const fetchWriters = async () => {
       try {
-        setLoading(true);
+        if (currentPage === 1) {
+          setLoading(true);
+        } else {
+          setIsLoadingMore(true);
+        }
+
         const res = await fetch(`/api/experts?page=${currentPage}&limit=8`, {
           cache: "no-store",
         });
@@ -175,21 +200,63 @@ export default function WritersDirectory() {
           const result = await res.json();
 
           if (result.success && Array.isArray(result.data)) {
-            const mapped = result.data.map((item: any) =>
-              mapExpertToWriter(item),
+            const mapped: Writer[] = sortWriters(
+              result.data.map((item: any) => mapExpertToWriter(item)),
+              selectedSort,
             );
-            setWriters(mapped);
-            setRemoteTotalPages(
-              Math.max(1, Number(result.pagination?.lastPage) || 1),
-            );
+            const reportedTotal = Number(result.pagination?.total) || 0;
+
+            setWriters((previous) => {
+              const existingIdentities = new Set(
+                previous.flatMap((writer) => [
+                  getWriterIdentity(writer),
+                  writer.name.trim().toLowerCase(),
+                ]),
+              );
+              const newWriters =
+                currentPage === 1
+                  ? mapped
+                  : mapped.filter((writer) => {
+                      const identity = getWriterIdentity(writer);
+                      const normalizedName = writer.name.trim().toLowerCase();
+                      if (
+                        existingIdentities.has(identity) ||
+                        existingIdentities.has(normalizedName)
+                      ) {
+                        return false;
+                      }
+                      existingIdentities.add(identity);
+                      existingIdentities.add(normalizedName);
+                      return true;
+                    });
+              const combined =
+                currentPage === 1 ? newWriters : [...previous, ...newWriters];
+
+              setHasMoreWriters(
+                newWriters.length > 0 &&
+                  mapped.length === 8 &&
+                  (reportedTotal === 0 || combined.length < reportedTotal),
+              );
+
+              return combined;
+            });
+          } else {
+            setHasMoreWriters(false);
           }
+        } else {
+          setHasMoreWriters(false);
         }
       } catch (err) {
         console.error("Error fetching experts:", err);
-        setWriters(WRITERS.slice(0, 8));
-        setRemoteTotalPages(Math.max(1, Math.ceil(WRITERS.length / 8)));
+        if (currentPage === 1) {
+          setWriters(WRITERS.slice(0, 8));
+          setHasMoreWriters(WRITERS.length > 8);
+        } else {
+          setHasMoreWriters(false);
+        }
       } finally {
         setLoading(false);
+        setIsLoadingMore(false);
       }
     };
 
@@ -230,38 +297,23 @@ export default function WritersDirectory() {
       });
     }
 
-    // Sort
-    result.sort((a, b) => {
-      if (
-        selectedSort === "rating-desc" ||
-        selectedSort === "rating-desc-high"
-      ) {
-        return b.rating - a.rating;
-      }
-      if (selectedSort === "orders-desc") {
-        const aCount =
-          typeof a.ordersCompleted === "number"
-            ? a.ordersCompleted
-            : parseInt(a.ordersCompleted) || 0;
-        const bCount =
-          typeof b.ordersCompleted === "number"
-            ? b.ordersCompleted
-            : parseInt(b.ordersCompleted) || 0;
-        return bCount - aCount;
-      }
-      return 0;
-    });
+    // Keep loaded batches in append order so new experts always appear below.
+    // On the first batch, sorting still responds immediately to the filter.
+    if (currentPage === 1) {
+      result = sortWriters(result, selectedSort);
+    }
 
     return result;
-  }, [writers, selectedSubject, selectedQual, selectedExp, selectedSort]);
+  }, [
+    writers,
+    selectedSubject,
+    selectedQual,
+    selectedExp,
+    selectedSort,
+    currentPage,
+  ]);
 
-  // Pagination bounds
-  const itemsPerPage = 8;
-  const totalPages = remoteTotalPages;
-
-  const currentWriters = useMemo(() => {
-    return filteredWriters.slice(0, itemsPerPage);
-  }, [filteredWriters]);
+  const currentWriters = filteredWriters;
 
   return (
     <div className="znw-page-wrapper">
@@ -523,53 +575,18 @@ export default function WritersDirectory() {
                 })}
               </StaggerContainer>
 
-              {/* Pagination Controls — always visible under writers list */}
-              {totalPages >= 1 && (
-                <div className="znw-pagination-wrapper">
-                  <nav>
-                    <ul className="pagination">
-                      <li
-                        className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-                      >
-                        <button
-                          onClick={() =>
-                            currentPage > 1 && handlePageChange(currentPage - 1)
-                          }
-                          className="page-link"
-                          disabled={currentPage === 1}
-                        >
-                          ‹
-                        </button>
-                      </li>
-                      {[...Array(totalPages)].map((_, i) => (
-                        <li
-                          key={i}
-                          className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
-                        >
-                          <button
-                            onClick={() => handlePageChange(i + 1)}
-                            className="page-link"
-                          >
-                            {i + 1}
-                          </button>
-                        </li>
-                      ))}
-                      <li
-                        className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
-                      >
-                        <button
-                          onClick={() =>
-                            currentPage < totalPages &&
-                            handlePageChange(currentPage + 1)
-                          }
-                          className="page-link"
-                          disabled={currentPage === totalPages}
-                        >
-                          ›
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
+              {hasMoreWriters && (
+                <div className="mb-12 mt-8 flex justify-center">
+                  <Button
+                    type="button"
+                    variant="blueOpen"
+                    size="md"
+                    isLoading={isLoadingMore}
+                    onClick={() => setCurrentPage((page) => page + 1)}
+                    className="min-w-[160px]"
+                  >
+                    {isLoadingMore ? "Loading Experts..." : "Load More"}
+                  </Button>
                 </div>
               )}
             </div>
