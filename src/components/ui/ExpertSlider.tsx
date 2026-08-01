@@ -75,7 +75,7 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
   };
 
   useEffect(() => {
-    if (experts.length <= 1 || isHovered) return;
+    if (experts.length <= 4 || isHovered) return;
 
     const interval = setInterval(() => {
       if (scrollRef.current) {
@@ -119,13 +119,13 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
         </>
       )}
 
-      {/* Slider Container — Always 1-by-1 horizontal slider on mobile */}
+      {/* Slider Container — Smooth horizontal flex slider */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
         className={cn(
           "w-full flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth py-2 snap-x snap-mandatory",
-          !isMoreThanFour ? "sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible" : ""
+          !isMoreThanFour ? "lg:justify-center" : ""
         )}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
@@ -136,7 +136,7 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
               key={expert.id || idx}
               className={cn(
                 "shrink-0 flex flex-col items-stretch snap-center",
-                "w-[85%] sm:w-[46%] lg:w-[calc(25%-18px)]"
+                "w-[280px] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-[320px]"
               )}
             >
               <Link
@@ -164,7 +164,12 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
 
       {/* Working Dynamic Interactive Pagination Dots */}
       {experts.length > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-4 sm:mt-5">
+        <div
+          className={cn(
+            "flex items-center justify-center gap-2 mt-4 sm:mt-5",
+            !isMoreThanFour ? "lg:hidden" : ""
+          )}
+        >
           {experts.map((_, idx) => (
             <button
               key={idx}
