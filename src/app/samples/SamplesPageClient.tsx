@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   AnimateIn,
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/AnimateIn";
+import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
 import {
   ChevronLeft,
   ChevronRight,
@@ -633,71 +635,15 @@ export default function SamplesPage() {
           Loved by thousands of students across the UK
         </p>
 
-        <div className="relative flex items-center justify-center">
-          <button
-            onClick={() => scrollToTestimonial(Math.max(0, activeTestimonialIndex - 1))}
-            className="hidden lg:flex w-12 h-12 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-400 hover:text-purple-700 absolute -left-6 z-10 cursor-pointer"
-          >
-            &lt;
-          </button>
-
-          <div
-            ref={testimonialScrollRef}
-            onScroll={handleTestimonialScroll}
-            className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 w-full overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {TESTIMONIALS.map((test, idx) => (
-              <div
-                key={idx}
-                className="shrink-0 w-[88%] md:w-auto snap-center bg-[#fafaff] border border-gray-100 rounded-2xl p-4 text-left shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer"
-              >
-                <div>
-                  <div className="text-purple-600 text-3xl mb-4 opacity-80 group-hover:text-purple-800 group-hover:scale-110 transform origin-left transition-all duration-300">
-                    <Quote className="w-8 h-8 fill-current" />
-                  </div>
-                  <p className="text-gray-600 text-[15px] leading-relaxed mb-4 group-hover:text-gray-800 transition-colors">
-                    {test.text}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <img
-                    src={test.image}
-                    alt={test.name}
-                    className="w-12 h-12 rounded-full object-cover bg-gray-200 shadow-sm border border-gray-100 group-hover:ring-2 ring-purple-400 transition-all"
-                  />
-                  <div>
-                    <h5 className="font-bold text-gray-900 text-sm">
-                      {test.name}
-                    </h5>
-                    <p className="text-xs text-gray-500">{test.university}</p>
-                    <div className="text-yellow-400 text-xs mt-1">★★★★★</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => scrollToTestimonial(Math.min(TESTIMONIALS.length - 1, activeTestimonialIndex + 1))}
-            className="hidden lg:flex w-12 h-12 items-center justify-center rounded-full bg-white border border-gray-200 shadow-md text-gray-400 hover:text-purple-700 absolute -right-6 z-10 cursor-pointer"
-          >
-            &gt;
-          </button>
-        </div>
-
-        <div className="flex justify-center gap-2 mt-8">
-          {TESTIMONIALS.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => scrollToTestimonial(idx)}
-              aria-label={`Go to testimonial ${idx + 1}`}
-              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer border-none p-0 focus:outline-none ${
-                activeTestimonialIndex === idx ? "w-6 bg-purple-700 shadow-sm" : "w-2.5 bg-gray-300 hover:bg-gray-400"
-              }`}
-            />
-          ))}
-        </div>
+        <TestimonialCarousel
+          testimonials={TESTIMONIALS.map((t) => ({
+            name: t.name,
+            institution: t.university,
+            quote: t.text,
+            rating: 5,
+            avatar: t.image,
+          }))}
+        />
       </section>
 
       {/* FAQ Section */}
@@ -747,13 +693,21 @@ export default function SamplesPage() {
                     className={`w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-transform duration-300 ${openFaqIndex === idx ? "rotate-180" : ""}`}
                   />
                 </div>
-                <div
-                  className={`faq-answer px-4 pb-4 pt-1 border-t border-gray-50 transition-all duration-300 ${openFaqIndex === idx ? "block animate-[fadeIn_0.3s_ease]" : "hidden"}`}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: openFaqIndex === idx ? "auto" : 0,
+                    opacity: openFaqIndex === idx ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                  className="overflow-hidden"
                 >
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </div>
+                  <div className="faq-answer px-4 pb-4 pt-3 border-t border-gray-50">
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </motion.div>
               </div>
             ))}
           </div>

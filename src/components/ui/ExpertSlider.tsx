@@ -162,14 +162,9 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
         })}
       </div>
 
-      {/* Working Dynamic Interactive Pagination Dots */}
+      {/* Working Dynamic Interactive Pagination Dots (Visible on Mobile only) */}
       {experts.length > 1 && (
-        <div
-          className={cn(
-            "flex items-center justify-center gap-2 mt-4 sm:mt-5",
-            !isMoreThanFour ? "lg:hidden" : ""
-          )}
-        >
+        <div className="flex md:hidden items-center justify-center gap-2 mt-4 sm:mt-5">
           {experts.map((_, idx) => (
             <button
               key={idx}
