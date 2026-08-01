@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   X,
   Copy,
@@ -22,13 +23,23 @@ import { openQuoteModal } from "@/components/ui/QuoteModal";
 export function PromoModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Only show promo modal on the home page "/"
+    if (pathname !== "/") return;
+
+    // Do not show if already closed during this session
+    if (typeof window !== "undefined" && sessionStorage.getItem("promo_modal_closed")) {
+      return;
+    }
+
     let triggered = false;
     let timer: NodeJS.Timeout | null = null;
 
     const triggerPopup = () => {
       if (triggered) return;
+      if (typeof window !== "undefined" && sessionStorage.getItem("promo_modal_closed")) return;
       triggered = true;
       setIsOpen(true);
       cleanup();
@@ -70,9 +81,12 @@ export function PromoModal() {
     window.addEventListener("touchmove", handleScrollOrTouch, { passive: true });
 
     return cleanup;
-  }, []);
+  }, [pathname]);
 
   const handleClose = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("promo_modal_closed", "true");
+    }
     setIsOpen(false);
   };
 
@@ -83,22 +97,19 @@ export function PromoModal() {
   };
 
   const handleClaimOffer = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("promo_modal_closed", "true");
+    }
     setIsOpen(false);
     openQuoteModal();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || pathname !== "/") return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-fadeIn"
-      onClick={handleClose}
-    >
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-fadeIn">
       {/* Modal Container */}
-      <div
-        className="relative w-full max-w-[600px] bg-white rounded-[22px] sm:rounded-[32px] p-4 sm:p-7 text-[#0f1b3d] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.35)] border border-purple-100 overflow-hidden select-none animate-scaleUp max-h-[92vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative w-full max-w-[600px] bg-white rounded-[22px] sm:rounded-[32px] p-4 sm:p-7 text-[#0f1b3d] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.35)] border border-purple-100 overflow-hidden select-none animate-scaleUp max-h-[92vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={handleClose}
