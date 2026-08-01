@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from "framer-motion";
 import Link from 'next/link';
 import { 
   CheckCircle2, 
@@ -1025,12 +1026,17 @@ export default function ReviewsAndFaq() {
                     <span>{faq.question}</span>
                     <ChevronDown className={`w-[18px] h-[18px] text-[#6d28d9] shrink-0 ml-4 transition-transform duration-300 ${isActive ? 'rotate-180' : ''}`} />
                   </button>
-                  <div
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: isActive ? "auto" : 0,
+                      opacity: isActive ? 1 : 0,
+                    }}
+                    transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
                     className="overflow-hidden"
-                    style={{ maxHeight: isActive ? '300px' : '0px', transition: 'max-height 0.3s ease-out' }}
                   >
                     <p className="pb-5 px-5 m-0 text-[15px] text-gray-500 leading-relaxed border-t border-gray-50 pt-3">{faq.answer}</p>
-                  </div>
+                  </motion.div>
                 </div>
               );
             })}

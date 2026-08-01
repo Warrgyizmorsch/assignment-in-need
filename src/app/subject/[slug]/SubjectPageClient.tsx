@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -90,6 +91,7 @@ import { QuoteForm } from "@/components/ui/QuoteForm";
 import { Button } from "@/components/ui/Button";
 import { ExpertCard } from "@/components/ui/ExpertCard";
 import { ExpertSlider } from "@/components/ui/ExpertSlider";
+import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
 
 export default function SubjectLanding({
   initialPageData = null,
@@ -1226,58 +1228,15 @@ export default function SubjectLanding({
             </p>
           </div>
 
-          {/* Testimonials Grid / List */}
-          <div className="flex flex-col md:grid md:grid-cols-3 gap-6 md:gap-8">
-            {reviewsToRender.map((review, i) => {
-              const isFeatured = i === 1; // Middle card featured
-              return (
-                <div
-                  key={i}
-                  className={`rounded-2xl p-7 relative flex flex-col justify-between text-left transition-all duration-300 hover:scale-[1.02] ${isFeatured
-                      ? "bg-[#3f159a] shadow-2xl text-white md:-translate-y-4"
-                      : "bg-white shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-gray-150"
-                    }`}
-                >
-                  <span
-                    className={`text-[80px] leading-[0.1] select-none font-serif opacity-20 absolute top-10 left-5 ${isFeatured ? "text-purple-300" : "text-[#3f159a]"
-                      }`}
-                  >
-                    “
-                  </span>
-                  <p
-                    className={`text-[15px] md:text-[15px] leading-relaxed mb-8 relative z-10 pt-4 font-semibold ${isFeatured ? "text-white" : "text-gray-650"
-                      }`}
-                  >
-                    {review.text}
-                  </p>
-                  <div className="flex items-center relative z-10 pt-4 border-t border-gray-100/10">
-                    <div className="w-10 h-10 rounded-full mr-3.5 overflow-hidden bg-gray-200 shrink-0 shadow-sm border border-white">
-                      <img
-                        src={review.img}
-                        alt={review.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h4
-                        className={`font-extrabold text-[12px] m-0 ${isFeatured ? "text-white" : "text-[#0f1b3d]"}`}
-                      >
-                        {review.name}
-                      </h4>
-                      <p
-                        className={`text-[10px] m-0 font-bold ${isFeatured ? "text-purple-200" : "text-gray-400"}`}
-                      >
-                        {review.uni}
-                      </p>
-                      <div className="flex text-[11px] mt-1 gap-0.5 text-yellow-400">
-                        ★★★★★
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <TestimonialCarousel
+            testimonials={reviewsToRender.map((r: any) => ({
+              name: r.name || "Student",
+              institution: r.uni || "UK University",
+              quote: r.text || "",
+              rating: 5,
+              avatar: r.img,
+            }))}
+          />
         </div>
       </section>
 
@@ -1428,11 +1387,19 @@ export default function SubjectLanding({
                             }`}
                         />
                       </button>
-                      {isOpen && (
-                        <div className="px-5 pb-5 pt-1 text-xs md:text-sm text-gray-600 leading-relaxed border-t border-gray-100 bg-gray-50/30 whitespace-pre-line">
+                      <motion.div
+                        initial={false}
+                        animate={{
+                          height: isOpen ? "auto" : 0,
+                          opacity: isOpen ? 1 : 0,
+                        }}
+                        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-5 pb-5 pt-3 text-xs md:text-sm text-gray-600 leading-relaxed border-t border-gray-100 bg-gray-50/30 whitespace-pre-line">
                           {faq.answer}
                         </div>
-                      )}
+                      </motion.div>
                     </div>
                   );
                 })}

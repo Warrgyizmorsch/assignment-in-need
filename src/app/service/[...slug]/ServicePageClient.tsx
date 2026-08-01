@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -1125,11 +1126,19 @@ export default function ServiceLanding() {
                           )}
                         />
                       </button>
-                      {isOpen && (
+                      <motion.div
+                        initial={false}
+                        animate={{
+                          height: isOpen ? "auto" : 0,
+                          opacity: isOpen ? 1 : 0,
+                        }}
+                        transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                        className="overflow-hidden"
+                      >
                         <div className="p-5 border-t border-slate-100 bg-slate-50/50 text-[15px] sm:text-[15px] text-text-body leading-relaxed whitespace-pre-line">
                           {faq.answer}
                         </div>
-                      )}
+                      </motion.div>
                     </div>
                   );
                 })}

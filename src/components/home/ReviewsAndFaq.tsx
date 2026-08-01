@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { getImageUrl } from "@/lib/api";
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
 
@@ -426,17 +427,19 @@ export default function ReviewsAndFaq() {
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </button>
-                    <div
-                      className="overflow-hidden"
-                      style={{
-                        maxHeight: isActive ? "200px" : "0px",
-                        transition: "max-height 0.3s ease-out",
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        height: isActive ? "auto" : 0,
+                        opacity: isActive ? 1 : 0,
                       }}
+                      transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                      className="overflow-hidden"
                     >
                       <p className="pb-5 m-0 text-[0.9rem] text-gray-600 leading-relaxed">
                         {faq.answer}
                       </p>
-                    </div>
+                    </motion.div>
                   </div>
                 </StaggerItem>
               );

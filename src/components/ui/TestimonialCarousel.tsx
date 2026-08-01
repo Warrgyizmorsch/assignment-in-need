@@ -22,6 +22,15 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
   className,
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  React.useEffect(() => {
+    if (!testimonials || testimonials.length <= 1 || isHovered) return;
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [testimonials, isHovered]);
 
   // Helper to get visible slides on desktop (3 items centered around activeIndex)
   const getVisibleSlides = () => {
@@ -40,7 +49,11 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
   };
 
   return (
-    <div className={cn("w-full flex flex-col items-center gap-8", className)}>
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={cn("w-full flex flex-col items-center gap-8", className)}
+    >
       {/* Desktop view: 3-column layout where the center item is featured */}
       <div className="hidden md:grid grid-cols-3 gap-6 w-full items-stretch min-h-[300px]">
         {getVisibleSlides().map(({ data, index, position }) => {
@@ -84,8 +97,8 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
         )}
       </div>
 
-      {/* Navigation dots */}
-      <div className="flex items-center gap-2 mt-2">
+      {/* Navigation dots (Visible on Mobile only) */}
+      <div className="flex md:hidden items-center gap-2 mt-2">
         {testimonials.map((_, idx) => (
           <button
             key={`dot-${idx}`}

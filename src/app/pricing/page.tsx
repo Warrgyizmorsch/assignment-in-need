@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import { toast } from "react-hot-toast";
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
+import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -738,58 +740,15 @@ export default function PricingPage() {
           </div>
 
           <div className="lg:w-3/4 w-full">
-            <div
-              ref={pricingScrollRef}
-              onScroll={handlePricingScroll}
-              className="flex lg:grid lg:grid-cols-3 gap-4 xl:gap-6 w-full overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {testimonials.map((t, idx) => (
-                <div
-                  key={idx}
-                  className="shrink-0 w-[88%] lg:w-auto snap-center bg-[#fbfcff] p-4 xl:p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer"
-                >
-                  <div>
-                    <div className="text-purple-600 text-3xl mb-4 opacity-80 group-hover:text-purple-800 transition-colors duration-300 group-hover:scale-110 transform origin-left">
-                      <Quote className="w-8 h-8 fill-current rotate-180" />
-                    </div>
-                    <p className="text-gray-600 text-[15px] leading-relaxed mb-6 group-hover:text-gray-800 transition-colors">
-                      {t.quote}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={t.avatar}
-                      alt={t.name}
-                      className="w-10 h-10 rounded-full object-cover bg-gray-200 group-hover:ring-2 ring-purple-400 transition-all"
-                    />
-                    <div>
-                      <h5 className="font-bold text-gray-900 text-sm">
-                        {t.name}
-                      </h5>
-                      <p className="text-[10px] text-gray-500">
-                        {t.university}
-                      </p>
-                      <div className="text-yellow-400 text-[10px] mt-0.5">
-                        ★★★★★
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-center gap-2 mt-4">
-              {testimonials.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => scrollToPricingTestimonial(idx)}
-                  aria-label={`Go to testimonial ${idx + 1}`}
-                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer border-none p-0 focus:outline-none ${
-                    activePricingIndex === idx ? "w-6 bg-purple-700 shadow-sm" : "w-2.5 bg-gray-300 hover:bg-gray-400"
-                  }`}
-                />
-              ))}
-            </div>
+            <TestimonialCarousel
+              testimonials={testimonials.map((t) => ({
+                name: t.name,
+                institution: t.university,
+                quote: t.quote,
+                rating: 5,
+                avatar: t.avatar,
+              }))}
+            />
           </div>
         </div>
       </section>
@@ -841,13 +800,21 @@ export default function PricingPage() {
                       className={`w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
                     />
                   </div>
-                  <div
-                    className={`px-4 pb-4 pt-1 border-t border-gray-50 transition-all duration-300 ${isOpen ? "block" : "hidden"}`}
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: isOpen ? "auto" : 0,
+                      opacity: isOpen ? 1 : 0,
+                    }}
+                    transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                    className="overflow-hidden"
                   >
-                    <p className="text-xs text-gray-500 leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
+                    <div className="px-4 pb-4 pt-3 border-t border-gray-50">
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </motion.div>
                 </div>
               );
             })}

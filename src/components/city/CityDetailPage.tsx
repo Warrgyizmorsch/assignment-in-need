@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { mapExpertToWriter } from "@/lib/api";
@@ -762,11 +763,19 @@ export default function CityDetailPage({
                           }`}
                       />
                     </button>
-                    {isOpen && (
-                      <div className="px-5 pb-5 pt-1 text-xs md:text-sm text-gray-600 leading-relaxed border-t border-gray-100 bg-gray-50/30">
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        height: isOpen ? "auto" : 0,
+                        opacity: isOpen ? 1 : 0,
+                      }}
+                      transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5 pt-3 text-xs md:text-sm text-gray-600 leading-relaxed border-t border-gray-100 bg-gray-50/30 whitespace-pre-line">
                         {faq.answer}
                       </div>
-                    )}
+                    </motion.div>
                   </div>
                 );
               })}
