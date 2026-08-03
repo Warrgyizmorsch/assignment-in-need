@@ -126,7 +126,18 @@ async function getAllApiSlugs(): Promise<string[]> {
 }
 
 export async function proxy(request: NextRequest) {
+  const host = (request.headers.get("host") || "").toLowerCase();
+
+  // Redirect non-www domain (assignmentinneed.co.uk) to www.assignmentinneed.co.uk
+  if (host === "assignmentinneed.co.uk") {
+    const url = request.nextUrl.clone();
+    url.host = "www.assignmentinneed.co.uk";
+    url.protocol = "https";
+    return NextResponse.redirect(url, 301);
+  }
+
   const { pathname } = request.nextUrl;
+
 
   // 1. Ignore files with extensions (e.g. .webp, .png, .jpg, .svg, .js, .css, .json, .ico, etc.)
   if (/\.[a-zA-Z0-9]+$/.test(pathname)) {
