@@ -213,7 +213,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
 
   // Stepper handlers
   const handleIncrement = () => {
-    setWordCount((prev) => Math.min(20000, prev + 250));
+    setWordCount((prev) => prev + 250);
   };
 
   const handleDecrement = () => {

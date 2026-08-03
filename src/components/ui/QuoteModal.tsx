@@ -85,6 +85,19 @@ const DEFAULT_DEADLINE_OPTIONS: CustomDropdownOption[] = [
   { label: "10+ Days", value: "10+ Days" },
 ];
 
+const DEFAULT_WORD_COUNT_OPTIONS: CustomDropdownOption[] = [
+  { label: "250 Words (1 Page)", value: "250" },
+  { label: "500 Words (2 Pages)", value: "500" },
+  { label: "1000 Words (4 Pages)", value: "1000" },
+  { label: "1500 Words (6 Pages)", value: "1500" },
+  { label: "2000 Words (8 Pages)", value: "2000" },
+  { label: "2500 Words (10 Pages)", value: "2500" },
+  { label: "3000 Words (12 Pages)", value: "3000" },
+  { label: "4000 Words (16 Pages)", value: "4000" },
+  { label: "5000 Words (20 Pages)", value: "5000" },
+  { label: "6000+ Words", value: "6000" },
+];
+
 // Helper to trigger the quote modal from anywhere
 export function openQuoteModal() {
   if (typeof window !== "undefined") {
@@ -103,21 +116,32 @@ export function QuoteModal() {
   const [whatsappNo, setWhatsappNo] = useState("");
   const [subject, setSubject] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [wordCount, setWordCount] = useState<number>(250);
   const [requirements, setRequirements] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Dynamic API optionsh
+  const handleIncrementWordCount = () => {
+    setWordCount((prev) => prev + 250);
+  };
+
+  const handleDecrementWordCount = () => {
+    setWordCount((prev) => Math.max(250, prev - 250));
+  };
+
+  // Dynamic API options
   const [subjectOptions, setSubjectOptions] = useState<CustomDropdownOption[]>(DEFAULT_SUBJECT_OPTIONS);
   const [deadlineOptions, setDeadlineOptions] = useState<CustomDropdownOption[]>(DEFAULT_DEADLINE_OPTIONS);
+  const [wordCountOptions, setWordCountOptions] = useState<CustomDropdownOption[]>(DEFAULT_WORD_COUNT_OPTIONS);
 
   // Fetch subjects & urgencies/deadlines from API on mount
   useEffect(() => {
     const fetchApiOptions = async () => {
       try {
-        const [subRes, urgRes] = await Promise.all([
+        const [subRes, urgRes, wcRes] = await Promise.all([
           dedupedFetch("/api/subjects"),
           dedupedFetch("/api/urgencies"),
+          dedupedFetch("/api/word-count"),
         ]);
 
         if (subRes.ok) {
@@ -149,6 +173,24 @@ export function QuoteModal() {
               return { label: name, value: name };
             });
             setDeadlineOptions(mapped);
+          }
+        }
+
+        if (wcRes.ok) {
+          const payload = await wcRes.json();
+          const list = Array.isArray(payload?.data)
+            ? payload.data
+            : Array.isArray(payload?.data?.data)
+            ? payload.data.data
+            : [];
+          if (list.length > 0) {
+            const mapped = list.map((item: any) => {
+              const val = String(item.value || item.word_count || item.name || String(item));
+              const num = parseInt(val.replace(/[^0-9]/g, ""), 10);
+              const label = item.name || (num ? `${num} Words (${Math.ceil(num / 250)} Page${num > 250 ? 's' : ''})` : val);
+              return { label, value: val };
+            });
+            setWordCountOptions(mapped);
           }
         }
       } catch (err) {
@@ -235,6 +277,8 @@ export function QuoteModal() {
       const cleanPhone = whatsappNo.replace(/[^0-9]/g, "");
       const cleanCode = countryCode.trim() || "+44";
       const fullPhone = `${cleanCode}${cleanPhone}`;
+      const cleanWc = String(wordCount || 250);
+      const calcPages = Math.max(1, Math.ceil(wordCount / 250));
 
       const payload = {
         name: fullName.trim(),
@@ -252,12 +296,13 @@ export function QuoteModal() {
         subject: subject || "General",
         deadline: deadline ? deadline.replace(/[^0-9]/g, "") || deadline : "5",
         urgency: deadline ? deadline.replace(/[^0-9]/g, "") || deadline : "5",
-        wordCount: "250",
-        pages: 1,
-        description: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline}`,
-        message: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline}`,
-        requirements: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline}`,
-        notes: `Subject: ${subject} | Deadline: ${deadline} | Requirements: ${requirements}`,
+        wordCount: cleanWc,
+        word_count: cleanWc,
+        pages: calcPages,
+        description: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc}`,
+        message: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc}`,
+        requirements: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc}`,
+        notes: `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc} | Requirements: ${requirements}`,
         coupon_code: "AIN40",
         promo_code: "AIN40",
         coupon: "AIN40",
@@ -511,36 +556,35 @@ export function QuoteModal() {
                       </div>
                     </div>
 
-                    {/* Row 2: WhatsApp Number */}
-                    <div>
-                      <label className="block text-[11px] font-bold text-gray-700 mb-1 flex items-center gap-1">
-                        <Phone className="w-3.5 h-3.5 text-green-600" /> WhatsApp Number
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <div className="w-[120px] shrink-0 border border-gray-200 rounded-xl bg-gray-50/50 px-2 py-2 text-xs">
-                          <CustomDropdown
-                            options={COUNTRY_CODES}
-                            value={countryCode}
-                            onChange={setCountryCode}
-                            placeholder="+44"
-                            enableSearch
-                            className="w-full"
-                            triggerClassName="text-xs font-bold text-gray-900 py-0"
+                    {/* Row 2: WhatsApp Number & Subject/Course */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-gray-700 mb-1 flex items-center gap-1">
+                          <Phone className="w-3.5 h-3.5 text-green-600" /> WhatsApp Number
+                        </label>
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-[100px] shrink-0 border border-gray-200 rounded-xl bg-gray-50/50 px-2 py-2 text-xs">
+                            <CustomDropdown
+                              options={COUNTRY_CODES}
+                              value={countryCode}
+                              onChange={setCountryCode}
+                              placeholder="+44"
+                              enableSearch
+                              className="w-full"
+                              triggerClassName="text-xs font-bold text-gray-900 py-0"
+                            />
+                          </div>
+                          <input
+                            type="tel"
+                            required
+                            value={whatsappNo}
+                            onChange={(e) => setWhatsappNo(e.target.value)}
+                            placeholder="WhatsApp number"
+                            className="w-full min-w-0 text-xs px-3 py-2.5 rounded-xl border border-gray-200 focus:border-[#3f159a] focus:ring-2 focus:ring-purple-200 outline-none transition bg-gray-50/50 hover:bg-white text-gray-900 font-medium"
                           />
                         </div>
-                        <input
-                          type="tel"
-                          required
-                          value={whatsappNo}
-                          onChange={(e) => setWhatsappNo(e.target.value)}
-                          placeholder="Enter your WhatsApp number"
-                          className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-[#3f159a] focus:ring-2 focus:ring-purple-200 outline-none transition bg-gray-50/50 hover:bg-white text-gray-900 font-medium"
-                        />
                       </div>
-                    </div>
 
-                    {/* Row 3: Subject & Deadline using CustomDropdown */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[11px] font-bold text-gray-700 mb-1 flex items-center gap-1">
                           <BookOpen className="w-3.5 h-3.5 text-gray-500" /> Subject / Course
@@ -555,6 +599,39 @@ export function QuoteModal() {
                             className="w-full"
                             triggerClassName="text-xs font-medium text-gray-900 py-0"
                           />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Row 3: Word Count & Deadline */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-gray-700 mb-1 flex items-center gap-1">
+                          <FileText className="w-3.5 h-3.5 text-gray-500" /> Word Count
+                        </label>
+                        <div className="w-full border border-gray-200 rounded-xl bg-gray-50/50 px-2 py-1 flex items-center justify-between h-[38px] transition focus-within:border-[#3f159a]">
+                          <button
+                            type="button"
+                            onClick={handleDecrementWordCount}
+                            className="w-7 h-7 flex items-center justify-center text-gray-600 font-bold text-sm bg-white border border-gray-200 rounded-lg hover:bg-purple-50 hover:text-[#3f159a] hover:border-purple-200 active:scale-95 transition-all outline-none cursor-pointer shadow-2xs select-none"
+                            title="Decrease 250 words"
+                          >
+                            −
+                          </button>
+                          <span className="text-xs font-bold text-gray-900 select-none whitespace-nowrap">
+                            {wordCount} Words{" "}
+                            <span className="text-[10px] text-gray-500 font-normal">
+                              ({Math.max(1, Math.ceil(wordCount / 250))} Page{Math.ceil(wordCount / 250) > 1 ? "s" : ""})
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handleIncrementWordCount}
+                            className="w-7 h-7 flex items-center justify-center text-gray-600 font-bold text-sm bg-white border border-gray-200 rounded-lg hover:bg-purple-50 hover:text-[#3f159a] hover:border-purple-200 active:scale-95 transition-all outline-none cursor-pointer shadow-2xs select-none"
+                            title="Increase 250 words"
+                          >
+                            +
+                          </button>
                         </div>
                       </div>
 
