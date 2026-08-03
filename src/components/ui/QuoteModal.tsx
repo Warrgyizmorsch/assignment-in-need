@@ -44,6 +44,22 @@ const COUNTRY_CODES: CustomDropdownOption[] = getCountries()
     return a.label.localeCompare(b.label);
   });
 
+const getCountryIso = (code: string) => {
+  const mapping: Record<string, string> = {
+    "+44": "GB",
+    "+1": "US",
+    "+91": "IN",
+    "+61": "AU",
+    "+971": "AE",
+    "+966": "SA",
+    "+353": "IE",
+    "+64": "NZ",
+    "+65": "SG",
+    "+60": "MY",
+  };
+  return mapping[code] || "GB";
+};
+
 const DEFAULT_SUBJECT_OPTIONS: CustomDropdownOption[] = [
   { label: "Accountancy / Accounting", value: "Accountancy / Accounting" },
   { label: "Business & Management", value: "Business & Management" },
@@ -223,39 +239,62 @@ export function QuoteModal() {
     try {
       const cleanPhone = whatsappNo.replace(/[^0-9]/g, "");
       const cleanCode = countryCode.trim() || "+44";
+      const fullPhone = `${cleanCode}${cleanPhone}`;
 
       const payload = {
         name: fullName.trim(),
+        user_name: fullName.trim(),
         email: email.trim(),
         phone: cleanPhone,
+        mobile: cleanPhone,
+        phone_number: fullPhone,
         countryCode: cleanCode,
+        country_code: cleanCode,
+        countrycode: cleanCode,
+        countryIso: "GB",
+
         service: subject || "Assignment",
         subject: subject || "General",
         deadline: deadline ? deadline.replace(/[^0-9]/g, "") || deadline : "5",
+        urgency: deadline ? deadline.replace(/[^0-9]/g, "") || deadline : "5",
         wordCount: "250",
+        pages: 1,
         description: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline}`,
+        message: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline}`,
+        requirements: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline}`,
+        notes: `Subject: ${subject} | Deadline: ${deadline} | Requirements: ${requirements}`,
         coupon_code: "AIN40",
         promo_code: "AIN40",
+        coupon: "AIN40",
         source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/",
       };
 
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      };
+
+      // Primary submission to /api/web-submit-quote
       let res = await fetch("/api/web-submit-quote", {
         method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify(payload),
       });
 
+      // Secondary backup submission to /api/submit-enquiry to guarantee CRM lead capture
       if (!res.ok) {
-        // Fallback to submit-enquiry endpoint
         res = await fetch("/api/submit-enquiry", {
           method: "POST",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-          },
+          headers,
+          body: JSON.stringify(payload),
+        });
+      }
+
+      // Third backup to /api/web-place-order
+      if (!res.ok) {
+        res = await fetch("/api/web-place-order", {
+          method: "POST",
+          headers,
           body: JSON.stringify(payload),
         });
       }
@@ -264,6 +303,7 @@ export function QuoteModal() {
 
       setIsSuccess(true);
       toast.success(data?.message || "Quote request submitted successfully!");
+
 
       try {
         localStorage.setItem(
