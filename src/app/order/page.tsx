@@ -1030,7 +1030,7 @@ export default function OrderPage() {
                         type="button"
                         onClick={() => {
                           const currentVal = parseInt(selectedWordCount, 10) || 250;
-                          const nextVal = Math.min(20000, currentVal + 250);
+                          const nextVal = currentVal + 250;
                           setSelectedWordCount(String(nextVal));
                         }}
                         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-solid border-slate-200 text-gray-600 hover:bg-slate-50 hover:text-purple-700 active:scale-95 transition-all cursor-pointer font-bold text-lg select-none outline-none focus:outline-none"
