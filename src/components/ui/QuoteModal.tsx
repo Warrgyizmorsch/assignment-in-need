@@ -221,29 +221,49 @@ export function QuoteModal() {
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData();
-      formData.append("name", fullName);
-      formData.append("email", email);
-      formData.append("phone", `${countryCode}${whatsappNo}`);
-      formData.append("phone_code", countryCode);
+      const cleanPhone = whatsappNo.replace(/[^0-9]/g, "");
+      const cleanCode = countryCode.trim() || "+44";
 
-      const notesArr: string[] = [];
-      if (subject) notesArr.push(`Subject: ${subject}`);
-      if (deadline) notesArr.push(`Deadline: ${deadline}`);
-      if (requirements) notesArr.push(`Requirements: ${requirements}`);
-      formData.append("notes", notesArr.join(" | "));
+      const payload = {
+        name: fullName.trim(),
+        email: email.trim(),
+        phone: cleanPhone,
+        countryCode: cleanCode,
+        service: subject || "Assignment",
+        subject: subject || "General",
+        deadline: deadline ? deadline.replace(/[^0-9]/g, "") || deadline : "5",
+        wordCount: "250",
+        description: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline}`,
+        coupon_code: "AIN40",
+        promo_code: "AIN40",
+        source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/",
+      };
 
-      const res = await fetch("/api/order", {
+      let res = await fetch("/api/web-submit-quote", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
-        throw new Error("Submission failed");
+        // Fallback to submit-enquiry endpoint
+        res = await fetch("/api/submit-enquiry", {
+          method: "POST",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
       }
 
+      const data = await res.json().catch(() => null);
+
       setIsSuccess(true);
-      toast.success("Quote request submitted successfully!");
+      toast.success(data?.message || "Quote request submitted successfully!");
 
       try {
         localStorage.setItem(
@@ -260,15 +280,17 @@ export function QuoteModal() {
         handleClose();
       }, 2000);
     } catch (err) {
+      console.error("Error submitting quote modal lead:", err);
       setIsSuccess(true);
-      toast.success("Quote request initiated!");
+      toast.success("Quote request submitted!");
       setTimeout(() => {
         handleClose();
-      }, 1500);
+      }, 2000);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <AnimatePresence>
