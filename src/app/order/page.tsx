@@ -27,7 +27,13 @@ import {
   Loader2,
   Mail,
   Phone,
+  Tag,
+  Ticket,
+  Check,
+  Sparkles,
+  ChevronRight,
 } from "lucide-react";
+
 
 import { Heading } from "@/components/ui/Heading";
 import { cn } from "@/lib/utils";
@@ -39,6 +45,7 @@ import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SUBJECTS } from "@/lib/data";
 import { getBaseUrl } from "@/lib/api";
 import { AnimateIn } from "@/components/ui/AnimateIn";
+import { CouponModal } from "@/components/ui/CouponModal";
 
 const ACADEMIC_LEVELS = [
   { label: "Undergraduate", value: "undergraduate" },
@@ -119,6 +126,16 @@ export default function OrderPage() {
 
   const [apiFormServices, setApiFormServices] = useState<any[]>([]);
   const [apiFormSubjects, setApiFormSubjects] = useState<any[]>([]);
+
+  // Coupon Modal & Applied Coupon State
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountType: "percentage" | "fixed";
+    discountValue: number;
+    discountAmount: number;
+    message?: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -437,9 +454,27 @@ export default function OrderPage() {
     return Number((subtotal * rate).toFixed(2));
   }, [subtotal, apiDiscountPercent]);
 
+  const extraCouponDiscount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    const remainingAmount = Math.max(0, subtotal - discount);
+
+    // If backend API returned a specific calculated discountAmount, use it
+    if (typeof appliedCoupon.discountAmount === "number" && appliedCoupon.discountAmount > 0) {
+      return Number(Math.min(remainingAmount, appliedCoupon.discountAmount).toFixed(2));
+    }
+
+    let extra = 0;
+    if (appliedCoupon.discountType === "percentage") {
+      extra = (remainingAmount * appliedCoupon.discountValue) / 100;
+    } else {
+      extra = appliedCoupon.discountValue;
+    }
+    return Number(Math.min(remainingAmount, extra).toFixed(2));
+  }, [subtotal, discount, appliedCoupon]);
+
   const total = useMemo(() => {
-    return Number((subtotal - discount).toFixed(2));
-  }, [subtotal, discount]);
+    return Number(Math.max(0, subtotal - discount - extraCouponDiscount).toFixed(2));
+  }, [subtotal, discount, extraCouponDiscount]);
 
   const pagesCount = useMemo(() => {
     return Math.ceil(parseInt(selectedWordCount, 10) / 250);
@@ -516,6 +551,10 @@ export default function OrderPage() {
         topic: "Academic Assignment Help",
         requirements: instructions || "No requirements specified.",
         finalPrice: total,
+        order_amount: Number(Math.max(0, subtotal - discount).toFixed(2)),
+        coupon_code: appliedCoupon?.code || "",
+        discount_amount: extraCouponDiscount || 0,
+        coupon_discount: extraCouponDiscount || 0,
         source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/order"
       };
 
@@ -1144,15 +1183,83 @@ export default function OrderPage() {
               </div>
 
               {/* Price Details breakdown */}
-              <div className="border-t border-gray-100 pt-4 flex flex-col gap-3">
+              <div className="border-t border-gray-100 pt-4 flex flex-col gap-2.5">
                 <div className="flex justify-between text-xs font-bold text-gray-700">
                   <span>Subtotal</span>
                   <span className="text-gray-950">£{subtotal.toFixed(2)}</span>
                 </div>
+
+                {/* Auto Applied 40% Discount */}
                 <div className="flex justify-between text-xs font-bold text-emerald-600 bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
                   <span>Discount (40%)</span>
                   <span>- £{discount.toFixed(2)}</span>
                 </div>
+
+                {/* Extra Applied Coupon Discount */}
+                {appliedCoupon && (
+                  <div className="flex justify-between text-xs font-bold text-purple-700 bg-purple-50/60 p-2.5 rounded-xl border border-purple-200">
+                    <span className="flex items-center gap-1.5">
+                      <Ticket className="w-3.5 h-3.5 text-purple-600" />
+                      Coupon ({appliedCoupon.code})
+                    </span>
+                    <span>- £{extraCouponDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Swiggy/Zomato Style Apply Coupon Card */}
+              <div className="pt-1">
+                {!appliedCoupon ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsCouponModalOpen(true)}
+                    className="w-full group bg-gradient-to-r from-purple-50/80 via-indigo-50/50 to-purple-50/30 border border-dashed border-purple-300 hover:border-purple-500 p-3 rounded-2xl cursor-pointer transition-all hover:shadow-md flex items-center justify-between text-left"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                        <Tag className="w-4 h-4" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-extrabold text-slate-800 flex items-center gap-1">
+                          Apply Coupon
+                          <Sparkles className="w-3 h-3 text-amber-500" />
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-medium">
+                          Save extra with promo codes
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-extrabold text-purple-700 bg-white px-2.5 py-1 rounded-xl border border-purple-200 shadow-2xs group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                      APPLY
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsCouponModalOpen(true)}
+                    className="w-full bg-emerald-50/90 hover:bg-emerald-100/90 border border-emerald-300 p-3 rounded-2xl flex items-center justify-between transition-all cursor-pointer group text-left shadow-2xs"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-extrabold text-emerald-950 uppercase tracking-wide flex items-center gap-1">
+                          '{appliedCoupon.code}' Applied
+                          <Sparkles className="w-3 h-3 text-amber-500" />
+                        </span>
+                        <span className="text-[11px] text-emerald-700 font-bold">
+                          Extra £{extraCouponDiscount.toFixed(2)} OFF
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-extrabold text-emerald-800 bg-white px-2.5 py-1 rounded-xl border border-emerald-200 shadow-2xs group-hover:bg-emerald-700 group-hover:text-white transition-colors flex items-center gap-0.5">
+                      CHANGE
+                      <ChevronRight className="w-3 h-3" />
+                    </span>
+                  </button>
+
+                )}
               </div>
 
               {/* Total Row price */}
@@ -1222,6 +1329,14 @@ export default function OrderPage() {
           </AnimateIn>
         </form>
       </SectionContainer>
+      {/* Coupon Modal Popup */}
+      <CouponModal
+        isOpen={isCouponModalOpen}
+        onClose={() => setIsCouponModalOpen(false)}
+        orderAmount={Math.max(0, subtotal - discount)}
+        appliedCouponCode={appliedCoupon?.code}
+        onApplyCoupon={(data) => setAppliedCoupon(data)}
+      />
     </div>
   );
 }
