@@ -108,25 +108,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generic fallback for custom entered codes (e.g. any code ending in 10/15/20/25/30)
-    const matchPercent = cleanCode.match(/(\d+)/);
-    if (matchPercent && Number(matchPercent[1]) > 0 && Number(matchPercent[1]) <= 50) {
-      const pct = Number(matchPercent[1]);
-      const discountAmount = (amount * pct) / 100;
-      return NextResponse.json({
-        success: true,
-        message: `Coupon '${cleanCode}' applied! Extra ${pct}% OFF`,
-        coupon_code: cleanCode,
-        discount_type: "percentage",
-        discount_value: pct,
-        discount_amount: Number(discountAmount.toFixed(2))
-      });
-    }
-
     return NextResponse.json(
       {
         success: false,
-        message: `Invalid or expired coupon code '${cleanCode}'. Try SAVE20 or WELCOME10.`
+        message: `Invalid or expired coupon code '${cleanCode}'. Please enter a valid coupon code.`
       },
       { status: 400 }
     );

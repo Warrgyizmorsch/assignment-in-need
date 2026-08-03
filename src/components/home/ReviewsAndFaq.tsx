@@ -122,6 +122,14 @@ function ReviewDetailModal({
   const [detail, setDetail] = useState<ReviewDetail | null>(null);
   const [fetching, setFetching] = useState(true);
 
+  // Prevent background page scrolling when modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   useEffect(() => {
     const fetchDetail = async () => {
       try {

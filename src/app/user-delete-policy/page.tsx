@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -26,6 +26,18 @@ export default function UserDeletePolicyPage() {
   const [copiedSubject, setCopiedSubject] = useState(false);
   const [copiedTemplate, setCopiedTemplate] = useState(false);
   const [showMailModal, setShowMailModal] = useState(false);
+
+  // Prevent background page scrolling when modal is open
+  useEffect(() => {
+    if (showMailModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMailModal]);
 
   const emailAddress = "daniel24white@gmail.com";
   const subjectLine = "Account Deletion Request";

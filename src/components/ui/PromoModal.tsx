@@ -25,6 +25,18 @@ export function PromoModal() {
   const [copied, setCopied] = useState(false);
   const pathname = usePathname();
 
+  // Prevent background page scrolling when PromoModal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     // Only show promo modal on the home page "/"
     if (pathname !== "/") return;

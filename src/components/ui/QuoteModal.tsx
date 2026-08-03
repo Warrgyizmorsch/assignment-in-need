@@ -96,6 +96,18 @@ export function QuoteModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Prevent background page scrolling when QuoteModal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   // Dynamic API optionsh
   const [subjectOptions, setSubjectOptions] = useState<CustomDropdownOption[]>(DEFAULT_SUBJECT_OPTIONS);
   const [deadlineOptions, setDeadlineOptions] = useState<CustomDropdownOption[]>(DEFAULT_DEADLINE_OPTIONS);

@@ -26,6 +26,26 @@ const FALLBACK_COUPONS = [
     description: "Applicable on all academic assignment orders.",
     badge: "BEST VALUE",
     expiry: "Valid till end of month"
+  },
+  {
+    id: "c3",
+    code: "WELCOME10",
+    discount_type: "percentage",
+    discount_value: 10,
+    title: "Get Extra 10% OFF",
+    description: "First order welcome promo coupon.",
+    badge: "WELCOME OFFER",
+    expiry: "Valid indefinitely"
+  },
+  {
+    id: "c4",
+    code: "STUDENT15",
+    discount_type: "percentage",
+    discount_value: 15,
+    title: "Get Extra 15% OFF",
+    description: "Special student discount coupon.",
+    badge: "STUDENT SPECIAL",
+    expiry: "Valid till end of month"
   }
 ];
 
@@ -120,8 +140,12 @@ export async function GET(request: NextRequest) {
 
         if (rawList && rawList.length > 0) {
           const normalized = rawList.map(normalizeCoupon);
+          const existingCodes = new Set(normalized.map((c: any) => c.code));
+          const extraFallback = FALLBACK_COUPONS.filter((f) => !existingCodes.has(f.code));
+          const combined = [...normalized, ...extraFallback];
+
           return NextResponse.json(
-            { success: true, data: normalized, raw: parsed },
+            { success: true, data: combined, raw: parsed },
             { status: 200 }
           );
         }

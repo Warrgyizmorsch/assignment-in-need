@@ -61,6 +61,24 @@ const DEFAULT_COUPONS: CouponItem[] = [
     description: "Applicable on your assignment order",
     badge: "BEST VALUE",
   },
+  {
+    id: "c_welcome10",
+    code: "WELCOME10",
+    discount_type: "percentage",
+    discount_value: 10,
+    title: "Get Extra 10% OFF",
+    description: "First order welcome promo coupon",
+    badge: "WELCOME OFFER",
+  },
+  {
+    id: "c_student15",
+    code: "STUDENT15",
+    discount_type: "percentage",
+    discount_value: 15,
+    title: "Get Extra 15% OFF",
+    description: "Special student discount coupon",
+    badge: "STUDENT SPECIAL",
+  },
 ];
 
 
@@ -87,6 +105,18 @@ export const CouponModal: React.FC<CouponModalProps> = ({
     if (!coupons || coupons.length === 0) return null;
     return [...coupons].sort((a, b) => (b.discount_value || 0) - (a.discount_value || 0))[0];
   }, [coupons]);
+
+  // Prevent background page scrolling when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   // Sync applied code from props
   useEffect(() => {
@@ -212,6 +242,35 @@ export const CouponModal: React.FC<CouponModalProps> = ({
           onClose();
         }, 300);
       } else {
+        if (foundCoupon) {
+          const amount = Math.round((orderAmount * discountVal) / 100);
+          onApplyCoupon({
+            code: cleanCode,
+            discountType,
+            discountValue: discountVal,
+            discountAmount: amount,
+            message: `Coupon ${cleanCode} applied!`,
+          });
+
+          setAppliedInfo({
+            code: cleanCode,
+            discountValue: discountVal,
+            discountType,
+          });
+
+          toast.success(`Coupon '${cleanCode}' applied successfully!`);
+
+          setTimeout(() => {
+            onClose();
+          }, 300);
+        } else {
+          const errMsg = data.message || `Invalid or expired coupon code '${cleanCode}'.`;
+          setErrorMsg(errMsg);
+          toast.error(errMsg);
+        }
+      }
+    } catch (err) {
+      if (foundCoupon) {
         const amount = Math.round((orderAmount * discountVal) / 100);
         onApplyCoupon({
           code: cleanCode,
@@ -229,33 +288,14 @@ export const CouponModal: React.FC<CouponModalProps> = ({
 
         toast.success(`Coupon '${cleanCode}' applied successfully!`);
 
-        // Close modal automatically on apply
         setTimeout(() => {
           onClose();
         }, 300);
+      } else {
+        const errMsg = `Invalid or expired coupon code '${cleanCode}'.`;
+        setErrorMsg(errMsg);
+        toast.error(errMsg);
       }
-    } catch (err) {
-      const amount = Math.round((orderAmount * discountVal) / 100);
-      onApplyCoupon({
-        code: cleanCode,
-        discountType,
-        discountValue: discountVal,
-        discountAmount: amount,
-        message: `Coupon ${cleanCode} applied!`,
-      });
-
-      setAppliedInfo({
-        code: cleanCode,
-        discountValue: discountVal,
-        discountType,
-      });
-
-      toast.success(`Coupon '${cleanCode}' applied successfully!`);
-
-      // Close modal automatically on apply
-      setTimeout(() => {
-        onClose();
-      }, 300);
     } finally {
       setIsApplying(false);
     }
@@ -479,7 +519,7 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                         />
                         <button
                           type="button"
-                          onClick={() => handleApply(manualCode || "ANSH20")}
+                          onClick={() => handleApply(manualCode)}
                           disabled={isApplying}
                           className="py-1.5 px-3.5 sm:py-2 sm:px-5 rounded-lg bg-purple-700 hover:bg-purple-800 active:scale-95 text-white font-extrabold text-xs tracking-wider uppercase shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-50 flex items-center gap-1"
                         >
