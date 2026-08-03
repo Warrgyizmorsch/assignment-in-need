@@ -44,20 +44,15 @@ const COUNTRY_CODES: CustomDropdownOption[] = getCountries()
     return a.label.localeCompare(b.label);
   });
 
-const getCountryIso = (code: string) => {
-  const mapping: Record<string, string> = {
-    "+44": "GB",
-    "+1": "US",
-    "+91": "IN",
-    "+61": "AU",
-    "+971": "AE",
-    "+966": "SA",
-    "+353": "IE",
-    "+64": "NZ",
-    "+65": "SG",
-    "+60": "MY",
-  };
-  return mapping[code] || "GB";
+const getCountryIso = (code: string): string => {
+  const digits = code.replace(/[^0-9]/g, "");
+  if (!digits) return "GB";
+  if (digits === "44") return "GB";
+  if (digits === "1") return "US";
+  if (digits === "91") return "IN";
+  if (digits === "61") return "AU";
+  const matched = getCountries().find((country) => getCountryCallingCode(country) === digits);
+  return matched || "GB";
 };
 
 const DEFAULT_SUBJECT_OPTIONS: CustomDropdownOption[] = [
@@ -251,7 +246,7 @@ export function QuoteModal() {
         countryCode: cleanCode,
         country_code: cleanCode,
         countrycode: cleanCode,
-        countryIso: "GB",
+        countryIso: getCountryIso(cleanCode),
 
         service: subject || "Assignment",
         subject: subject || "General",
