@@ -926,7 +926,7 @@ export default function ProfilePage() {
                       <h3 className="font-bold text-slate-800">Your Promo Coupons</h3>
                       {[
                         { emoji: "🎉", title: "40% OFF + Extra 10% OFF", sub: "Expires in 3 days • Applicable on all UK assignments", badge: "Auto Applied", code: null },
-                        { emoji: "🎁", title: "WELCOME10 - Extra 10% Discount", sub: "First order promo coupon • Valid indefinitely", badge: null, code: "WELCOME10" },
+                        { emoji: "🎁", title: "SAVE20 - Extra 20% Discount", sub: "Applicable on all assignments • Valid indefinitely", badge: null, code: "SAVE20" },
                       ].map(({ emoji, title, sub, badge, code }) => (
                         <div key={title} className="bg-white border border-slate-100 rounded-xl p-4 flex items-center justify-between hover:border-purple-200 transition">
                           <div className="flex items-center gap-3.5">

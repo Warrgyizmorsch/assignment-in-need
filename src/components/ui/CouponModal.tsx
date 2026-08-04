@@ -61,24 +61,6 @@ const DEFAULT_COUPONS: CouponItem[] = [
     description: "Applicable on your assignment order",
     badge: "BEST VALUE",
   },
-  {
-    id: "c_welcome10",
-    code: "WELCOME10",
-    discount_type: "percentage",
-    discount_value: 10,
-    title: "Get Extra 10% OFF",
-    description: "First order welcome promo coupon",
-    badge: "WELCOME OFFER",
-  },
-  {
-    id: "c_student15",
-    code: "STUDENT15",
-    discount_type: "percentage",
-    discount_value: 15,
-    title: "Get Extra 15% OFF",
-    description: "Special student discount coupon",
-    badge: "STUDENT SPECIAL",
-  },
 ];
 
 
