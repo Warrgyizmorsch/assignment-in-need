@@ -99,10 +99,10 @@ export function SidebarQuoteForm({ sourceName = "Blog Page" }: SidebarQuoteFormP
     const fetchAppConfigs = async () => {
       try {
         const [servicesRes, urgRes, subRes, wcRes] = await Promise.all([
-          dedupedFetch("/api/services"),
-          dedupedFetch("/api/urgencies"),
-          dedupedFetch("/api/subjects"),
-          dedupedFetch("/api/word-count"),
+          dedupedFetch("/api/app/services"),
+          dedupedFetch("/api/app/urgencies"),
+          dedupedFetch("/api/app/subjects"),
+          dedupedFetch("/api/app/word-count"),
         ]);
 
         if (servicesRes.ok) {

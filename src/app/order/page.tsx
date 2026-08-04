@@ -49,7 +49,7 @@ const ACADEMIC_LEVELS = [
 
 const WORK_TYPES = [
   { label: "Standard", value: "standard" },
-  { label: "First Class", value: "first_class" },
+  { label: "First Class Work", value: "first_class" },
 ];
 
 const DEADLINES = [
@@ -126,9 +126,6 @@ export default function OrderPage() {
           const result = await res.json();
           if ((result.success || result.status === "success") && Array.isArray(result.data)) {
             setDynamicServices(result.data);
-            if (result.data.length > 0) {
-              setSelectedService(result.data[0].slug);
-            }
           }
         }
       } catch (err) {
@@ -143,11 +140,6 @@ export default function OrderPage() {
           const payload = await res.json();
           if ((payload.success || payload.status === "success") && Array.isArray(payload.data)) {
             setDynamicSubjects(payload.data);
-            if (payload.data.length > 0) {
-              const cleanSlug = (payload.data[0].slug || "").replace(/^\/+/, "");
-              const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
-              setSelectedSubject(finalSlug);
-            }
           }
         }
       } catch (err) {
@@ -157,12 +149,20 @@ export default function OrderPage() {
 
     const fetchAppConfigs = async () => {
       try {
+        const token =
+          (typeof window !== "undefined" ? localStorage.getItem("ain_auth_token") : null) ||
+          "87|2wXqHtAWjaLM9VFBnk7pUal7x2OVRJISaZK5JIYmedd58dd0";
+        const headers: Record<string, string> = {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        };
+
         const [wcRes, urgRes, countryRes, servicesRes, subjectsRes] = await Promise.all([
-          fetch("/api/word-count"),
-          fetch("/api/urgencies"),
-          fetch("/api/app/countries"),
-          fetch("/api/services"),
-          fetch("/api/subjects"),
+          fetch("/api/app/word-count", { headers }),
+          fetch("/api/app/urgencies", { headers }),
+          fetch("/api/app/countries", { headers }),
+          fetch("/api/app/services", { headers }),
+          fetch("/api/app/subjects", { headers }),
         ]);
 
         if (wcRes.ok) {
@@ -421,9 +421,9 @@ export default function OrderPage() {
       }
     }
 
-    // Work Type Multipliers (Standard vs First Class)
+    // Work Type Multipliers (Standard vs First Class - matching mobile app 1.30x multiplier)
     let workTypeMult = 1.0;
-    if (selectedWorkType === "first_class") workTypeMult = 1.25;
+    if (selectedWorkType === "first_class") workTypeMult = 1.30;
 
     return Number(
       (
@@ -458,21 +458,29 @@ export default function OrderPage() {
   }, [selectedWordCount]);
 
   const activeServiceLabel = useMemo(() => {
+    if (!selectedService) return "Select Service";
+    const matchOpt = serviceOptions.find(
+      (s) => s.value === selectedService || s.label === selectedService
+    );
+    if (matchOpt) return matchOpt.label;
+
     let matchName = "";
     dynamicServices.forEach((s: any) => {
-      if (s.slug === selectedService) {
-        matchName = s.title || s.hero_heading || "Service";
+      if (s.slug === selectedService || s.title === selectedService) {
+        matchName = s.title || s.hero_heading || s.meta_title;
       }
       if (Array.isArray(s.children)) {
         s.children.forEach((c: any) => {
-          if (c.slug === selectedService) {
-            matchName = c.title || c.hero_heading || "Service";
+          if (c.slug === selectedService || c.title === selectedService) {
+            matchName = c.title || c.hero_heading;
           }
         });
       }
     });
-    return matchName || "Academic Writing";
-  }, [selectedService, dynamicServices]);
+    if (matchName) return matchName;
+
+    return selectedService;
+  }, [selectedService, serviceOptions, dynamicServices]);
 
   const activeDeadlineLabel = useMemo(() => {
     const matchOpt = deadlineOptions.find((d) => String(d.value) === String(selectedDeadline));
@@ -497,8 +505,10 @@ export default function OrderPage() {
   }, [selectedDeadline]);
 
   const activeSubjectLabel = useMemo(() => {
-    const match = subjectOptions.find((s) => s.value === selectedSubject);
-    return match ? match.label : selectedSubject || "Academic Subject";
+    if (!selectedSubject) return "Select Subject";
+    const match = subjectOptions.find((s) => s.value === selectedSubject || s.label === selectedSubject);
+    if (match) return match.label;
+    return selectedSubject;
   }, [selectedSubject, subjectOptions]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -529,7 +539,7 @@ export default function OrderPage() {
         countrycode: cleanCountryCode,
         phone: phoneNumber,
         service: activeServiceLabel,
-        workType: selectedWorkType === "first_class" ? "First Class" : "Standard",
+        workType: selectedWorkType === "first_class" ? "First Class Work" : "Standard",
         country: getCountryName(countryCode),
         subject: activeSubjectLabel,
         urgency: urgencyValue,
@@ -790,7 +800,7 @@ export default function OrderPage() {
           </AnimateIn>
         </div>
       </section>
-{/* 2. Order Form Main Section */}
+      {/* 2. Order Form Main Section */}
       <SectionContainer className="!py-2 !pb-2">
         <form
           onSubmit={handleOrderSubmit}
@@ -1122,14 +1132,18 @@ export default function OrderPage() {
 
               {/* Active Selection Details list */}
               <div className="flex flex-col gap-3.5 py-1 text-xs font-bold text-gray-700">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 font-semibold">Service</span>
-                  <span className="text-gray-900">{activeServiceLabel}</span>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-gray-400 font-semibold shrink-0">Service</span>
+                  <span className="text-gray-900 font-bold text-right truncate">{activeServiceLabel}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 font-semibold">Work Type</span>
-                  <span className="text-gray-900 font-bold">
-                    {selectedWorkType === "first_class" ? "First Class" : "Standard"}
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-gray-400 font-semibold shrink-0">Subject</span>
+                  <span className="text-gray-900 font-bold text-right truncate">{activeSubjectLabel}</span>
+                </div>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="text-gray-400 font-semibold shrink-0">Work Type</span>
+                  <span className="text-gray-900 font-bold text-right">
+                    {selectedWorkType === "first_class" ? "First Class Work" : "Standard"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
