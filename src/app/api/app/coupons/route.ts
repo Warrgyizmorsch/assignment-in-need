@@ -53,6 +53,15 @@ const normalizeCoupon = (item: any, idx: number) => {
     item.discount_type ||
     (item.percentage || item.discount_percentage ? "percentage" : item.type || "percentage");
 
+  const min_order_amount = Number(
+    item.min_order_amount ||
+    item.min_amount ||
+    item.min_order ||
+    item.min_spend ||
+    item.minimum_order ||
+    0
+  );
+
   const title =
     item.title ||
     item.name ||
@@ -63,12 +72,14 @@ const normalizeCoupon = (item: any, idx: number) => {
     item.description ||
     item.details ||
     item.subtitle ||
-    `Applicable on your assignment order. Apply at checkout.`;
+    (min_order_amount > 0
+      ? `Valid on orders above £${min_order_amount}`
+      : `Applicable on your assignment order. Apply at checkout.`);
 
   const badge =
     item.badge ||
     item.tag ||
-    (discount_value >= 20 ? "BEST VALUE" : "SPECIAL OFFER");
+    (min_order_amount > 0 ? `MIN £${min_order_amount}` : discount_value >= 20 ? "BEST VALUE" : "SPECIAL OFFER");
 
   const expiry =
     item.expiry ||
@@ -82,6 +93,7 @@ const normalizeCoupon = (item: any, idx: number) => {
     code,
     discount_type,
     discount_value,
+    min_order_amount,
     title,
     description,
     badge,

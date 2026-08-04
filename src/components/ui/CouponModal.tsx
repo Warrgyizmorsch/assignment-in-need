@@ -14,6 +14,7 @@ import {
   Ticket,
   Sparkles,
   Trash2,
+  Lock,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -45,10 +46,21 @@ export interface CouponModalProps {
 
 const DEFAULT_COUPONS: CouponItem[] = [
   {
+    id: "c_aadi03",
+    code: "AADI03",
+    discount_type: "percentage",
+    discount_value: 15,
+    min_order_amount: 45,
+    title: "Get Extra 15% OFF",
+    description: "Valid on orders above £45",
+    badge: "MIN £45",
+  },
+  {
     id: "c_ansh20",
     code: "ANSH20",
     discount_type: "percentage",
     discount_value: 20,
+    min_order_amount: 0,
     title: "Get Flat 20% OFF",
     description: "Special discount code for assignment booking",
     badge: "POPULAR",
@@ -57,8 +69,9 @@ const DEFAULT_COUPONS: CouponItem[] = [
     id: "c_save20",
     code: "SAVE20",
     discount_type: "percentage",
-    discount_value: 20,
-    title: "Get Flat 20% OFF",
+    discount_value: 10,
+    min_order_amount: 0,
+    title: "Get Extra 10% OFF",
     description: "Applicable on your assignment order",
     badge: "BEST VALUE",
   },
@@ -83,11 +96,39 @@ export const CouponModal: React.FC<CouponModalProps> = ({
     discountType: string;
   } | null>(null);
 
-  // Dynamically find best/highest discount coupon for the user's order
+  // Dynamically find highest discount coupon THAT IS ACTUALLY APPLICABLE on the user's order right now
   const bestCoupon = React.useMemo(() => {
     if (!coupons || coupons.length === 0) return null;
-    return [...coupons].sort((a, b) => (b.discount_value || 0) - (a.discount_value || 0))[0];
-  }, [coupons]);
+
+    // Filter only coupons where minimum order requirement is met
+    const applicable = coupons.filter((c: CouponItem) => {
+      const minOrder = Number(c.min_order_amount || 0);
+      return minOrder === 0 || orderAmount >= minOrder;
+    });
+
+    if (applicable.length > 0) {
+      return [...applicable].sort((a, b) => (b.discount_value || 0) - (a.discount_value || 0))[0];
+    }
+
+    // Fallback if no coupon is applicable yet
+    return [...coupons].sort((a, b) => Number(a.min_order_amount || 0) - Number(b.min_order_amount || 0))[0] || null;
+  }, [coupons, orderAmount]);
+
+  // Sort coupons: Applicable coupons top, locked/unmet min amount coupons bottom
+  const sortedCoupons = React.useMemo(() => {
+    if (!coupons || coupons.length === 0) return [];
+    return [...coupons].sort((a, b) => {
+      const minA = Number(a.min_order_amount || 0);
+      const minB = Number(b.min_order_amount || 0);
+      const notMetA = minA > 0 && orderAmount < minA;
+      const notMetB = minB > 0 && orderAmount < minB;
+
+      if (notMetA !== notMetB) {
+        return notMetA ? 1 : -1;
+      }
+      return (b.discount_value || 0) - (a.discount_value || 0);
+    });
+  }, [coupons, orderAmount]);
 
   // Prevent background page scrolling when modal is open
   useEffect(() => {
@@ -507,7 +548,7 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                   </div>
 
                   <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">
-                    {coupons.map((coupon) => {
+                    {sortedCoupons.map((coupon: CouponItem) => {
                       const isApplied = appliedInfo?.code === coupon.code;
                       const minOrder = Number(coupon.min_order_amount || 0);
                       const isMinNotMet = minOrder > 0 && orderAmount < minOrder;
@@ -520,20 +561,19 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                             if (isApplied) {
                               handleRemove();
                             } else if (isMinNotMet) {
-                              const msg = `Add £${shortfall} more to your order to apply '${coupon.code}' (Min order £${minOrder}.00 required).`;
-                              setErrorMsg(msg);
-                              toast.error(msg);
+                              // Locked coupon: Cannot be applied
+                              return;
                             } else {
                               setManualCode(coupon.code);
                               handleApply(coupon.code);
                             }
                           }}
-                          className={`group rounded-xl border p-2.5 sm:p-3 flex items-center justify-between gap-2.5 transition-all cursor-pointer ${
+                          className={`rounded-xl border p-2.5 sm:p-3 flex items-center justify-between gap-2.5 transition-all ${
                             isApplied
-                              ? "bg-emerald-50/90 border-emerald-400 shadow-2xs"
+                              ? "bg-emerald-50/90 border-emerald-400 shadow-2xs cursor-pointer"
                               : isMinNotMet
-                              ? "bg-amber-50/40 border-amber-200/80 hover:border-amber-300 opacity-95"
-                              : "bg-slate-50/80 hover:bg-purple-50/60 border-slate-200 hover:border-purple-300"
+                              ? "bg-amber-50/30 border-amber-200/70 opacity-80 cursor-not-allowed select-none"
+                              : "bg-slate-50/80 hover:bg-purple-50/60 border-slate-200 hover:border-purple-300 cursor-pointer group"
                           }`}
                         >
                           {/* Coupon Details Left */}
@@ -543,11 +583,11 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                                 isApplied
                                   ? "bg-emerald-600 border-emerald-600 text-white"
                                   : isMinNotMet
-                                  ? "bg-amber-100 border-amber-300 text-amber-900 font-bold"
+                                  ? "bg-amber-100/80 border-amber-300 text-amber-900 font-bold"
                                   : "bg-white border-dashed border-purple-300 text-purple-800"
                               }`}
                             >
-                              <Tag className="w-3 h-3" />
+                              {isMinNotMet ? <Lock className="w-3 h-3 text-amber-700" /> : <Tag className="w-3 h-3" />}
                               {coupon.code}
                             </span>
                             <div className="min-w-0">
@@ -556,54 +596,55 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                                   {coupon.title}
                                 </h5>
                               </div>
-                              <p className={`text-[10px] truncate mt-0.2 ${isMinNotMet ? "text-amber-800 font-bold" : "text-slate-500 font-medium"}`}>
+                              <p className={`text-[10px] truncate mt-0.2 ${isMinNotMet ? "text-amber-800 font-semibold" : "text-slate-500 font-medium"}`}>
                                 {isMinNotMet
-                                  ? `Add £${shortfall} more to apply (Min order £${minOrder})`
+                                  ? `Add £${shortfall} more to unlock (Min. order £${minOrder})`
                                   : coupon.description}
                               </p>
                             </div>
                           </div>
 
-                          {/* Apply / Remove CTA Button Right */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (isApplied) {
-                                handleRemove();
-                              } else if (isMinNotMet) {
-                                const msg = `Add £${shortfall} more to your order to apply '${coupon.code}' (Min order £${minOrder}.00 required).`;
-                                setErrorMsg(msg);
-                                toast.error(msg);
-                              } else {
-                                setManualCode(coupon.code);
-                                handleApply(coupon.code);
-                              }
-                            }}
-                            className={`py-1.5 px-3 sm:px-3.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
-                              isApplied
-                                ? "bg-rose-100 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200"
-                                : isMinNotMet
-                                ? "bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 font-extrabold"
-                                : "bg-purple-100 group-hover:bg-purple-700 text-purple-800 group-hover:text-white"
-                            }`}
-                          >
-                            {isApplied ? (
-                              <>
-                                <Trash2 className="w-3 h-3" />
-                                Remove
-                              </>
-                            ) : isMinNotMet ? (
-                              <>
-                                Add £{shortfall} more
-                              </>
-                            ) : (
-                              <>
-                                APPLY
-                                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                              </>
-                            )}
-                          </button>
+                          {/* Apply / Remove / Locked CTA Badge Right */}
+                          {isMinNotMet ? (
+                            <button
+                              type="button"
+                              disabled
+                              className="py-1.5 px-3 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider bg-amber-100/80 text-amber-900 border border-amber-300/80 shadow-2xs flex items-center gap-1 shrink-0 cursor-not-allowed opacity-90"
+                            >
+                              <Lock className="w-3 h-3 text-amber-700" />
+                              ADD £{shortfall} MORE
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isApplied) {
+                                  handleRemove();
+                                } else {
+                                  setManualCode(coupon.code);
+                                  handleApply(coupon.code);
+                                }
+                              }}
+                              className={`py-1.5 px-3 sm:px-3.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
+                                isApplied
+                                  ? "bg-rose-100 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200"
+                                  : "bg-purple-100 group-hover:bg-purple-700 text-purple-800 group-hover:text-white"
+                              }`}
+                            >
+                              {isApplied ? (
+                                <>
+                                  <Trash2 className="w-3 h-3" />
+                                  Remove
+                                </>
+                              ) : (
+                                <>
+                                  APPLY
+                                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                                </>
+                              )}
+                            </button>
+                          )}
                         </div>
                       );
                     })}
