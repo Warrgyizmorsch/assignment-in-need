@@ -22,6 +22,7 @@ export interface CouponItem {
   code: string;
   discount_type?: "percentage" | "fixed";
   discount_value?: number;
+  min_order_amount?: number;
   title?: string;
   description?: string;
   badge?: string;
@@ -133,15 +134,21 @@ export const CouponModal: React.FC<CouponModalProps> = ({
         if (res.ok) {
           const payload = await res.json();
           if (payload.success && Array.isArray(payload.data) && payload.data.length > 0) {
-            const normalized = payload.data.map((item: any, idx: number) => ({
-              id: item.id || `c_${idx}`,
-              code: String(item.code || item.coupon_code || "SAVE20").toUpperCase(),
-              discount_type: item.discount_type || "percentage",
-              discount_value: Number(item.discount_value || 20),
-              title: item.title || `Get ${item.discount_value || 20}% OFF`,
-              description: item.description || "Applicable on your assignment order",
-              badge: item.badge || "EXCLUSIVE",
-            }));
+            const normalized = payload.data.map((item: any, idx: number) => {
+              const minAmt = Number(item.min_order_amount || item.min_amount || item.min_order || 0);
+              const discVal = Number(item.discount_value || 20);
+              const discType = item.discount_type || "percentage";
+              return {
+                id: item.id || `c_${idx}`,
+                code: String(item.code || item.coupon_code || "SAVE20").toUpperCase(),
+                discount_type: discType,
+                discount_value: discVal,
+                min_order_amount: minAmt,
+                title: item.title || `Get ${discVal}% OFF`,
+                description: item.description || (minAmt > 0 ? `Valid on orders above £${minAmt}` : "Applicable on your assignment order"),
+                badge: item.badge || (minAmt > 0 ? `MIN £${minAmt}` : "EXCLUSIVE"),
+              };
+            });
             setCoupons(normalized);
           } else {
             setCoupons(DEFAULT_COUPONS);
@@ -175,6 +182,17 @@ export const CouponModal: React.FC<CouponModalProps> = ({
     const foundCoupon = coupons.find((c) => c.code.toUpperCase() === cleanCode);
     const discountVal = foundCoupon?.discount_value || 20;
     const discountType = foundCoupon?.discount_type || "percentage";
+    const minOrder = Number(foundCoupon?.min_order_amount || 0);
+
+    // Minimum order amount validation
+    if (minOrder > 0 && orderAmount < minOrder) {
+      const shortfall = (minOrder - orderAmount).toFixed(2);
+      const msg = `Add £${shortfall} more to your order to apply '${cleanCode}' (Min. order £${minOrder}.00 required).`;
+      setErrorMsg(msg);
+      toast.error(msg);
+      setIsApplying(false);
+      return;
+    }
 
     try {
       const token =
@@ -219,65 +237,18 @@ export const CouponModal: React.FC<CouponModalProps> = ({
 
         toast.success(data.message || `Coupon '${cleanCode}' applied successfully!`);
 
-        // Close modal automatically on apply (like Swiggy / Zomato)
         setTimeout(() => {
           onClose();
         }, 300);
       } else {
-        if (foundCoupon) {
-          const amount = Math.round((orderAmount * discountVal) / 100);
-          onApplyCoupon({
-            code: cleanCode,
-            discountType,
-            discountValue: discountVal,
-            discountAmount: amount,
-            message: `Coupon ${cleanCode} applied!`,
-          });
-
-          setAppliedInfo({
-            code: cleanCode,
-            discountValue: discountVal,
-            discountType,
-          });
-
-          toast.success(`Coupon '${cleanCode}' applied successfully!`);
-
-          setTimeout(() => {
-            onClose();
-          }, 300);
-        } else {
-          const errMsg = data.message || `Invalid or expired coupon code '${cleanCode}'.`;
-          setErrorMsg(errMsg);
-          toast.error(errMsg);
-        }
-      }
-    } catch (err) {
-      if (foundCoupon) {
-        const amount = Math.round((orderAmount * discountVal) / 100);
-        onApplyCoupon({
-          code: cleanCode,
-          discountType,
-          discountValue: discountVal,
-          discountAmount: amount,
-          message: `Coupon ${cleanCode} applied!`,
-        });
-
-        setAppliedInfo({
-          code: cleanCode,
-          discountValue: discountVal,
-          discountType,
-        });
-
-        toast.success(`Coupon '${cleanCode}' applied successfully!`);
-
-        setTimeout(() => {
-          onClose();
-        }, 300);
-      } else {
-        const errMsg = `Invalid or expired coupon code '${cleanCode}'.`;
+        const errMsg = data.message || `Coupon '${cleanCode}' cannot be applied.`;
         setErrorMsg(errMsg);
         toast.error(errMsg);
       }
+    } catch (err) {
+      const errMsg = `Failed to apply coupon '${cleanCode}'. Please try again.`;
+      setErrorMsg(errMsg);
+      toast.error(errMsg);
     } finally {
       setIsApplying(false);
     }
@@ -538,12 +509,20 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                   <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1">
                     {coupons.map((coupon) => {
                       const isApplied = appliedInfo?.code === coupon.code;
+                      const minOrder = Number(coupon.min_order_amount || 0);
+                      const isMinNotMet = minOrder > 0 && orderAmount < minOrder;
+                      const shortfall = (minOrder - orderAmount).toFixed(2);
+
                       return (
                         <div
                           key={coupon.code}
                           onClick={() => {
                             if (isApplied) {
                               handleRemove();
+                            } else if (isMinNotMet) {
+                              const msg = `Add £${shortfall} more to your order to apply '${coupon.code}' (Min order £${minOrder}.00 required).`;
+                              setErrorMsg(msg);
+                              toast.error(msg);
                             } else {
                               setManualCode(coupon.code);
                               handleApply(coupon.code);
@@ -552,6 +531,8 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                           className={`group rounded-xl border p-2.5 sm:p-3 flex items-center justify-between gap-2.5 transition-all cursor-pointer ${
                             isApplied
                               ? "bg-emerald-50/90 border-emerald-400 shadow-2xs"
+                              : isMinNotMet
+                              ? "bg-amber-50/40 border-amber-200/80 hover:border-amber-300 opacity-95"
                               : "bg-slate-50/80 hover:bg-purple-50/60 border-slate-200 hover:border-purple-300"
                           }`}
                         >
@@ -561,6 +542,8 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                               className={`px-2 py-0.5 rounded-lg border font-mono font-black text-xs tracking-wider uppercase shrink-0 flex items-center gap-1 shadow-2xs ${
                                 isApplied
                                   ? "bg-emerald-600 border-emerald-600 text-white"
+                                  : isMinNotMet
+                                  ? "bg-amber-100 border-amber-300 text-amber-900 font-bold"
                                   : "bg-white border-dashed border-purple-300 text-purple-800"
                               }`}
                             >
@@ -573,8 +556,10 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                                   {coupon.title}
                                 </h5>
                               </div>
-                              <p className="text-[10px] text-slate-500 font-medium truncate mt-0.2">
-                                {coupon.description}
+                              <p className={`text-[10px] truncate mt-0.2 ${isMinNotMet ? "text-amber-800 font-bold" : "text-slate-500 font-medium"}`}>
+                                {isMinNotMet
+                                  ? `Add £${shortfall} more to apply (Min order £${minOrder})`
+                                  : coupon.description}
                               </p>
                             </div>
                           </div>
@@ -586,14 +571,20 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                               e.stopPropagation();
                               if (isApplied) {
                                 handleRemove();
+                              } else if (isMinNotMet) {
+                                const msg = `Add £${shortfall} more to your order to apply '${coupon.code}' (Min order £${minOrder}.00 required).`;
+                                setErrorMsg(msg);
+                                toast.error(msg);
                               } else {
                                 setManualCode(coupon.code);
                                 handleApply(coupon.code);
                               }
                             }}
-                            className={`py-1.5 px-3 sm:px-4 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
+                            className={`py-1.5 px-3 sm:px-3.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
                               isApplied
                                 ? "bg-rose-100 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200"
+                                : isMinNotMet
+                                ? "bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 font-extrabold"
                                 : "bg-purple-100 group-hover:bg-purple-700 text-purple-800 group-hover:text-white"
                             }`}
                           >
@@ -601,6 +592,10 @@ export const CouponModal: React.FC<CouponModalProps> = ({
                               <>
                                 <Trash2 className="w-3 h-3" />
                                 Remove
+                              </>
+                            ) : isMinNotMet ? (
+                              <>
+                                Add £{shortfall} more
                               </>
                             ) : (
                               <>

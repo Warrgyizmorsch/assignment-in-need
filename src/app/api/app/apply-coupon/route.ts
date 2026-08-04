@@ -6,12 +6,11 @@ const BACKEND_URL =
   "https://ain.warrgyizmorsch.com";
 
 // Known fallback coupon calculations
-const FALLBACK_DISCOUNTS: Record<string, { type: "percentage" | "fixed"; value: number; title: string }> = {
-  ANSH20: { type: "percentage", value: 20, title: "Flat 20% OFF" },
-  SAVE20: { type: "percentage", value: 20, title: "Extra 20% OFF" },
-  WELCOME10: { type: "percentage", value: 10, title: "Extra 10% OFF" },
+const FALLBACK_DISCOUNTS: Record<string, { type: "percentage" | "fixed"; value: number; title: string; min_order_amount?: number }> = {
+  AADI03: { type: "percentage", value: 15, title: "Extra 15% OFF", min_order_amount: 45 },
+  ANSH20: { type: "percentage", value: 20, title: "Flat 20% OFF", min_order_amount: 0 },
+  SAVE20: { type: "percentage", value: 10, title: "Extra 10% OFF", min_order_amount: 0 },
   FLAT15: { type: "fixed", value: 15, title: "Flat £15 OFF" },
-  STUDENT15: { type: "percentage", value: 15, title: "Extra 15% Student Discount" },
   SAVE10: { type: "percentage", value: 10, title: "Extra 10% OFF" },
   SPECIAL25: { type: "percentage", value: 25, title: "Extra 25% Special OFF" }
 };
@@ -80,7 +79,7 @@ export async function POST(request: NextRequest) {
               raw: parsed
             });
           } else {
-            // If backend returned failure message
+            // If backend returned failure message (e.g. min amount not met)
             return NextResponse.json({
               success: false,
               message: parsed.message || parsed.error || `Invalid coupon code '${cleanCode}'.`
@@ -97,6 +96,14 @@ export async function POST(request: NextRequest) {
     // Fallback logic if backend API fails or returns error
     if (FALLBACK_DISCOUNTS[cleanCode]) {
       const rule = FALLBACK_DISCOUNTS[cleanCode];
+      if (rule.min_order_amount && amount < rule.min_order_amount) {
+        const shortfall = (rule.min_order_amount - amount).toFixed(2);
+        return NextResponse.json({
+          success: false,
+          message: `Add £${shortfall} more to apply '${cleanCode}' (Minimum order £${rule.min_order_amount}.00 required).`
+        }, { status: 400 });
+      }
+
       const discountAmount = rule.type === "percentage" ? (amount * rule.value) / 100 : rule.value;
       return NextResponse.json({
         success: true,
