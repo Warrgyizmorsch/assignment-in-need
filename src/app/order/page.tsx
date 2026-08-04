@@ -48,9 +48,8 @@ const ACADEMIC_LEVELS = [
 ];
 
 const WORK_TYPES = [
-  { label: "Writing (from scratch)", value: "writing" },
-  { label: "Editing & Proofreading", value: "editing" },
-  { label: "Rewriting", value: "rewriting" },
+  { label: "Standard", value: "standard" },
+  { label: "First Class", value: "first_class" },
 ];
 
 const DEADLINES = [
@@ -105,8 +104,7 @@ export default function OrderPage() {
   // Step 2: Assignment Details
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedService, setSelectedService] = useState("");
-  const [selectedWorkType, setSelectedWorkType] = useState("writing");
-  const [academicLevel, setAcademicLevel] = useState("undergraduate");
+  const [selectedWorkType, setSelectedWorkType] = useState("standard");
   const [dynamicServices, setDynamicServices] = useState<any[]>([]);
   const [dynamicSubjects, setDynamicSubjects] = useState<any[]>([]);
 
@@ -357,26 +355,49 @@ export default function OrderPage() {
       }
     }
 
-    // Deadline Multipliers from API
+    // Deadline Multipliers from API or fallback day-based calculation
     let deadlineMult = 1.0;
     const matchedUrg = apiUrgencies.find(
       (urg: any) =>
         String(urg.value) === String(selectedDeadline) ||
         urg.name === selectedDeadline ||
-        String(urg.value) === selectedDeadline.replace(/[^0-9]/g, "")
+        String(urg.value) === String(selectedDeadline).replace(/[^0-9]/g, "")
     );
     if (matchedUrg && matchedUrg.multiplier) {
       deadlineMult = Number(matchedUrg.multiplier);
     } else {
-      // Fallback mapping for Next.js static deadline slugs
-      if (selectedDeadline === "12h" || selectedDeadline === "1") deadlineMult = 2.0;
-      else if (selectedDeadline === "24h" || selectedDeadline === "2") deadlineMult = 1.5;
-      else if (selectedDeadline === "2d") deadlineMult = 1.5;
-      else if (selectedDeadline === "3d" || selectedDeadline === "3") deadlineMult = 1.4;
-      else if (selectedDeadline === "5d" || selectedDeadline === "5") deadlineMult = 1.2;
-      else if (selectedDeadline === "7d" || selectedDeadline === "7") deadlineMult = 1.1;
-      else if (selectedDeadline === "10d" || selectedDeadline === "10") deadlineMult = 1.05;
-      else if (selectedDeadline === "14d" || selectedDeadline === "15") deadlineMult = 1.0;
+      const valStr = String(selectedDeadline).toLowerCase().trim();
+      let days = 3;
+
+      if (valStr.includes("12h")) {
+        days = 0.5;
+      } else if (valStr.includes("24h") || valStr === "1" || valStr === "1d" || valStr.includes("1 day")) {
+        days = 1;
+      } else if (valStr === "2" || valStr === "2d" || valStr.includes("2 day")) {
+        days = 2;
+      } else if (valStr === "3" || valStr === "3d" || valStr.includes("3 day")) {
+        days = 3;
+      } else if (valStr === "4" || valStr === "4d" || valStr.includes("4 day")) {
+        days = 4;
+      } else if (valStr === "5" || valStr === "5d" || valStr.includes("5 day")) {
+        days = 5;
+      } else if (valStr === "7" || valStr === "7d" || valStr.includes("7 day")) {
+        days = 7;
+      } else if (valStr === "10" || valStr === "10d" || valStr.includes("10 day")) {
+        days = 10;
+      } else {
+        const parsed = parseInt(valStr.replace(/[^0-9]/g, ""), 10);
+        if (!isNaN(parsed) && parsed > 0) days = parsed;
+      }
+
+      if (days <= 0.5) deadlineMult = 2.2;
+      else if (days <= 1) deadlineMult = 1.8;
+      else if (days <= 2) deadlineMult = 1.5;
+      else if (days <= 3) deadlineMult = 1.35;
+      else if (days <= 5) deadlineMult = 1.2;
+      else if (days <= 7) deadlineMult = 1.1;
+      else if (days <= 10) deadlineMult = 1.05;
+      else deadlineMult = 1.0;
     }
 
     // Service Multiplier from /api/services API
@@ -400,23 +421,15 @@ export default function OrderPage() {
       }
     }
 
-    // Academic Level Multipliers
-    let levelMult = 1.0;
-    if (academicLevel === "postgraduate") levelMult = 1.3;
-    else if (academicLevel === "phd") levelMult = 1.6;
-    else if (academicLevel === "college") levelMult = 0.85;
-
-    // Work Type Multipliers
+    // Work Type Multipliers (Standard vs First Class)
     let workTypeMult = 1.0;
-    if (selectedWorkType === "editing") workTypeMult = 0.5;
-    else if (selectedWorkType === "rewriting") workTypeMult = 0.8;
+    if (selectedWorkType === "first_class") workTypeMult = 1.25;
 
     return Number(
       (
         basePrice *
         deadlineMult *
         serviceMultiplier *
-        levelMult *
         workTypeMult
       ).toFixed(2),
     );
@@ -424,7 +437,6 @@ export default function OrderPage() {
     selectedWordCount,
     selectedDeadline,
     selectedService,
-    academicLevel,
     selectedWorkType,
     apiWordCounts,
     apiUrgencies,
@@ -463,9 +475,19 @@ export default function OrderPage() {
   }, [selectedService, dynamicServices]);
 
   const activeDeadlineLabel = useMemo(() => {
-    const match = DEADLINES.find((d) => d.value === selectedDeadline);
-    return match ? match.label : "3 Days";
-  }, [selectedDeadline]);
+    const matchOpt = deadlineOptions.find((d) => String(d.value) === String(selectedDeadline));
+    if (matchOpt) return matchOpt.label;
+
+    const matchStatic = DEADLINES.find((d) => String(d.value) === String(selectedDeadline));
+    if (matchStatic) return matchStatic.label;
+
+    const num = parseInt(String(selectedDeadline).replace(/[^0-9]/g, ""), 10);
+    if (!isNaN(num) && num > 0) {
+      return `${num} ${num === 1 ? 'Day' : 'Days'}`;
+    }
+
+    return selectedDeadline || "3 Days";
+  }, [selectedDeadline, deadlineOptions]);
 
   const urgencyValue = useMemo(() => {
     if (selectedDeadline === "12h" || selectedDeadline === "24h") {
@@ -507,7 +529,7 @@ export default function OrderPage() {
         countrycode: cleanCountryCode,
         phone: phoneNumber,
         service: activeServiceLabel,
-        workType: selectedWorkType === "writing" ? "Writing" : selectedWorkType === "editing" ? "Editing" : "Rewriting",
+        workType: selectedWorkType === "first_class" ? "First Class" : "Standard",
         country: getCountryName(countryCode),
         subject: activeSubjectLabel,
         urgency: urgencyValue,
@@ -956,26 +978,7 @@ export default function OrderPage() {
                   Delivery Details
                 </span>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Academic Level Dropdown */}
-                  <div className="flex flex-col gap-1.5 w-full text-left">
-                    <label className="text-[13px] font-bold text-gray-700">
-                      Academic Level <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 z-10">
-                        <Award className="w-[18px] h-[18px] text-gray-400" />
-                      </div>
-                      <CustomDropdown
-                        options={ACADEMIC_LEVELS}
-                        value={academicLevel}
-                        onChange={setAcademicLevel}
-                        placeholder="Select Academic Level"
-                        triggerClassName="!text-[14px] !text-gray-800 !font-medium !h-[46px] pl-10 pr-4 bg-white !border !border-solid !border-gray-200 rounded-xl focus:border-purple-600 focus-within:border-purple-600 transition-colors shadow-sm flex items-center justify-between"
-                        dropdownClassName="!text-[14px] shadow-lg rounded-xl border border-gray-150"
-                      />
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                   {/* Deadline Dropdown */}
                   <div className="flex flex-col gap-1.5 w-full text-left">
@@ -1125,8 +1128,8 @@ export default function OrderPage() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400 font-semibold">Work Type</span>
-                  <span className="text-gray-900 uppercase">
-                    {selectedWorkType}
+                  <span className="text-gray-900 font-bold">
+                    {selectedWorkType === "first_class" ? "First Class" : "Standard"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
