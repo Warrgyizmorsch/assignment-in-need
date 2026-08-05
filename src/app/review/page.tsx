@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { getBaseUrl, getImageUrl } from '@/lib/api';
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
+import { buildPageSchema } from "@/lib/data";
 
 interface Review {
   id: number;
@@ -300,6 +301,15 @@ export default function ReviewsAndFaq() {
 
   return (
     <div className="bg-[#fdfcff] w-full min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema(STATIC_FAQS, false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* Detail modal */}
       {selectedId !== null && (
         <ReviewModal id={selectedId} onClose={() => setSelectedId(null)} />

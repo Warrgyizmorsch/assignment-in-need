@@ -541,3 +541,124 @@ export const FAQS: FAQ[] = [
     answer: "Yes, student satisfaction is our priority. If the delivered draft requires changes, you can request unlimited revisions within 14 days of receipt, and your matched expert will adjust the document to match your original specifications absolutely free."
   }
 ];
+
+export const organizationSchema = {
+  "@type": "Organization",
+  name: "Assignment In Need",
+  alternateName: "Assignment In Need UK",
+  url: "https://assignmentinneed.co.uk/",
+  logo: "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
+  description:
+    "Assignment In Need offers expert academic assistance for UK students, including essays, dissertations, coursework, and case studies, delivered by 150+ subject specialists.",
+  telephone: "+44 78262 33106",
+  email: "order@assignmentinneed.co.uk",
+  priceRange: "£8 - £25",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Roehampton Lane",
+    addressLocality: "London",
+    postalCode: "SW15 5PU",
+    addressCountry: "GB",
+  },
+  areaServed: [
+    { "@type": "Country", name: "United Kingdom" },
+    { "@type": "City", name: "London" },
+    { "@type": "City", name: "Manchester" },
+    { "@type": "City", name: "Birmingham" },
+    { "@type": "City", name: "Leeds" },
+    { "@type": "City", name: "Glasgow" },
+    { "@type": "City", name: "Liverpool" },
+    { "@type": "City", name: "Cardiff" },
+    { "@type": "City", name: "Bristol" },
+    { "@type": "City", name: "Oxford" },
+    { "@type": "City", name: "Sheffield" },
+    { "@type": "City", name: "Edinburgh" },
+  ],
+  sameAs: [
+    "https://www.instagram.com/assignmentinneedofficial/",
+    "https://twitter.com/assignment_in",
+    "https://www.youtube.com/@assignmentinneed1169",
+    "https://in.pinterest.com/assignnmentinneed66/",
+    "https://www.facebook.com/profile.php?id=61564613120071",
+  ],
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "25000",
+  },
+};
+
+export const localBusinessSchema = {
+  "@type": "LocalBusiness",
+  name: "Assignment In Need",
+  image: "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
+  url: "https://assignmentinneed.co.uk/",
+  telephone: "+44 78262 33106",
+  priceRange: "£8 - £25",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Roehampton Lane",
+    addressLocality: "London",
+    postalCode: "SW15 5PU",
+    addressCountry: "GB",
+  },
+};
+
+export const homeWebPageSchema = {
+  "@type": "WebPage",
+  "@id": "https://assignmentinneed.co.uk/#webpage",
+  url: "https://assignmentinneed.co.uk/",
+  name: "Assignment Help UK | Human-Written Academic Support",
+  isPartOf: { "@id": "https://assignmentinneed.co.uk/#website" },
+  about: { "@id": "https://assignmentinneed.co.uk/#organization" },
+  description:
+    "Need reliable Assignment Help UK? Get human-written essays, reports, coursework, and dissertations from subject specialists who understand UK universities.",
+  inLanguage: "en-GB",
+};
+
+export function buildPageSchema(faqs?: any[], isHomePage: boolean = false) {
+  const validFaqs = Array.isArray(faqs)
+    ? faqs
+        .map((item) => {
+          if (!item) return null;
+          const q = typeof item === "object" ? item.question || item.title || item.q || "" : "";
+          const a = typeof item === "object" ? item.answer || item.content || item.a || "" : typeof item === "string" ? item : "";
+          const cleanQ = String(q).replace(/<[^>]*>/g, "").trim();
+          const cleanA = String(a).replace(/<[^>]*>/g, "").trim();
+          if (cleanQ && cleanA) {
+            return {
+              "@type": "Question",
+              name: cleanQ,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: cleanA,
+              },
+            };
+          }
+          return null;
+        })
+        .filter(Boolean)
+    : [];
+
+  const faqPageSchema =
+    validFaqs.length > 0
+      ? {
+          "@type": "FAQPage",
+          inLanguage: "en-GB",
+          mainEntity: validFaqs,
+        }
+      : null;
+
+  const graph = [
+    organizationSchema,
+    ...(isHomePage ? [homeWebPageSchema] : []),
+    ...(faqPageSchema ? [faqPageSchema] : []),
+    localBusinessSchema,
+  ];
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": graph,
+  };
+}
+

@@ -29,10 +29,11 @@ import {
   MapPin,
   ShieldCheck,
   PhoneCall,
-  CheckCircle2,
   ChevronRight,
+  CheckCircle2,
 } from "lucide-react";
 import { AnimateIn } from "@/components/ui/AnimateIn";
+import { buildPageSchema } from "@/lib/data";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -192,6 +193,15 @@ export default function ContactPage() {
 
   return (
     <div className="font-sans text-[#111827] bg-[#fdfcff] overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema([], false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 3.1 BREADCRUMB + HEADER */}
       <section className="bg-white border-b border-gray-100 py-6 px-4 md:px-6 lg:px-8">
         <div className="max-w-[1250px] mx-auto text-left">

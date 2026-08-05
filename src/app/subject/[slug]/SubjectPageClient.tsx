@@ -6,8 +6,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
-import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import { mapExpertToWriter } from "@/lib/api";
+import { buildPageSchema } from "@/lib/data";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -812,8 +812,19 @@ export default function SubjectLanding({
     );
   }
 
+  const parsedSubjectFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
+
   return (
     <div className="font-sans text-[#111827] bg-white overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema(parsedSubjectFaqs, false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 3.2 HERO SECTION (Incorporates breadcrumbs for seamless backdrop layout) */}
       <section
         className="relative pt-6 pb-0 px-4 md:px-6 lg:px-8 overflow-hidden border-b border-gray-100"
