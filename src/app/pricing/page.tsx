@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import { toast } from "react-hot-toast";
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
+import { buildPageSchema } from "@/lib/data";
 import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
@@ -366,6 +367,15 @@ export default function PricingPage() {
 
   return (
     <main className="w-full font-sans text-gray-800 bg-[#fbfcff]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema(faqs, false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* Breadcrumb row */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-[15px] text-gray-500">
         Home <span className="mx-2">&gt;</span>{" "}

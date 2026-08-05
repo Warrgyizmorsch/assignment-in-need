@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { AnimateIn } from "@/components/ui/AnimateIn";
 import { toast } from "react-hot-toast";
+import { buildPageSchema } from "@/lib/data";
 
 export default function UserDeletePolicyPage() {
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -96,6 +97,15 @@ Thank you.`;
 
   return (
     <div className="font-sans text-gray-800 bg-[#fbfbfe] min-h-screen pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema([], false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 1. Header Hero Banner (Fully Responsive for Mobile App & Web) */}
       <section className="relative w-full bg-gradient-to-r from-[#3f159a] to-[#250d5e] text-white py-10 sm:py-14 md:py-16 overflow-hidden">
         <div className="absolute top-0 right-0 w-64 sm:w-80 h-64 sm:h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />

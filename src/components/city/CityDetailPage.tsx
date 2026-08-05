@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { mapExpertToWriter } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { buildPageSchema } from "@/lib/data";
 
 
 import {
@@ -332,6 +333,15 @@ export default function CityDetailPage({
 
   return (
     <div className="font-sans text-[#111827] bg-white overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema(pageData?.faqs, false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* HERO SECTION */}
       <section
         className="relative pt-6 pb-0 px-4 md:px-6 lg:px-8 overflow-hidden border-b border-gray-100"

@@ -51,6 +51,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
+import { buildPageSchema } from "@/lib/data";
+
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
 
@@ -107,8 +109,30 @@ export default async function BlogDetailPage({ params }: Props) {
     year: "numeric",
   });
 
+  let blogFaqs: any[] = [];
+  if (post.faqs) {
+    if (Array.isArray(post.faqs)) blogFaqs = post.faqs;
+    else if (typeof post.faqs === "string") {
+      try { blogFaqs = JSON.parse(post.faqs); } catch (e) {}
+    }
+  } else if (post.faq) {
+    if (Array.isArray(post.faq)) blogFaqs = post.faq;
+    else if (typeof post.faq === "string") {
+      try { blogFaqs = JSON.parse(post.faq); } catch (e) {}
+    }
+  }
+
   return (
     <div className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema(blogFaqs, false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       <SectionContainer>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8">
           <AnimateIn variant="fadeUp" className="lg:col-span-8">

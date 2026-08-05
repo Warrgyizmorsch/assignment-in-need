@@ -17,7 +17,7 @@ import { ProcessSteps } from "@/components/ui/ProcessSteps";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
-import { WRITERS, TESTIMONIALS } from "@/lib/data";
+import { WRITERS, TESTIMONIALS, buildPageSchema } from "@/lib/data";
 import { mapExpertToWriter } from "@/lib/api";
 import ServicePageLoading from "./loading";
 import {
@@ -565,8 +565,19 @@ export default function ServiceLanding() {
     },
   ];
 
+  const parsedServiceFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
+
   return (
     <div className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema(parsedServiceFaqs, false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 1. Hero Section */}
       <section
         className="relative pt-6 pb-8 px-4 md:px-6 lg:px-8 overflow-hidden border-b border-gray-100"

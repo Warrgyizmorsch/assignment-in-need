@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { mapExpertToWriter } from "@/lib/api";
+import { buildPageSchema } from "@/lib/data";
 import {
   GraduationCap,
   Users,
@@ -182,6 +183,15 @@ export default function AboutPage() {
 
   return (
     <div className="font-sans text-[#111827] bg-white overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema([], false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 3.1 BREADCRUMB + HEADER */}
       <section className="bg-white border-b border-gray-150 py-6 px-4 md:px-6 lg:px-8">
         <div className="max-w-[1250px] mx-auto text-left">

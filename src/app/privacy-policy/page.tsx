@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ChevronRight, Shield, Clock, Lock, CheckCircle2 } from "lucide-react";
 import { AnimateIn } from "@/components/ui/AnimateIn";
+import { buildPageSchema } from "@/lib/data";
 
 export default function PrivacyPolicyPage() {
   const dataRetention = [
@@ -31,6 +32,15 @@ export default function PrivacyPolicyPage() {
 
   return (
     <div className="font-sans text-gray-800 bg-[#fbfbfe] min-h-screen pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema([], false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 1. Header Hero Banner */}
       <section className="relative w-full bg-gradient-to-r from-[#3f159a] to-[#250d5e] text-white py-12 md:py-16 overflow-hidden">
         {/* Soft background glow */}

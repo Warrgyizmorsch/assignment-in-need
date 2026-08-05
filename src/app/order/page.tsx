@@ -36,7 +36,7 @@ import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SectionContainer } from "@/components/ui/SectionContainer";
-import { SUBJECTS } from "@/lib/data";
+import { SUBJECTS, buildPageSchema } from "@/lib/data";
 import { getBaseUrl } from "@/lib/api";
 import { AnimateIn } from "@/components/ui/AnimateIn";
 
@@ -684,6 +684,15 @@ export default function OrderPage() {
 
   return (
     <div className="bg-[#f8fafc] min-h-screen pb-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildPageSchema([], false), null, 2).replace(
+            /</g,
+            "\\u003c"
+          ),
+        }}
+      />
       {/* 1. Hero Title Header Block */}
       <section className="relative  w-full bg-gradient-to-r from-white via-purple-50/20 to-purple-50/40 overflow-hidden">
         {/* Soft background shape */}
