@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { CanonicalHeader } from "@/components/layout/CanonicalHeader";
 import { ChatBot } from "@/components/ui/ChatBot";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
+import { ReferWidget } from "@/components/ui/ReferWidget";
 import { QuoteModal } from "@/components/ui/QuoteModal";
 import { PromoModal } from "@/components/ui/PromoModal";
 import "./globals.css";
@@ -28,11 +29,19 @@ export const metadata: Metadata = {
     "Need reliable Assignment Help UK? Get human-written essays, reports, coursework, and dissertations from subject specialists who understand UK universities.",
   keywords: [
     "assignment help",
+    "assignment help uk",
+    "assignment service",
+    "online assignment help",
+    "assignment helper",
+    "assignment writing services",
+    "assignment help online",
+    "assignment help online uk",
     "plagiarism-free writing",
     "case study writing",
     "business law essays",
     "nursing assignment help",
     "engineering report help",
+
   ],
   robots: {
     index: true,
@@ -95,7 +104,6 @@ export default function RootLayout({
         <CanonicalHeader />
         <Script
           id="chunk-error-handler"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
                 (function () {
@@ -181,6 +189,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <main className="flex-grow">{children}</main>
         <Footer />
         <WhatsAppButton />
+        <ReferWidget />
         <ChatBot />
         <QuoteModal />
         <PromoModal />

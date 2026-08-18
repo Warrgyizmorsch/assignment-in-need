@@ -139,24 +139,17 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
                 "w-[280px] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-[320px]"
               )}
             >
-              <Link
-                href={targetHref}
-                className="block h-full no-underline hover:no-underline"
-              >
-                <ExpertCard
-                  name={expert.name}
-                  role={expert.role}
-                  rating={expert.rating}
-                  ordersCount={expert.ordersCount}
-                  avatar={expert.avatar}
-                  experience={expert.experience}
-                  qualifications={expert.qualifications}
-                  onHire={() => {
-                    window.location.href = "/order";
-                  }}
-                  className="h-full"
-                />
-              </Link>
+              <ExpertCard
+                name={expert.name}
+                role={expert.role}
+                rating={expert.rating}
+                ordersCount={expert.ordersCount}
+                avatar={expert.avatar}
+                experience={expert.experience}
+                qualifications={expert.qualifications}
+                slug={expert.slug || expert.id || ""}
+                className="h-full"
+              />
             </div>
           );
         })}

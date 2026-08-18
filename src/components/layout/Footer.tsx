@@ -13,6 +13,7 @@ const Link = (props: React.ComponentProps<typeof NextLink>) => (
 
 export const Footer = () => {
   const [subjects, setSubjects] = React.useState<any[]>([]);
+  const [cities, setCities] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     const fetchSubjects = async () => {
@@ -31,7 +32,26 @@ export const Footer = () => {
         // fallback
       }
     };
+
+    const fetchCities = async () => {
+      try {
+        const res = await dedupedFetch("/api/city-pages");
+        if (res.ok) {
+          const payload = await res.json();
+          if (
+            (payload.success || payload.status === "success") &&
+            Array.isArray(payload.data)
+          ) {
+            setCities(payload.data);
+          }
+        }
+      } catch (e) {
+        // fallback
+      }
+    };
+
     fetchSubjects();
+    fetchCities();
   }, []);
 
   return (
@@ -350,22 +370,22 @@ export const Footer = () => {
               Resources
             </p>
             <ul className="list-none p-0 m-0 flex flex-col gap-3.5">
-              <li>
+              {/* <li>
                 <Link
                   href="/resources/referencing-guides"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Referencing Guides
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link
                   href="/resources/writing-tips"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Writing Tips
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/samples"
@@ -376,20 +396,28 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
+                  href="/review"
+                  className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
+                >
+                  Review
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/blog"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Blog
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/resources/student-resources"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Student Resources
                 </Link>
-              </li>
+              </li> */}
               {/* <li className="font-semibold"><Link href="/resources" className="text-[#3b82f6] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">View All Resources</Link></li> */}
             </ul>
           </div>
@@ -414,14 +442,14 @@ export const Footer = () => {
                   Our Experts
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
-                  href="#"
+                  href="/review"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Reviews
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="/contact"
@@ -485,6 +513,43 @@ export const Footer = () => {
           </ul>
         </div>
       </div>
+
+      {cities.length > 0 && (
+        <div className="w-full border-t border-white/10 py-8 px-8 text-center flex flex-col items-center justify-center">
+          <p className="text-[#ff5722] text-[1.1rem] font-bold mb-4 mt-0">
+            We Offer Assignment Writing Services In :
+          </p>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 max-w-[1400px]">
+            {cities.map((city: any, index: number) => {
+              const rawSlug = city.slug || city.url || city.city || city.title || "";
+
+              let finalSlug = rawSlug;
+              let displayName = city.city || city.name || "City";
+
+              if (typeof rawSlug === "string") {
+                const lastSeg = rawSlug.trim().split("/").pop() || "";
+                if (lastSeg) {
+                  let cleanSlug = lastSeg.replace(/-assignment-help$/, "").replace(/^cities-/, "").replace(/^assignment-help-/, "");
+                  finalSlug = `assignment-help-${cleanSlug}`;
+
+                  // Generate a clean display name if city field is not available or too long
+                  displayName = cleanSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                }
+              }
+
+              return (
+                <Link
+                  key={city.id || index}
+                  href={`/cities/${finalSlug}`}
+                  className="text-white no-underline text-[0.95rem] transition-colors duration-200 hover:text-[#ff5722]"
+                >
+                  {displayName}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="w-full border-t border-white/10 py-6 px-8 text-center flex justify-center">
         <p className="m-0 text-[#9ca3af] text-[0.85rem] max-w-[1400px] w-full">

@@ -1,35 +1,104 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import {
-  X,
-  Copy,
-  Check,
-  Gift,
-  ArrowRight,
-  FileText,
-  Cpu,
-  RefreshCw,
-  Headset,
-  GraduationCap,
-  ShieldCheck,
-  Star,
-  Zap,
-} from "lucide-react";
+import { X, GraduationCap, ChevronDown, Check } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { getCountries, getCountryCallingCode } from "react-phone-number-input";
+import en from "react-phone-number-input/locale/en.json";
 import { openQuoteModal } from "@/components/ui/QuoteModal";
+
+interface CustomDropdownOption {
+  label: string;
+  value: string;
+}
+
+const COUNTRY_CODES: CustomDropdownOption[] = getCountries()
+  .map((country) => {
+    const code = getCountryCallingCode(country);
+    const name = (en as any)[country] || country;
+    return {
+      label: `+${code} (${country === "GB" ? "UK" : name})`,
+      value: `+${code}`,
+    };
+  })
+  .sort((a, b) => {
+    if (a.value === "+44" && a.label.includes("UK")) return -1;
+    if (b.value === "+44" && b.label.includes("UK")) return 1;
+    return a.label.localeCompare(b.label);
+  });
+
+const SEGMENTS = [
+  { label: "40% OFF", color: "#3f159a", value: "40% OFF" }, // 0
+  { label: "FREE", color: "#ffb800", value: "FREE" },        // 1
+  { label: "10% OFF", color: "#3f159a", value: "10% OFF" }, // 2
+  { label: "20% OFF", color: "#ff5500", value: "20% OFF" }, // 3
+  { label: "40% OFF", color: "#3f159a", value: "40% OFF" }, // 4
+  { label: "FREE", color: "#ffb800", value: "FREE" },        // 5
+  { label: "10% OFF", color: "#3f159a", value: "10% OFF" }, // 6
+  { label: "20% OFF", color: "#ff5500", value: "20% OFF" }, // 7
+];
 
 export function PromoModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const pathname = usePathname();
 
-  useEffect(() => {
-    // Only show promo modal on the home page "/"
-    if (pathname !== "/") return;
+  const [name, setName] = useState("");
+  const [countryCode, setCountryCode] = useState("+44");
+  const [countryLabel, setCountryLabel] = useState("+44 (UK)");
+  const [phone, setPhone] = useState("");
 
-    // Do not show if already closed during this session
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [spinResult, setSpinResult] = useState<string | null>(null);
+  const [rotation, setRotation] = useState(0);
+  
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [nextSpinTime, setNextSpinTime] = useState<number | null>(null);
+  const [timeLeftStr, setTimeLeftStr] = useState<string>("");
+
+  useEffect(() => {
+    const cleanPhone = phone.replace(/[^0-9]/g, "");
+    if (cleanPhone.length >= 5) {
+      const fullPhone = `${countryCode.trim() || "+44"}${cleanPhone}`;
+      const historyRaw = localStorage.getItem("spin_history");
+      if (historyRaw) {
+        try {
+          const history = JSON.parse(historyRaw);
+          const lastSpin = history[fullPhone];
+          if (lastSpin && Date.now() - lastSpin < 24 * 60 * 60 * 1000) {
+            setNextSpinTime(lastSpin + 24 * 60 * 60 * 1000);
+            return;
+          }
+        } catch (e) {}
+      }
+    }
+    setNextSpinTime(null);
+  }, [phone, countryCode]);
+
+  useEffect(() => {
+    if (!nextSpinTime) {
+      setTimeLeftStr("");
+      return;
+    }
+    const interval = setInterval(() => {
+      const diff = nextSpinTime - Date.now();
+      if (diff <= 0) {
+        setNextSpinTime(null);
+        setTimeLeftStr("");
+        clearInterval(interval);
+      } else {
+        const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, "0");
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, "0");
+        const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, "0");
+        setTimeLeftStr(`${h}h : ${m}m : ${s}s`);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [nextSpinTime]);
+
+  useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("promo_modal_closed")) {
       return;
     }
@@ -45,25 +114,17 @@ export function PromoModal() {
       cleanup();
     };
 
-    // Desktop: Trigger on mouse cursor movement or exit intent
     const handleMouseMove = () => {
-      if (!timer) {
-        timer = setTimeout(triggerPopup, 1000);
-      }
+      if (!timer) timer = setTimeout(triggerPopup, 1000);
     };
 
     const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 15) {
-        triggerPopup();
-      }
+      if (e.clientY <= 15) triggerPopup();
     };
 
-    // Mobile: Trigger when user scrolls or touches page
     const handleScrollOrTouch = () => {
       if (window.scrollY > 30 || window.pageYOffset > 30) {
-        if (!timer) {
-          timer = setTimeout(triggerPopup, 800);
-        }
+        if (!timer) timer = setTimeout(triggerPopup, 800);
       }
     };
 
@@ -83,6 +144,17 @@ export function PromoModal() {
     return cleanup;
   }, [pathname]);
 
+  // Click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleClose = () => {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("promo_modal_closed", "true");
@@ -90,217 +162,322 @@ export function PromoModal() {
     setIsOpen(false);
   };
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText("AIN40");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const getCountryIso = (code: string): string => {
+    const digits = code.replace(/[^0-9]/g, "");
+    if (!digits) return "GB";
+    if (digits === "44") return "GB";
+    const matched = getCountries().find((country) => getCountryCallingCode(country) === digits);
+    return matched || "GB";
   };
 
-  const handleClaimOffer = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("promo_modal_closed", "true");
+  const getCouponCode = (val: string) => {
+    if (val === "40% OFF") return "AIN40";
+    if (val === "20% OFF") return "AIN20";
+    if (val === "10% OFF") return "AIN10";
+    return "AIN40";
+  };
+
+  const submitLead = async (wonValue: string) => {
+    try {
+      const cleanPhone = phone.replace(/[^0-9]/g, "");
+      const cleanCode = countryCode.trim() || "+44";
+      const fullPhone = `${cleanCode}${cleanPhone}`;
+      const code = getCouponCode(wonValue);
+
+      const payload = {
+        name: name.trim(),
+        user_name: name.trim(),
+        email: `spin_${Date.now()}@assignmentinneed.co.uk`, // Dummy email
+        phone: cleanPhone,
+        mobile: cleanPhone,
+        phone_number: fullPhone,
+        countryCode: cleanCode,
+        country_code: cleanCode,
+        countrycode: cleanCode,
+        countryIso: getCountryIso(cleanCode),
+        service: "Assignment",
+        subject: "General",
+        deadline: "5",
+        urgency: "5",
+        wordCount: "250",
+        pages: 1,
+        description: `Spin wheel lead from ${name}. Won Coupon: ${code}`,
+        message: `Spin wheel lead from ${name}. Won Coupon: ${code}`,
+        requirements: `Spin wheel lead from ${name}. Won Coupon: ${code}`,
+        notes: `Spin wheel lead from ${name}. Won Coupon: ${code}`,
+        coupon_code: code,
+        promo_code: code,
+        coupon: code,
+        source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/",
+      };
+
+      const headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      };
+
+      let res = await fetch("/api/web-submit-quote", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        res = await fetch("/api/submit-enquiry", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+      }
+
+      if (!res.ok) {
+        res = await fetch("/api/web-place-order", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+      }
+    } catch (e) {
+      console.error("Lead submission failed", e);
     }
-    setIsOpen(false);
-    openQuoteModal();
   };
 
-  if (!isOpen || pathname !== "/") return null;
+  const handleSpin = async () => {
+    if (!name.trim()) {
+      toast.error("Please enter your name");
+      return;
+    }
+    if (!phone.trim() || phone.length < 5) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+
+    const cleanPhone = phone.replace(/[^0-9]/g, "");
+    const cleanCode = countryCode.trim() || "+44";
+    const fullPhone = `${cleanCode}${cleanPhone}`;
+    
+    // Check 24-hour limit
+    const historyRaw = localStorage.getItem("spin_history");
+    let history: Record<string, number> = {};
+    if (historyRaw) {
+      try { history = JSON.parse(historyRaw); } catch (e) {}
+    }
+    
+    const lastSpin = history[fullPhone];
+    if (lastSpin && Date.now() - lastSpin < 24 * 60 * 60 * 1000) {
+      toast.error("This number has already spun the wheel in the last 24 hours. Please try again later.");
+      return;
+    }
+
+    setIsSpinning(true);
+    setSpinResult(null);
+
+    // Determine result
+    const rand = Math.floor(Math.random() * 1000);
+    let targetIndex = 0;
+
+    if (rand < 960) {
+      targetIndex = Math.random() > 0.5 ? 0 : 4; // 40% OFF
+    } else if (rand < 990) {
+      targetIndex = Math.random() > 0.5 ? 2 : 6; // 10% OFF
+    } else {
+      targetIndex = Math.random() > 0.5 ? 3 : 7; // 20% OFF
+    }
+
+    // SVG rotation calculation
+    const segmentCenter = (targetIndex * 45) + 22.5;
+    const extraSpins = 360 * 5; 
+    const newRotation = rotation + extraSpins + (360 - segmentCenter) - (rotation % 360);
+
+    setRotation(newRotation);
+
+    setTimeout(() => {
+      setIsSpinning(false);
+      const wonValue = SEGMENTS[targetIndex].value;
+      setSpinResult(wonValue);
+      
+      // Save spin history
+      history[fullPhone] = Date.now();
+      localStorage.setItem("spin_history", JSON.stringify(history));
+      localStorage.setItem("ain_won_discount", wonValue);
+
+      // Submit lead with won coupon
+      submitLead(wonValue);
+      
+    }, 4500); // Wait for CSS transition
+  };
+
+  if (!isOpen) return null;
+
+  const renderSlices = () => {
+    return SEGMENTS.map((seg, i) => {
+      const startAngle = (i * 45 * Math.PI) / 180;
+      const endAngle = ((i + 1) * 45 * Math.PI) / 180;
+      const x1 = Math.cos(startAngle) * 100;
+      const y1 = Math.sin(startAngle) * 100;
+      const x2 = Math.cos(endAngle) * 100;
+      const y2 = Math.sin(endAngle) * 100;
+      
+      const largeArcFlag = 0;
+      const pathData = `M 0 0 L ${x1} ${y1} A 100 100 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+      const textAngle = (i * 45) + 22.5;
+
+      return (
+        <g key={i}>
+          <path d={pathData} fill={seg.color} stroke="#fff" strokeWidth="1" />
+          <text
+            x="65"
+            y="0"
+            fill="#fff"
+            fontSize="10"
+            fontWeight="bold"
+            textAnchor="middle"
+            alignmentBaseline="middle"
+            transform={`rotate(${textAngle})`}
+          >
+            {seg.label}
+          </text>
+        </g>
+      );
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      {/* Modal Container */}
-      <div className="relative w-full max-w-[600px] bg-white rounded-[22px] sm:rounded-[32px] p-4 sm:p-7 text-[#0f1b3d] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.35)] border border-purple-100 overflow-hidden select-none animate-scaleUp max-h-[92vh] overflow-y-auto">
-        {/* Close Button */}
+      <div className="relative w-full max-w-[800px] bg-[#f8f5fd] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+        
         <button
           onClick={handleClose}
-          className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-purple-50 hover:bg-purple-100 active:scale-95 transition-all flex items-center justify-center text-purple-700 z-20 border border-purple-100/60 shadow-2xs"
-          aria-label="Close promotion modal"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-100 hover:bg-purple-200 flex items-center justify-center text-purple-700 z-20 transition-colors"
+          aria-label="Close"
         >
           <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
-        {/* Top Header & Gift Box Section */}
-        <div className="flex flex-row items-center justify-between gap-3 sm:gap-4 relative z-10 pt-0 sm:pt-1">
-          {/* Left Text Column */}
-          <div className="flex-1 text-left">
-            {/* Top Pill Badge */}
-            <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-0.5 sm:py-1.5 rounded-full border border-purple-200/80 bg-purple-50/80 text-purple-700 text-[9px] sm:text-xs font-bold tracking-wider uppercase mb-1.5 sm:mb-3 shadow-2xs whitespace-nowrap">
-              <Gift className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-600 shrink-0" />
-              <span className="whitespace-nowrap">LIMITED TIME STUDENT OFFER</span>
+        {/* Left: Spin Wheel Area */}
+        <div className="w-full md:w-[45%] bg-gradient-to-br from-[#fdfbf6] to-[#f4ebe1] flex items-center justify-center p-6 md:p-8 relative">
+          <div className="relative w-[240px] h-[240px] sm:w-[280px] sm:h-[280px]">
+            <div 
+              className="w-full h-full rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.15)] bg-white overflow-hidden"
+              style={{
+                transform: `rotate(${rotation}deg)`,
+                transition: "transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)",
+              }}
+            >
+              <svg viewBox="-100 -100 200 200" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+                {renderSlices()}
+                <circle cx="0" cy="0" r="22" fill="#fff" stroke="#e5e7eb" strokeWidth="2" />
+              </svg>
             </div>
-
-            {/* Main Heading */}
-            <h2 className="text-xl sm:text-[32px] font-black text-[#0f1b3d] tracking-tight leading-[1.15] font-heading">
-              Get <span className="text-[#ff5500]">40% OFF</span>
-              <br className="hidden sm:inline" /> Your First Assignment
-            </h2>
-
-            {/* Description */}
-            <p className="text-[11px] sm:text-sm font-medium text-gray-500 mt-1 sm:mt-2 leading-tight sm:leading-relaxed max-w-sm">
-              Save instantly on your first order and get expert help from{" "}
-              <strong className="text-purple-700 font-bold">
-                UK academic specialists
-              </strong>
-              .
-            </p>
+            
+            {/* Center Cap Overlay (Static) */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-gray-700 pointer-events-none z-10">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            
+            <div className="absolute top-1/2 -right-4 sm:-right-5 -translate-y-1/2 z-10 filter drop-shadow-md">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 12L22 2V22L2 12Z" fill="#ea580c" />
+              </svg>
+            </div>
           </div>
+        </div>
 
-          {/* Right Gift Box Illustration */}
-          <div className="relative w-20 h-20 sm:w-36 sm:h-36 shrink-0 flex items-center justify-center">
-            <Image
-              src="/images/gift.png"
-              alt="40% OFF Gift Box Offer"
-              fill
-              sizes="(min-width: 640px) 144px, 80px"
-              priority
-              className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.16)]"
+        {/* Right: Form Area */}
+        <div className="w-full md:w-[55%] p-6 sm:p-8 md:p-10 flex flex-col justify-center bg-white">
+          <h2 className="text-[26px] sm:text-[32px] font-black text-[#0f1b3d] leading-tight tracking-tight mb-2">
+            Spin to <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-orange-500">Save</span> on Your UK Assignment!
+          </h2>
+          <p className="text-gray-500 text-sm sm:text-base font-medium mb-6">
+            Spin the wheel for instant discounts on your first order.
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              disabled={!!spinResult || isSpinning}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 sm:py-3.5 text-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all text-gray-800 font-medium disabled:bg-gray-50 disabled:text-gray-500"
             />
-          </div>
-        </div>
 
-        {/* 6 Features Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mt-3.5 sm:mt-5">
-          <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-[#f8f6ff] border border-purple-100/70 text-left">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white border border-purple-100 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
-              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <div className="flex gap-2 relative" ref={dropdownRef}>
+              <div 
+                className={`w-[140px] shrink-0 border border-gray-200 rounded-xl px-3 py-3 sm:py-3.5 text-sm flex items-center justify-between transition-all font-medium ${(spinResult || isSpinning) ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-800 cursor-pointer hover:border-purple-400'}`}
+                onClick={() => {
+                  if (!spinResult && !isSpinning) setIsDropdownOpen(!isDropdownOpen);
+                }}
+              >
+                <span className="truncate mr-2">{countryLabel}</span>
+                <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+              </div>
+              
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                value={phone}
+                disabled={!!spinResult || isSpinning}
+                onChange={(e) => setPhone(e.target.value)}
+                className="flex-1 border border-gray-200 rounded-xl px-4 py-3 sm:py-3.5 text-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all text-gray-800 font-medium disabled:bg-gray-50 disabled:text-gray-500"
+              />
+
+              {isDropdownOpen && !spinResult && !isSpinning && (
+                <div className="absolute top-full left-0 mt-1 w-[250px] bg-white border border-gray-100 shadow-xl rounded-xl max-h-60 overflow-y-auto z-50 py-1 text-sm font-medium">
+                  {COUNTRY_CODES.map((opt) => (
+                    <div
+                      key={opt.value + opt.label}
+                      onClick={() => {
+                        setCountryCode(opt.value);
+                        setCountryLabel(opt.label);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`px-4 py-2.5 cursor-pointer flex items-center justify-between hover:bg-purple-50 transition-colors ${countryLabel === opt.label ? 'bg-purple-50/50 text-purple-700' : 'text-gray-700'}`}
+                    >
+                      <span>{opt.label}</span>
+                      {countryLabel === opt.label && <Check className="w-4 h-4" />}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#0f1b3d] leading-tight">
-              Free Plagiarism Report
-            </span>
-          </div>
 
-          <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-[#f8f6ff] border border-purple-100/70 text-left">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white border border-purple-100 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
-              <Cpu className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#0f1b3d] leading-tight">
-              Free AI Report
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-[#f8f6ff] border border-purple-100/70 text-left">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white border border-purple-100 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
-              <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#0f1b3d] leading-tight">
-              Unlimited Revisions
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-[#f8f6ff] border border-purple-100/70 text-left">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white border border-purple-100 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
-              <Headset className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#0f1b3d] leading-tight">
-              24/7 Expert Support
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-[#f8f6ff] border border-purple-100/70 text-left">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white border border-purple-100 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
-              <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#0f1b3d] leading-tight">
-              UK Academic Experts
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-[#f8f6ff] border border-purple-100/70 text-left">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-white border border-purple-100 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
-              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </div>
-            <span className="text-[10px] sm:text-xs font-bold text-[#0f1b3d] leading-tight">
-              100% Confidential Service
-            </span>
-          </div>
-        </div>
-
-        {/* Coupon Code Section */}
-        <div className="w-full mt-3.5 sm:mt-4 bg-[#faf8ff] border-2 border-dashed border-purple-200/90 rounded-2xl p-2.5 sm:p-3.5 flex items-center justify-between gap-2 sm:gap-3">
-          <div className="flex flex-col items-start pl-1">
-            <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-purple-600">
-              YOUR PROMO CODE
-            </span>
-            <span className="text-lg sm:text-2xl font-black tracking-[0.2em] text-purple-900 font-mono mt-0.5">
-              AIN40
-            </span>
-          </div>
-          <button
-            onClick={handleCopyCode}
-            className="flex items-center gap-1 sm:gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-xl bg-white hover:bg-purple-50 active:scale-95 transition-all text-xs sm:text-sm font-bold text-purple-700 border border-purple-200 shadow-2xs shrink-0"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
-                <span className="text-emerald-700">Copied!</span>
-              </>
+            {spinResult ? (
+              <button
+                onClick={() => {
+                  handleClose();
+                  openQuoteModal();
+                }}
+                className="btn-shutter-orange-open w-full mt-3 sm:mt-4 py-3 sm:py-4 px-4 sm:px-6 rounded-xl text-white font-black text-sm sm:text-base shadow-[0_10px_25px_rgba(255,106,18,0.35)] flex items-center justify-center group tracking-wide cursor-pointer border-none uppercase transition-all"
+              >
+                <span className="relative z-10">REDEEM NOW</span>
+              </button>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span>Copy Code</span>
+                <button
+                  onClick={handleSpin}
+                  disabled={isSpinning || !!nextSpinTime}
+                  className="btn-shutter-orange-open w-full mt-3 sm:mt-4 py-3 sm:py-4 px-4 sm:px-6 rounded-xl text-white font-black text-sm sm:text-base shadow-[0_10px_25px_rgba(255,106,18,0.35)] flex items-center justify-center group tracking-wide cursor-pointer border-none uppercase transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  <span className="relative z-10">{isSpinning ? "SPINNING..." : "SPIN NOW"}</span>
+                </button>
+                {nextSpinTime && (
+                  <div className="mt-2 text-center text-red-500 font-bold text-sm animate-fadeIn">
+                    Next spin available in: {timeLeftStr}
+                  </div>
+                )}
               </>
             )}
-          </button>
-        </div>
-
-        {/* Main Orange CTA Button */}
-        <button
-          onClick={handleClaimOffer}
-          className="btn-shutter-orange-open w-full mt-3 sm:mt-4 py-3 sm:py-4 px-4 sm:px-6 rounded-2xl text-white font-black text-sm sm:text-lg shadow-[0_10px_25px_rgba(255,106,18,0.35)] flex items-center justify-center gap-2 sm:gap-2.5 group tracking-wide cursor-pointer border-none"
-        >
-          <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-white relative z-10" />
-          <span className="relative z-10">Claim My 40% Discount Now</span>
-          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-        </button>
-
-        {/* Secondary Dismiss Text */}
-        <div className="text-center mt-2.5 sm:mt-3">
-          <button
-            onClick={handleClose}
-            className="text-[11px] sm:text-sm font-semibold text-gray-500 hover:text-purple-800 underline underline-offset-4 transition-colors"
-          >
-            Continue Without Discount
-          </button>
-        </div>
-
-        {/* Bottom Trust Strip */}
-        <div className="w-full mt-3 sm:mt-4 p-2.5 sm:p-3 rounded-2xl bg-[#f8f6ff] border border-purple-100/70 grid grid-cols-3 gap-1 sm:gap-2.5 text-center text-xs">
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 border-r border-purple-100/80 pr-1 sm:pr-2">
-            <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 shrink-0" />
-            <div className="flex flex-col text-left">
-              <span className="font-bold text-[#0f1b3d] text-[10px] sm:text-xs leading-none">
-                Secure Payment
-              </span>
-              <span className="text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5 hidden sm:inline">
-                100% Safe & Secure
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 border-r border-purple-100/80 pr-1 sm:pr-2">
-            <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 fill-purple-100 shrink-0" />
-            <div className="flex flex-col text-left">
-              <span className="font-bold text-[#0f1b3d] text-[10px] sm:text-xs leading-none">
-                4.9/5 Rating
-              </span>
-              <span className="text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5 hidden sm:inline">
-                Trusted by Thousands
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 shrink-0" />
-            <div className="flex flex-col text-left">
-              <span className="font-bold text-[#0f1b3d] text-[10px] sm:text-xs leading-none">
-                Instant Response
-              </span>
-              <span className="text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5 hidden sm:inline">
-                We're Here 24/7
-              </span>
-            </div>
+            
+            {spinResult && (
+              <div className="mt-3 text-center animate-fadeIn text-sm sm:text-base font-bold text-purple-800 flex items-center justify-center gap-1.5">
+                🎉 You won {spinResult}, {name}!
+              </div>
+            )}
           </div>
         </div>
+
       </div>
     </div>
   );

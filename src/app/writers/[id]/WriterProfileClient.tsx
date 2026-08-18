@@ -40,7 +40,7 @@ export default function WriterProfile() {
       try {
         setLoading(true);
         const baseUrl = getBaseUrl();
-        
+
         // 1. Try direct ID endpoint
         const res = await fetch(`${baseUrl}/api/experts/${id}`, { cache: "no-store" });
         if (res.ok) {
@@ -59,8 +59,8 @@ export default function WriterProfile() {
           const expertsArray = Array.isArray(listJson?.data)
             ? listJson.data
             : Array.isArray(listJson)
-            ? listJson
-            : [];
+              ? listJson
+              : [];
 
           const cleanSlug = (str: string) =>
             str
@@ -105,7 +105,7 @@ export default function WriterProfile() {
           const wIdClean = cleanSlug(w.id);
           const wNameClean = cleanSlug(w.name);
           return (targetClean && (wIdClean.includes(targetClean) || targetClean.includes(wIdClean))) ||
-                 (targetClean && (wNameClean.includes(targetClean) || targetClean.includes(wNameClean)));
+            (targetClean && (wNameClean.includes(targetClean) || targetClean.includes(wNameClean)));
         }) || WRITERS[0];
 
         setWriter(staticWriter);
@@ -468,6 +468,20 @@ export default function WriterProfile() {
                 size="md"
                 fullWidth
                 onClick={() => {
+                  if (typeof window !== "undefined") {
+                    const expertData = {
+                      id: writer.id,
+                      name: writer.name,
+                      avatar: writer.avatar,
+                      role: writer.role,
+                      rating: writer.rating,
+                      ordersCompleted: writer.ordersCompleted,
+                      experience: writer.experience,
+                      qualifications: writer.qualifications,
+                      expertise: writer.expertise
+                    };
+                    localStorage.setItem("hiredExpert", JSON.stringify(expertData));
+                  }
                   router.push("/pricing");
                 }}
               >

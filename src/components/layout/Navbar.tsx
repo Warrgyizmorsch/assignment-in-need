@@ -83,6 +83,21 @@ const ASSIGNMENT_SERVICE_SUBJECTS: NavLinkItem[] = [
 ];
 const isNonServicePage = (item: ServicePageApiItem) => {
   const rawSlug = (item.slug || "").toLowerCase().trim().replace(/^\/+/, "");
+  
+  const excludedServices = [
+    "service/assignment-services",
+    "service/essay-writing-service",
+    "service/dissertation",
+    "service/case-study-help",
+    "service/report-writing",
+    "service/coursework-help",
+    "service/editing-and-formatting",
+    "service/proofreading" // Adding this just in case, as it's the 8th card
+  ];
+  if (excludedServices.includes(rawSlug)) {
+    return true;
+  }
+
   if (
     rawSlug.startsWith("cities/") ||
     rawSlug.startsWith("city/") ||
