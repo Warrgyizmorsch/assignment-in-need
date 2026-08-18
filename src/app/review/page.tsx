@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from "framer-motion";
 import Link from 'next/link';
-import { 
-  CheckCircle2, 
-  FileText, 
-  Clock, 
-  Star, 
-  GraduationCap, 
-  Zap, 
-  User, 
+import {
+  CheckCircle2,
+  FileText,
+  Clock,
+  Star,
+  GraduationCap,
+  Zap,
+  User,
   Calendar,
   Heart,
   ChevronDown
@@ -215,7 +215,8 @@ function ReviewModal({ id, onClose }: { id: number; onClose: () => void }) {
         )}
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -345,9 +346,9 @@ export default function ReviewsAndFaq() {
             </div>
           </AnimateIn>
           <AnimateIn variant="scaleUp" className="znw-hero-image-wrapper hidden lg:flex">
-            <img 
-              src="https://www.assignmentinneed.co.uk/public/new-home-page-images/Writer-Hero-bg.webp" 
-              alt="Academic Writers Illustration" 
+            <img
+              src="/new-home-page-images/Writer-Hero-bg.webp"
+              alt="Academic Writers Illustration"
             />
           </AnimateIn>
         </div>
@@ -356,7 +357,7 @@ export default function ReviewsAndFaq() {
       {/* 2. Rated & Trusted Strip */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-30">
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
+
           {/* Card 1: Google Review */}
           <StaggerItem>
             <div className="bg-white border border-gray-100 shadow-md rounded-2xl p-4 flex items-center justify-between hover:shadow-lg transition h-full">
@@ -437,7 +438,7 @@ export default function ReviewsAndFaq() {
         <div className="max-w-[1200px] mx-auto px-4 text-center">
           <h2 className="text-2xl font-black text-gray-900 mb-2">Our Detailed Ratings</h2>
           <p className="text-[15px] text-gray-500 mb-8">The quality of our service is reflected in the satisfaction of our students.</p>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             {[
               { label: "Written Excellence", value: "9.8/10", icon: "✍️" },
@@ -503,13 +504,13 @@ export default function ReviewsAndFaq() {
                     </div>
                   </div>
 
-                  <p 
+                  <p
                     className="ts-bio"
-                    dangerouslySetInnerHTML={{ 
-                      __html: expert.content 
-                        ? expert.content.replace(/<[^>]*>/g, '').substring(0, 120) + '...' 
-                        : "Expert academic writer dedicated to quality work." 
-                    }} 
+                    dangerouslySetInnerHTML={{
+                      __html: expert.content
+                        ? expert.content.replace(/<[^>]*>/g, '').substring(0, 120) + '...'
+                        : "Expert academic writer dedicated to quality work."
+                    }}
                   />
                 </div>
 
@@ -935,48 +936,48 @@ export default function ReviewsAndFaq() {
           >
             {loading
               ? skeletons.map((_, idx) => (
-                  <div key={idx} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col gap-3 animate-pulse">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-200" />
-                      <div className="flex flex-col gap-1.5 flex-1">
-                        <div className="h-3 bg-gray-200 rounded w-2/3" />
-                        <div className="h-2.5 bg-gray-100 rounded w-1/2" />
-                      </div>
-                    </div>
-                    <div className="h-2.5 bg-gray-100 rounded w-24" />
-                    <div className="space-y-1.5">
-                      <div className="h-2.5 bg-gray-100 rounded w-full" />
-                      <div className="h-2.5 bg-gray-100 rounded w-5/6" />
-                      <div className="h-2.5 bg-gray-100 rounded w-3/4" />
+                <div key={idx} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col gap-3 animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-200" />
+                    <div className="flex flex-col gap-1.5 flex-1">
+                      <div className="h-3 bg-gray-200 rounded w-2/3" />
+                      <div className="h-2.5 bg-gray-100 rounded w-1/2" />
                     </div>
                   </div>
-                ))
+                  <div className="h-2.5 bg-gray-100 rounded w-24" />
+                  <div className="space-y-1.5">
+                    <div className="h-2.5 bg-gray-100 rounded w-full" />
+                    <div className="h-2.5 bg-gray-100 rounded w-5/6" />
+                    <div className="h-2.5 bg-gray-100 rounded w-3/4" />
+                  </div>
+                </div>
+              ))
               : reviews.slice(0, visibleCount).map((r) => (
-                  <div
-                    key={r.id}
-                    onClick={() => setSelectedId(r.id)}
-                    className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col gap-3 transition hover:-translate-y-1 hover:shadow-md cursor-pointer text-left"
-                  >
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={r.image}
-                        alt={r.name}
-                        className="w-10 h-10 rounded-full bg-gray-100 object-cover border border-gray-200"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=f3e8ff&color=6b21a8&size=80`;
-                        }}
-                      />
-                      <div className="flex flex-col">
-                        <strong className="text-sm text-gray-900 leading-tight">{r.name}</strong>
-                        <span className="text-xs text-gray-500">{r.meta}</span>
-                      </div>
+                <div
+                  key={r.id}
+                  onClick={() => setSelectedId(r.id)}
+                  className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col gap-3 transition hover:-translate-y-1 hover:shadow-md cursor-pointer text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={r.image}
+                      alt={r.name}
+                      className="w-10 h-10 rounded-full bg-gray-100 object-cover border border-gray-200"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=f3e8ff&color=6b21a8&size=80`;
+                      }}
+                    />
+                    <div className="flex flex-col">
+                      <strong className="text-sm text-gray-900 leading-tight">{r.name}</strong>
+                      <span className="text-xs text-gray-500">{r.meta}</span>
                     </div>
-                    <Stars rating={r.rating} />
-                    <p className="text-xs text-gray-600 leading-relaxed m-0 line-clamp-3">{r.text}</p>
-                    <span className="text-[11px] text-[#6d28d9] font-bold mt-auto hover:underline">Read full review &rarr;</span>
                   </div>
-                ))}
+                  <Stars rating={r.rating} />
+                  <p className="text-xs text-gray-600 leading-relaxed m-0 line-clamp-3">{r.text}</p>
+                  <span className="text-[11px] text-[#6d28d9] font-bold mt-auto hover:underline">Read full review &rarr;</span>
+                </div>
+              ))}
           </div>
 
           {!loading && visibleCount < reviews.length && (
@@ -1055,7 +1056,8 @@ export default function ReviewsAndFaq() {
       </section>
 
       {/* Embedded CSS Styles */}
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* SECTION BG (same look) */
         .ts-section {
           position: relative;

@@ -45,10 +45,6 @@ if (backendHostname) {
 }
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Avoid Turbopack persistence panics caused by a corrupted `.next/dev` cache.
-    turbopackFileSystemCacheForDev: false,
-  },
   images: {
     remotePatterns,
   },

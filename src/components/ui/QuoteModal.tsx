@@ -105,9 +105,9 @@ export function openQuoteModal() {
   }
 }
 
-export function QuoteModal() {
+  export function QuoteModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
+  const [dynamicDiscount, setDynamicDiscount] = useState("40");
 
   // Form states
   const [fullName, setFullName] = useState("");
@@ -203,7 +203,13 @@ export function QuoteModal() {
 
   // Global event listener for modal trigger & button intercepts
   useEffect(() => {
-    const handleOpen = () => setIsOpen(true);
+    const handleOpen = () => {
+      const won = localStorage.getItem("ain_won_discount");
+      if (won === "10% OFF") setDynamicDiscount("50");
+      else if (won === "20% OFF") setDynamicDiscount("60");
+      else setDynamicDiscount("40");
+      setIsOpen(true);
+    };
 
     window.addEventListener("open-quote-modal", handleOpen);
 
@@ -238,6 +244,10 @@ export function QuoteModal() {
 
       if (isQuoteTrigger) {
         e.preventDefault();
+        const won = localStorage.getItem("ain_won_discount");
+        if (won === "10% OFF") setDynamicDiscount("50");
+        else if (won === "20% OFF") setDynamicDiscount("60");
+        else setDynamicDiscount("40");
         setIsOpen(true);
       }
     };
@@ -428,10 +438,10 @@ export function QuoteModal() {
                   </div>
 
                   {/* Main Title */}
-                  <div>
+                  <div className="text-center">
                     <h2 className="text-2xl sm:text-[1.7rem] font-black leading-tight text-[#1a0c40]">
-                      Get Expert <br />
-                      <span className="text-[#3b1285]">Assignment Help</span>
+                      Get <span className="text-amber-500">{dynamicDiscount}% OFF</span> <br />
+                      <span className="text-[#3b1285]">On Assignment Help</span>
                     </h2>
                     <p className="text-xs sm:text-[13px] text-gray-600 font-medium leading-relaxed mt-1.5">
                       High-quality, plagiarism-free assignments delivered on
@@ -679,10 +689,10 @@ export function QuoteModal() {
                         {isSubmitting ? (
                           "Submitting Request..."
                         ) : (
-                          <>
-                            Get <span className="text-amber-300 text-lg font-black mx-1">40% OFF</span> Now
-                            <ArrowRight className="w-4 h-4 ml-1 stroke-[3]" />
-                          </>
+                          <span className="relative z-10 flex items-center justify-center">
+                            Get <span className="text-amber-300 text-lg font-black mx-1">{dynamicDiscount}% OFF</span> Now
+                            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                          </span>
                         )}
                       </button>
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Script from "next/script";
 import { Button } from "@/components/ui/Button";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import { toast } from "react-hot-toast";
@@ -46,6 +47,7 @@ import {
   Zap,
   Coins,
   CheckCircle2,
+  Star,
 } from "lucide-react";
 
 export default function PricingPage() {
@@ -65,6 +67,50 @@ export default function PricingPage() {
   const [subjectsOptions, setSubjectsOptions] = useState<any[]>([]);
   const pricingScrollRef = useRef<HTMLDivElement>(null);
   const [activePricingIndex, setActivePricingIndex] = useState(0);
+
+  const [hiredExpert, setHiredExpert] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const storedExpert = localStorage.getItem("hiredExpert");
+        if (storedExpert) {
+          const parsed = JSON.parse(storedExpert);
+          if (parsed && parsed.avatar && parsed.avatar.length > 3) {
+            setHiredExpert(parsed);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Could not parse hired expert", e);
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const expertId = urlParams.get("expert");
+      if (expertId) {
+        fetch("/api/experts")
+          .then((res) => res.json())
+          .then((data) => {
+            if ((data.success || data.status === "success") && Array.isArray(data.data)) {
+              const expert = data.data.find((e: any) => String(e.id) === expertId || e.slug === expertId);
+              if (expert) {
+                setHiredExpert({
+                  id: expert.id,
+                  name: expert.name || expert.name_en,
+                  role: expert.subject ? `${expert.subject} Expert` : "Academic Expert",
+                  avatar: expert.image && !expert.image.includes("blank.png") && !expert.image.includes("ui-avatars.com") ? (expert.image.startsWith("http") ? expert.image : (process.env.NEXT_PUBLIC_BACKEND_URL || "") + (expert.image.startsWith("/") ? expert.image : `/${expert.image}`)) : "/assets/media/avatars/blank.png",
+                  rating: expert.rating || 4.9,
+                  ordersCompleted: expert.finish_order || expert.orders_completed || expert.ordersCompleted || 250,
+                  experience: expert.experience || "8+ Years",
+                  qualifications: expert.qualifications || expert.role || "Master's Qualified",
+                });
+              }
+            }
+          })
+          .catch((err) => console.error("Error fetching hired expert:", err));
+      }
+    }
+  }, []);
 
   const handlePricingScroll = () => {
     if (!pricingScrollRef.current) return;
@@ -121,7 +167,7 @@ export default function PricingPage() {
             setSubjectsOptions(mapped);
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     };
     fetchSubjects();
   }, []);
@@ -367,7 +413,8 @@ export default function PricingPage() {
 
   return (
     <main className="w-full font-sans text-gray-800 bg-[#fbfcff]">
-      <script
+      <Script
+        id="pricing-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildPageSchema(faqs, false), null, 2).replace(
@@ -382,8 +429,80 @@ export default function PricingPage() {
         <span className="text-gray-900">Pricing</span>
       </div>
 
+      {/* Hero Section Wrapper */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-4">
+        {hiredExpert && (
+          <div className="bg-[#fff5f0] border border-orange-200 rounded-2xl p-4 md:p-5 mb-6 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden shadow-sm w-full z-20">
+
+            {/* Left Side: Text */}
+            <div className="text-left relative z-20 md:w-5/12 shrink-0">
+              <h3 className="text-lg md:text-[20px] font-black text-gray-900 leading-tight">
+                Your Professional Expert Helper
+              </h3>
+              <p className="text-xs md:text-[14px] text-gray-600 font-medium mt-1">
+                Ready to assist with your assignment
+              </p>
+
+              {/* Curved Dashed Arrow (Desktop only) */}
+              <div className="hidden md:block absolute -right-12 top-4 w-16 h-6 opacity-60">
+                <svg viewBox="0 0 100 40" fill="none" className="w-full h-full overflow-visible">
+                  <path d="M0,35 Q50,45 95,15" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
+                  <path d="M85,10 L98,12 L92,25" stroke="#f97316" strokeWidth="1.5" fill="none" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Right Side: Expert Mini Card */}
+            <div className="bg-white rounded-xl border border-gray-150 p-2.5 shadow-sm w-full md:w-[58%] lg:max-w-[450px] flex items-start gap-2 relative z-20 shrink-0 ml-auto">
+              <div className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-lg overflow-hidden bg-gray-100 relative">
+                <img
+                  src={hiredExpert.avatar && hiredExpert.avatar.length > 3 && (hiredExpert.avatar.startsWith("/") || hiredExpert.avatar.startsWith("http")) ? hiredExpert.avatar : "/assets/media/avatars/blank.png"}
+                  alt={hiredExpert.name}
+                  className="w-full h-full object-cover object-top"
+                  onError={(e) => {
+                    e.currentTarget.src = "/assets/media/avatars/blank.png";
+                  }}
+                />
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start w-full gap-2">
+                  <div className="shrink-0 max-w-[120px]">
+                    <div className="flex items-center gap-1">
+                      <h4 className="font-bold text-gray-900 text-xs md:text-[14px] leading-tight truncate">
+                        {hiredExpert.name}
+                      </h4>
+                      <ShieldCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                    </div>
+                    <div className="flex items-center gap-0.5 mt-0.5 border-l border-gray-200 pl-1.5">
+                      {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 text-amber-500 fill-current" />)}
+                    </div>
+                    <span className="text-[9px] md:text-[10px] text-gray-500 font-medium flex items-center gap-1 mt-1 truncate"><GraduationCap className="w-2.5 h-2.5 shrink-0" /> {hiredExpert.qualifications}</span>
+                  </div>
+
+                  {/* Stats Column */}
+                  <div className="flex flex-col gap-0.5 text-[9px] md:text-[10px] shrink-0 text-right">
+                    <div className="flex items-center justify-end gap-1 text-slate-700">
+                      <ShoppingCart className="w-2.5 h-2.5 text-[#f97316]" />
+                      <span className="font-bold">{hiredExpert.ordersCompleted} <span className="font-medium text-slate-500">Completed orders</span></span>
+                    </div>
+                    <div className="flex items-center justify-end gap-1 text-slate-700">
+                      <Clock className="w-2.5 h-2.5 text-[#f97316]" />
+                      <span className="font-bold">1 <span className="font-medium text-slate-500">In progress order</span></span>
+                    </div>
+                    <div className="flex items-center justify-end gap-1 text-slate-700">
+                      <ShieldCheck className="w-2.5 h-2.5 text-[#f97316]" />
+                      <span className="font-bold">{parseInt(hiredExpert.experience || "6")} <span className="font-medium text-slate-500">Years of Experience</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-5 flex flex-col lg:flex-row gap-12 items-start justify-between">
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-5 flex flex-col lg:flex-row gap-12 items-start justify-between">
         {/* Faded Background Image for Mobile */}
         <div
           className="absolute inset-0 z-0 lg:hidden pointer-events-none"
@@ -397,7 +516,7 @@ export default function PricingPage() {
         />
 
         {/* Hero Left Content */}
-        <AnimateIn variant="fadeUp" className="lg:w-1/2 pt-4 relative z-10 text-left">
+        <AnimateIn variant="fadeUp" className="lg:w-1/2 pt-0 relative z-10 text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wide mb-6">
             <FileText className="w-4 h-4 text-purple-700" />
             Get Instant Quote
@@ -480,6 +599,7 @@ export default function PricingPage() {
             </div>
           ) : (
             <div className="w-full max-w-[620px] p-6 md:p-8 rounded-[24px] border border-white bg-white shadow-[0_12px_42px_rgba(0,0,0,0.06)] relative flex flex-col justify-between">
+
               <div className="mb-6 text-left">
                 <h3 className="text-[20px] text-[#0f1b3d] font-bold mb-2 tracking-tight font-heading">
                   Send Us an Enquiry
@@ -650,6 +770,7 @@ export default function PricingPage() {
           )}
         </AnimateIn>
       </section>
+
 
       {/* What's Included Section */}
       <section className="bg-white py-12 md:py-16 border-t border-gray-100 text-left">

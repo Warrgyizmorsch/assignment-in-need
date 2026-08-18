@@ -12,6 +12,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/AnimateIn";
+import { ExpertCard } from "@/components/ui/ExpertCard";
 import "./writers.css";
 
 const SUBJECT_OPTIONS = [
@@ -217,25 +218,25 @@ export default function WritersDirectory() {
                 currentPage === 1
                   ? mapped
                   : mapped.filter((writer) => {
-                      const identity = getWriterIdentity(writer);
-                      const normalizedName = writer.name.trim().toLowerCase();
-                      if (
-                        existingIdentities.has(identity) ||
-                        existingIdentities.has(normalizedName)
-                      ) {
-                        return false;
-                      }
-                      existingIdentities.add(identity);
-                      existingIdentities.add(normalizedName);
-                      return true;
-                    });
+                    const identity = getWriterIdentity(writer);
+                    const normalizedName = writer.name.trim().toLowerCase();
+                    if (
+                      existingIdentities.has(identity) ||
+                      existingIdentities.has(normalizedName)
+                    ) {
+                      return false;
+                    }
+                    existingIdentities.add(identity);
+                    existingIdentities.add(normalizedName);
+                    return true;
+                  });
               const combined =
                 currentPage === 1 ? newWriters : [...previous, ...newWriters];
 
               setHasMoreWriters(
                 newWriters.length > 0 &&
-                  mapped.length === 8 &&
-                  (reportedTotal === 0 || combined.length < reportedTotal),
+                mapped.length === 8 &&
+                (reportedTotal === 0 || combined.length < reportedTotal),
               );
 
               return combined;
@@ -458,118 +459,20 @@ export default function WritersDirectory() {
             <div>
               <StaggerContainer className="znw-experts-grid">
                 {currentWriters.map((writer) => {
-                  const filledStars = Math.round(writer.rating);
                   return (
-                    <StaggerItem key={writer.id}>
-                      <div className="znw-expert-card h-full flex flex-col justify-between">
-                        <div>
-                          <div className="znw-card-header">
-                            <div className="znw-avatar-wrapper">
-                              {writer.avatar &&
-                              writer.avatar.length > 3 &&
-                              (writer.avatar.startsWith("/") ||
-                                writer.avatar.startsWith("http")) ? (
-                                <img
-                                  src={writer.avatar}
-                                  alt={writer.name}
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src =
-                                      "/assets/media/avatars/blank.png";
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-full h-full rounded-full bg-purple-100 text-purple-700 font-extrabold flex items-center justify-center text-lg uppercase">
-                                  {writer.avatar || writer.name.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-                            <div className="znw-header-info">
-                              <h3 className="znw-expert-name">{writer.name}</h3>
-                              <p className="znw-expert-role">
-                                {writer.role || "Academic Expert"}
-                              </p>
-                              <div className="znw-expert-rating">
-                                <div className="znw-stars">
-                                  {[...Array(5)].map((_, i) => (
-                                    <span
-                                      key={i}
-                                      className={
-                                        i < filledStars
-                                          ? "text-[#fbbf24]"
-                                          : "text-[#e5e7eb]"
-                                      }
-                                    >
-                                      ★
-                                    </span>
-                                  ))}
-                                </div>
-                                <span className="znw-rating-number">
-                                  {writer.rating.toFixed(1)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="znw-card-body">
-                            <div className="znw-orders-stat">
-                              <div className="znw-icon">
-                                <svg
-                                  viewBox="0 0 24 24"
-                                  width="16"
-                                  height="16"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                  <polyline points="14 2 14 8 20 8"></polyline>
-                                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                                  <polyline points="10 9 9 9 8 9"></polyline>
-                                </svg>
-                              </div>
-                              <div>
-                                <span className="znw-orders-count">
-                                  {writer.ordersCompleted}
-                                </span>{" "}
-                                <span className="znw-orders-text">
-                                  Orders Completed
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="znw-info-section">
-                              <h4 className="znw-info-title">Expertise</h4>
-                              <p className="znw-info-text">
-                                {writer.expertise.join(", ")}
-                              </p>
-                            </div>
-
-                            <div className="znw-info-section">
-                              <h4 className="znw-info-title">Qualifications</h4>
-                              <p className="znw-info-text">
-                                {writer.qualifications}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="znw-card-footer">
-                          <button
-                            onClick={() => {
-                              window.location.href = `/writers/${writer.id}`;
-                            }}
-                            className="btn-shutter-blue-close flex items-center justify-center gap-2 w-full py-3 px-4 font-semibold text-[0.95rem] rounded-lg cursor-pointer"
-                          >
-                            Hire Now{" "}
-                            <span className="transition-transform duration-300 group-hover:translate-x-1">
-                              →
-                            </span>
-                          </button>
-                        </div>
-                      </div>
+                    <StaggerItem key={writer.id} className="h-full">
+                      <ExpertCard
+                        name={writer.name}
+                        role={writer.role}
+                        rating={writer.rating}
+                        ordersCount={writer.ordersCompleted}
+                        avatar={writer.avatar}
+                        experience={writer.experience}
+                        qualifications={writer.qualifications}
+                        expertise={writer.expertise}
+                        slug={writer.id}
+                        className="h-full"
+                      />
                     </StaggerItem>
                   );
                 })}

@@ -26,11 +26,12 @@ import {
   XCircle,
   Hourglass,
   ReceiptText,
+  Search,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 type ActiveTab = "overview" | "orders" | "edit-profile" | "rewards" | "security";
-type OrderSubTab = "confirmed" | "pending";
+type OrderSubTab = "all" | "processing" | "pending" | "cancelled" | "overdue" | "quotes" | "completed";
 
 /* ── API Types ─────────────────────────────────────────────────────────────── */
 interface ConfirmedOrder {
@@ -49,6 +50,8 @@ interface ConfirmedOrder {
   amount: string | null;
   received_amount: string;
   due_amount: number;
+  progress: number;
+  progress_percentage: number;
   created_at: string;
   images: string[];
   files: string[];
@@ -69,6 +72,8 @@ interface NonConfirmedLead {
   deadline: string;
   delivery_time: string | null;
   requirements: string;
+  progress: number;
+  progress_percentage: number;
   created_at: string;
   subject: string;
   images: string[];
@@ -130,11 +135,85 @@ function StatusBadge({ status }: { status: string | null }) {
   );
 }
 
+function isOrderOverdue(dateString: string | null, status: string | null): boolean {
+  if (!dateString) return false;
+  const s = (status || "").toLowerCase();
+  if (s === "completed" || s === "delivered" || s === "cancelled") return false;
+  
+  const deliveryDate = new Date(dateString);
+  deliveryDate.setHours(23, 59, 59, 999);
+  return deliveryDate < new Date();
+}
+
+function CircularProgress({ progress }: { progress: number }) {
+  const size = 64;
+  const radius = 26;
+  const cx = size / 2;
+  const cy = size / 2;
+  const circumference = 2 * Math.PI * radius;
+  const safeProgress = Number(progress) || 0;
+  const strokeDashoffset = circumference - (safeProgress / 100) * circumference;
+
+  return (
+    <div 
+      className="relative inline-grid place-items-center shrink-0" 
+      style={{ width: size, height: size }} 
+      title={`${safeProgress}% Progress`}
+    >
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox={`0 0 ${size} ${size}`} 
+        style={{ position: 'absolute', top: 0, left: 0, transform: 'rotate(-90deg)' }}
+      >
+        {/* Background Track */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={radius}
+          stroke="#e2e8f0"
+          strokeWidth="4.5"
+          fill="transparent"
+        />
+        {/* Progress Arc */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={radius}
+          stroke="#2563eb"
+          strokeWidth="4.5"
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          style={{ transition: 'stroke-dashoffset 0.5s ease-in-out' }}
+        />
+        {/* Green Dot Indicator */}
+        {safeProgress > 0 && (
+          <circle
+            cx={cx + radius * Math.cos((safeProgress / 100) * 2 * Math.PI)}
+            cy={cy + radius * Math.sin((safeProgress / 100) * 2 * Math.PI)}
+            r="5.5"
+            fill="#10b981"
+            stroke="#ffffff"
+            strokeWidth="2"
+            style={{ transition: 'all 0.5s ease-in-out' }}
+          />
+        )}
+      </svg>
+      <span className="relative z-10 font-extrabold text-[#2563eb]" style={{ fontSize: '15px', lineHeight: 1 }}>
+        {Math.round(safeProgress)}%
+      </span>
+    </div>
+  );
+}
+
 /* ── Main Component ─────────────────────────────────────────────────────────── */
 export default function ProfilePage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
-  const [orderSubTab, setOrderSubTab] = useState<OrderSubTab>("confirmed");
+  const [orderSubTab, setOrderSubTab] = useState<OrderSubTab>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isClient, setIsClient] = useState(false);
 
   const [profile, setProfile] = useState({
@@ -197,17 +276,34 @@ export default function ProfilePage() {
           const json = await res.json().catch(() => null);
           if (json?.success && json?.data) {
             const pd = json.data as Record<string, string>;
+            
+            let resolvedLocation = pd.country || pd.location || "";
+            if (!resolvedLocation) {
+              try {
+                const ipRes = await fetch("https://ipapi.co/json/");
+                if (ipRes.ok) {
+                  const ipData = await ipRes.json();
+                  if (ipData.country_name) {
+                    resolvedLocation = ipData.city ? `${ipData.city}, ${ipData.country_name}` : ipData.country_name;
+                  }
+                }
+              } catch (e) {
+                // fallback gracefully
+              }
+            }
+
             const merged = {
               name: pd.name || "",
               email: pd.email || "",
               phone_no: pd.mobile_no || pd.phone_no || pd.phone || "+44 7300 000000",
-              location: pd.country || pd.location || "United Kingdom",
+              location: resolvedLocation || "United Kingdom",
               created_at: pd.created_at || new Date().toISOString(),
             };
             setProfile(merged);
             setEditForm(merged);
             localStorage.setItem("ain_user_name", merged.name);
             localStorage.setItem("ain_user_email", merged.email);
+            pd.location = merged.location; // cache the resolved location
             localStorage.setItem("ain_user_data", JSON.stringify(pd));
           }
         }
@@ -311,6 +407,18 @@ export default function ProfilePage() {
   const pendingLeads = orderData?.non_confirmed_leads ?? [];
   const summary = orderData?.summary;
 
+  const processingCount = confirmedOrders.filter(o => {
+    const s = (o.status || "").toLowerCase();
+    return s === "processing" || s === "in progress" || s === "";
+  }).length;
+  const pendingCount = confirmedOrders.filter(o => (o.status || "").toLowerCase() === "pending").length;
+  const cancelledCount = confirmedOrders.filter(o => (o.status || "").toLowerCase() === "cancelled").length;
+  const overdueCount = confirmedOrders.filter(o => isOrderOverdue(o.delivery_date, o.status)).length;
+  const completedCount = confirmedOrders.filter(o => {
+    const s = (o.status || "").toLowerCase();
+    return s === "completed" || s === "done" || s === "delivered";
+  }).length;
+
   // Latest active confirmed order for the dashboard overview panel
   const latestActiveOrder = confirmedOrders.find(
     (o) => !o.status || (o.status !== "Cancelled" && o.status !== "Completed")
@@ -324,7 +432,7 @@ export default function ProfilePage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(107,33,168,0.15),transparent)] pointer-events-none" />
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-4 -mt-16 md:-mt-20 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-4 -mt-16 md:-mt-20 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
           {/* ── Sidebar ── */}
@@ -476,15 +584,24 @@ export default function ProfilePage() {
                       </div>
                     ) : latestActiveOrder ? (
                       <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50/50">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
-                          <div>
-                            <StatusBadge status={latestActiveOrder.status} />
-                            <h3 className="text-lg font-bold text-[#1e1b4b] mt-2">
-                              {latestActiveOrder.order_id} • {latestActiveOrder.subject ?? latestActiveOrder.title ?? "Assignment"}
-                            </h3>
-                            {latestActiveOrder.title && (
-                              <p className="text-sm text-gray-500 mt-1">{latestActiveOrder.title}</p>
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10 border-b border-gray-100 pb-4 mb-4">
+                          <div className="flex items-start gap-4">
+                            {isOrderOverdue(latestActiveOrder.delivery_date, latestActiveOrder.status) ? (
+                              <div className="bg-red-50 text-red-600 font-bold text-xs px-3 py-2 rounded-xl flex flex-col items-center justify-center shrink-0 border border-red-100 h-16 w-16 shadow-sm">
+                                <AlertCircle className="h-5 w-5 mb-1" /> Overdue
+                              </div>
+                            ) : (
+                              <CircularProgress progress={latestActiveOrder.progress_percentage ?? 0} />
                             )}
+                            <div>
+                              <StatusBadge status={latestActiveOrder.status} />
+                              <h3 className="text-lg font-bold text-[#1e1b4b] mt-2">
+                                {latestActiveOrder.order_id} • {latestActiveOrder.subject ?? latestActiveOrder.title ?? "Assignment"}
+                              </h3>
+                              {latestActiveOrder.title && (
+                                <p className="text-sm text-gray-500 mt-1">{latestActiveOrder.title}</p>
+                              )}
+                            </div>
                           </div>
                           <div className="text-left md:text-right shrink-0">
                             <span className="text-xs text-gray-400 block">Delivery Date</span>
@@ -602,38 +719,88 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
-                    {/* Sub-tabs */}
-                    <div className="flex gap-2 bg-slate-50 p-1 rounded-xl w-fit border border-slate-100">
-                      <button
-                        onClick={() => setOrderSubTab("confirmed")}
-                        className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
-                          orderSubTab === "confirmed"
-                            ? "bg-white text-[#3f159a] shadow-sm"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`}
-                      >
-                        Confirmed
-                        {summary && (
-                          <span className="ml-1.5 bg-purple-100 text-purple-700 text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                            {summary.confirmed_count}
-                          </span>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => setOrderSubTab("pending")}
-                        className={`text-xs font-bold px-4 py-2 rounded-lg transition-all ${
-                          orderSubTab === "pending"
-                            ? "bg-white text-[#3f159a] shadow-sm"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`}
-                      >
-                        Pending Quotes
-                        {summary && (
-                          <span className="ml-1.5 bg-amber-100 text-amber-700 text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                            {summary.non_confirmed_count}
-                          </span>
-                        )}
-                      </button>
+                    {/* Sub-tabs and Search */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                      <div className="flex gap-2 bg-slate-50 p-1 rounded-xl w-fit border border-slate-100 overflow-x-auto max-w-full">
+                        <button
+                          onClick={() => setOrderSubTab("all")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "all"
+                              ? "bg-white text-[#3f159a] shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          All
+                          {summary && (
+                            <span className="ml-1.5 bg-purple-100 text-purple-700 text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                              {summary.confirmed_count}
+                            </span>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setOrderSubTab("processing")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "processing"
+                              ? "bg-white text-[#3f159a] shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Processing ({processingCount})
+                        </button>
+                        <button
+                          onClick={() => setOrderSubTab("pending")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "pending"
+                              ? "bg-white text-[#3f159a] shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Pending ({pendingCount})
+                        </button>
+                        <button
+                          onClick={() => setOrderSubTab("cancelled")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "cancelled"
+                              ? "bg-white text-[#3f159a] shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Cancelled ({cancelledCount})
+                        </button>
+                        <button
+                          onClick={() => setOrderSubTab("overdue")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "overdue"
+                              ? "bg-white text-red-600 shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Overdue ({overdueCount})
+                        </button>
+                        <button
+                          onClick={() => setOrderSubTab("completed")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "completed"
+                              ? "bg-white text-green-600 shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Completed ({completedCount})
+                        </button>
+                      </div>
+
+                      <div className="relative w-full md:w-64 shrink-0">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <Search className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Search Order ID..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#3f159a]/20 focus:border-[#3f159a] transition-all shadow-sm"
+                        />
+                      </div>
                     </div>
 
                     {/* Loading / Error States */}
@@ -658,22 +825,43 @@ export default function ProfilePage() {
                     )}
 
                     {/* ── Confirmed Orders Table ── */}
-                    {!ordersLoading && !ordersError && orderSubTab === "confirmed" && (
+                    {!ordersLoading && !ordersError && orderSubTab !== "quotes" && (
                       <>
-                        {confirmedOrders.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                            <FileText className="h-12 w-12 text-slate-200" />
-                            <p className="text-sm text-gray-400">No confirmed orders yet.</p>
-                            <Link href="/order" className="text-xs font-bold text-[#3f159a] underline">
-                              Place your first order →
-                            </Link>
-                          </div>
-                        ) : (
-                          <div className="overflow-x-auto border border-slate-100 rounded-2xl bg-white">
+                        {(() => {
+                          const filteredConfirmed = confirmedOrders.filter((order) => {
+                            const s = (order.status || "").toLowerCase();
+                            
+                            // Apply Tab Filter
+                            let tabMatches = true;
+                            if (orderSubTab === "processing") tabMatches = s === "processing" || s === "in progress" || s === "";
+                            else if (orderSubTab === "pending") tabMatches = s === "pending";
+                            else if (orderSubTab === "cancelled") tabMatches = s === "cancelled";
+                            else if (orderSubTab === "overdue") tabMatches = isOrderOverdue(order.delivery_date, order.status);
+                            else if (orderSubTab === "completed") tabMatches = s === "completed" || s === "done" || s === "delivered";
+
+                            // Apply Search Filter
+                            const q = searchQuery.toLowerCase();
+                            const searchMatches = !q || (order.order_id || "").toLowerCase().includes(q) || (order.subject || "").toLowerCase().includes(q);
+
+                            return tabMatches && searchMatches;
+                          });
+
+                          if (filteredConfirmed.length === 0) {
+                            return (
+                              <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+                                <FileText className="h-12 w-12 text-slate-200" />
+                                <p className="text-sm text-gray-400">No orders in this category.</p>
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                          <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white">
                             <table className="w-full text-left border-collapse">
-                              <thead>
-                                <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                              <thead className="sticky top-0 z-20 shadow-sm bg-slate-50">
+                                <tr className="border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
                                   <th className="py-4 px-5">Order</th>
+                                  <th className="py-4 px-5 text-left">Progress</th>
                                   <th className="py-4 px-5">Status</th>
                                   <th className="py-4 px-5">Delivery</th>
                                   <th className="py-4 px-5">Amount</th>
@@ -681,7 +869,7 @@ export default function ProfilePage() {
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-100 text-sm text-gray-600">
-                                {confirmedOrders.map((order) => (
+                                {filteredConfirmed.map((order) => (
                                   <tr key={order.order_db_id} className="hover:bg-slate-50/50 transition">
                                     <td className="py-4 px-5">
                                       <span className="font-bold text-[#1e1b4b] block text-xs">{order.order_id}</span>
@@ -696,6 +884,19 @@ export default function ProfilePage() {
                                           year: "numeric", month: "short", day: "numeric",
                                         })}
                                       </span>
+                                    </td>
+                                    <td className="py-4 px-5 text-left">
+                                      {order.status?.toLowerCase() === "cancelled" ? (
+                                        <span className="text-gray-300 font-bold">—</span>
+                                      ) : order.status?.toLowerCase() === "completed" || order.status?.toLowerCase() === "delivered" ? (
+                                        <CircularProgress progress={100} />
+                                      ) : isOrderOverdue(order.delivery_date, order.status) ? (
+                                        <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 font-bold text-[10px] px-2 py-1 rounded-md border border-red-100 uppercase tracking-wider">
+                                          <AlertCircle className="h-3 w-3" /> Overdue
+                                        </span>
+                                      ) : (
+                                        <CircularProgress progress={order.progress_percentage ?? 0} />
+                                      )}
                                     </td>
                                     <td className="py-4 px-5">
                                       <StatusBadge status={order.status} />
@@ -741,32 +942,44 @@ export default function ProfilePage() {
                               </tbody>
                             </table>
                           </div>
-                        )}
+                          );
+                        })()}
                       </>
                     )}
 
                     {/* ── Pending / Non-Confirmed Leads Table ── */}
-                    {!ordersLoading && !ordersError && orderSubTab === "pending" && (
+                    {!ordersLoading && !ordersError && orderSubTab === "quotes" && (
                       <>
-                        {pendingLeads.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                            <CheckCircle className="h-12 w-12 text-slate-200" />
-                            <p className="text-sm text-gray-400">No pending quotes. All orders are confirmed!</p>
-                          </div>
-                        ) : (
-                          <div className="overflow-x-auto border border-slate-100 rounded-2xl bg-white">
+                        {(() => {
+                          const filteredLeads = pendingLeads.filter(lead => {
+                            const q = searchQuery.toLowerCase();
+                            return !q || (lead.order_id || "").toLowerCase().includes(q) || (lead.subject || "").toLowerCase().includes(q);
+                          });
+
+                          if (filteredLeads.length === 0) {
+                            return (
+                              <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+                                <CheckCircle className="h-12 w-12 text-slate-200" />
+                                <p className="text-sm text-gray-400">No pending quotes found.</p>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white">
                             <table className="w-full text-left border-collapse">
-                              <thead>
-                                <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                              <thead className="sticky top-0 z-20 shadow-sm bg-slate-50">
+                                <tr className="border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
                                   <th className="py-4 px-5">Order</th>
                                   <th className="py-4 px-5">Subject</th>
+                                  <th className="py-4 px-5 text-left">Progress</th>
                                   <th className="py-4 px-5">Deadline</th>
                                   <th className="py-4 px-5">Quote</th>
                                   <th className="py-4 px-5 text-right">Status</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-100 text-sm text-gray-600">
-                                {pendingLeads.map((lead) => (
+                                {filteredLeads.map((lead) => (
                                   <tr key={lead.lead_id} className="hover:bg-slate-50/50 transition">
                                     <td className="py-4 px-5">
                                       <span className="font-bold text-[#1e1b4b] block text-xs">{lead.order_id}</span>
@@ -788,6 +1001,9 @@ export default function ProfilePage() {
                                         {Number(lead.word_count).toLocaleString()} words
                                       </span>
                                     </td>
+                                    <td className="py-4 px-5 text-left">
+                                      <CircularProgress progress={lead.progress_percentage ?? 0} />
+                                    </td>
                                     <td className="py-4 px-5 whitespace-nowrap text-xs text-slate-600">
                                       {new Date(lead.deadline).toLocaleDateString(undefined, {
                                         year: "numeric", month: "short", day: "numeric",
@@ -806,7 +1022,8 @@ export default function ProfilePage() {
                               </tbody>
                             </table>
                           </div>
-                        )}
+                          );
+                        })()}
                       </>
                     )}
                   </motion.div>

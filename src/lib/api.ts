@@ -35,8 +35,20 @@ export const mapExpertToWriter = (expert: any): Writer => {
     calculatedExperience = "6+ Years";
   }
 
-  // Calculate average rating from reviews if available
-  let calculatedRating = 4.8;
+  // Calculate average rating based on orders completed
+  let calculatedRating = 3.5;
+  if (finishOrder >= 1300) {
+    calculatedRating = 5.0;
+  } else if (finishOrder >= 1000) {
+    calculatedRating = 4.5;
+  } else if (finishOrder >= 700) {
+    calculatedRating = 4.0;
+  } else if (finishOrder > 0) {
+    calculatedRating = 3.5;
+  } else {
+    calculatedRating = 4.8; // Fallback if no finish_order data
+  }
+
   let reviewsArray = [];
   if (expert.customer_review) {
     try {
@@ -45,13 +57,6 @@ export const mapExpertToWriter = (expert: any): Writer => {
         : expert.customer_review;
     } catch (e) {
       console.error("Error parsing customer reviews:", e);
-    }
-  }
-
-  if (Array.isArray(reviewsArray) && reviewsArray.length > 0) {
-    const ratings = reviewsArray.map((r: any) => parseFloat(r.rating) || 5).filter(Boolean);
-    if (ratings.length > 0) {
-      calculatedRating = ratings.reduce((sum: number, r: number) => sum + r, 0) / ratings.length;
     }
   }
 
