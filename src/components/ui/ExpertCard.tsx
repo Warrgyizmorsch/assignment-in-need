@@ -118,9 +118,9 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
       {...props}
     >
       {/* Peach curved background top */}
-      <div className="absolute top-[-80px] left-[-20%] w-[140%] h-[180px] bg-orange-50 rounded-b-[50%] pointer-events-none z-0"></div>
+      <div className="absolute top-[-60px] left-[-20%] w-[140%] h-[140px] bg-orange-50 rounded-b-[50%] pointer-events-none z-0"></div>
 
-      <div className="relative z-10 px-4 pt-6 pb-5 flex flex-col flex-1">
+      <div className="relative z-10 px-3 pt-5 pb-4 flex flex-col flex-1">
         {/* Avatar */}
         <div className="mx-auto mb-3">
           <div className="w-[85px] h-[85px] rounded-full border-[3px] border-[#ea580c] shadow-sm overflow-hidden bg-white mx-auto">
@@ -136,7 +136,7 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
         </div>
 
         {/* Name and Rating */}
-        <div className="text-center mb-2">
+        <div className="text-center mb-1.5">
           <div className="flex items-center justify-center gap-1.5 flex-wrap">
             <h3 className="font-bold text-[17px] text-gray-900 m-0 leading-tight">
               {name}
@@ -198,7 +198,7 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
         </div>
 
         {/* Qualifications */}
-        <div className="flex items-center justify-center gap-1.5 text-slate-600 mb-3 text-center">
+        <div className="flex items-center justify-center gap-1.5 text-slate-600 mb-2 text-center">
           <GraduationCap className="w-3.5 h-3.5 shrink-0" />
           <p className="text-[12px] font-medium m-0 leading-tight">
             {qualifications || role || "Academic Expert"}
@@ -206,7 +206,7 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
         </div>
 
         {/* Bio text */}
-        <p className="text-[13px] text-slate-500 leading-relaxed text-center mb-4 px-1">
+        <p className="text-[12.5px] text-slate-500 leading-snug text-center mb-3 px-1">
           {bioText}
           <Link href={"/writers/" + (slug || "none")} className="text-[#ff5722] hover:text-red-700 font-medium ml-1">
             Read More
@@ -214,7 +214,7 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
         </p>
 
         {/* Stats List */}
-        <div className="flex flex-col gap-2.5 mt-auto mb-5 pl-2">
+        <div className="flex flex-col gap-1.5 mt-auto mb-4 pl-1">
           <div className="flex items-center gap-2">
             <ShoppingCart className="w-4 h-4 text-[#f97316] shrink-0" />
             <span className="text-[13.5px] font-medium text-slate-700">Completed Orders</span>
