@@ -240,6 +240,29 @@ const DesktopDropdown = ({
   items: NavLinkItem[];
   scrollable?: boolean;
 }) => {
+  const [hoveredSubmenu, setHoveredSubmenu] = useState<NavLinkItem[] | null>(null);
+  const [submenuOffset, setSubmenuOffset] = useState<number>(0);
+  const [submenuLeft, setSubmenuLeft] = useState<number>(240);
+  const dropdownRef = useRef<HTMLUListElement>(null);
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLLIElement>, item: NavLinkItem) => {
+    if (item.children && item.children.length > 0) {
+      setHoveredSubmenu(item.children);
+      const li = e.currentTarget;
+      const ul = dropdownRef.current;
+      if (ul) {
+        setSubmenuOffset(li.offsetTop - ul.scrollTop);
+        setSubmenuLeft(ul.offsetWidth);
+      }
+    } else {
+      setHoveredSubmenu(null);
+    }
+  };
+
+  const handleScroll = () => {
+    setHoveredSubmenu(null);
+  };
+
   if (!items || items.length === 0) {
     return (
       <li className="znh-nav-item">
@@ -251,52 +274,70 @@ const DesktopDropdown = ({
   }
 
   return (
-    <li className="znh-nav-item">
+    <li className="znh-nav-item" onMouseLeave={() => setHoveredSubmenu(null)}>
       <button type="button" className="znh-nav-link">
         {label}
         <ChevronDown className="znh-down-icon" />
       </button>
       <ul
+        ref={dropdownRef}
+        onScroll={handleScroll}
         className={cn(
           "znh-dropdown-menu",
           scrollable && "znh-dropdown-scrollable",
         )}
       >
-      {items.map((item, idx) => (
-        <li key={`${item.path}-${item.name}-${idx}`} className="znh-dropdown-item">
-          {item.disabled ? (
-            <span className="znh-dropdown-link znh-dropdown-link-disabled">
-              {item.name}
-            </span>
-          ) : (
-            <Link href={ensureRelativePath(item.path)} className="znh-dropdown-link">
-              <span>{item.name}</span>
-              {item.children && item.children.length > 0 && (
-                <ChevronRight className="znh-right-icon" />
-              )}
-            </Link>
-          )}
-          {item.children && item.children.length > 0 && (
-            <ul className="znh-submenu">
-              {item.children.map((child, childIdx) => (
-                <li key={`${child.path}-${child.name}-${childIdx}`}>
-                  {child.disabled ? (
-                    <span className="znh-dropdown-link znh-dropdown-link-disabled">
-                      {child.name}
-                    </span>
-                  ) : (
-                    <Link href={ensureRelativePath(child.path)} className="znh-dropdown-link">
-                      {child.name}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </li>
-      ))}
-    </ul>
-  </li>
+        {items.map((item, idx) => (
+          <li 
+            key={`${item.path}-${item.name}-${idx}`} 
+            className="znh-dropdown-item"
+            onMouseEnter={(e) => handleMouseEnter(e, item)}
+          >
+            {item.disabled ? (
+              <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                {item.name}
+              </span>
+            ) : (
+              <Link href={ensureRelativePath(item.path)} className="znh-dropdown-link">
+                <span>{item.name}</span>
+                {item.children && item.children.length > 0 && (
+                  <ChevronRight className="znh-right-icon" />
+                )}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ul>
+      
+      {/* Submenu rendered outside scrollable container to prevent clipping */}
+      <ul 
+        className="znh-submenu"
+        style={{
+          top: '100%',
+          left: `${submenuLeft}px`,
+          marginTop: `${submenuOffset}px`,
+          opacity: hoveredSubmenu ? 1 : 0,
+          visibility: hoveredSubmenu ? 'visible' : 'hidden',
+          transform: hoveredSubmenu ? 'translateX(0)' : 'translateX(10px)',
+          pointerEvents: hoveredSubmenu ? 'auto' : 'none',
+          zIndex: 101, // Ensure it appears in front of the main dropdown
+        }}
+      >
+        {hoveredSubmenu && hoveredSubmenu.map((child, childIdx) => (
+          <li key={`${child.path}-${child.name}-${childIdx}`}>
+            {child.disabled ? (
+              <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                {child.name}
+              </span>
+            ) : (
+              <Link href={ensureRelativePath(child.path)} className="znh-dropdown-link">
+                {child.name}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ul>
+    </li>
   );
 };
 
@@ -826,7 +867,7 @@ export const Navbar = () => {
 
             <div className="znh-desktop-menu-container">
               <ul className="znh-nav-list">
-                <DesktopDropdown label="Services" items={serviceDropdownItems} />
+                <DesktopDropdown label="Services" items={serviceDropdownItems} scrollable />
                 <DesktopDropdown
                   label="Subjects"
                   items={subjectsDropdownItems}
