@@ -424,6 +424,30 @@ export default function ProfilePage() {
     (o) => !o.status || (o.status !== "Cancelled" && o.status !== "Completed")
   );
 
+  const filteredConfirmed = confirmedOrders.filter((order) => {
+    const s = (order.status || "").toLowerCase();
+    
+    // Apply Tab Filter
+    let tabMatches = true;
+    if (orderSubTab === "processing") tabMatches = s === "processing" || s === "in progress" || s === "";
+    else if (orderSubTab === "pending") tabMatches = s === "pending";
+    else if (orderSubTab === "cancelled") tabMatches = s === "cancelled";
+    else if (orderSubTab === "overdue") tabMatches = isOrderOverdue(order.delivery_date, order.status);
+    else if (orderSubTab === "completed") tabMatches = s === "completed" || s === "done" || s === "delivered";
+
+    // Apply Search Filter
+    const q = searchQuery.toLowerCase();
+    const searchMatches = !q || (order.order_id || "").toLowerCase().includes(q) || (order.subject || "").toLowerCase().includes(q);
+
+    return tabMatches && searchMatches;
+  });
+
+  const showLeads = orderSubTab === "pending" || orderSubTab === "all";
+  const filteredLeads = showLeads ? pendingLeads.filter(lead => {
+    const q = searchQuery.toLowerCase();
+    return !q || (lead.order_id || "").toLowerCase().includes(q) || (lead.subject || "").toLowerCase().includes(q);
+  }) : [];
+
   /* ── Render ── */
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-16">
@@ -755,7 +779,7 @@ export default function ProfilePage() {
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
-                          Pending ({pendingCount})
+                          Pending ({pendingCount + (summary?.non_confirmed_count ?? 0)})
                         </button>
                         <button
                           onClick={() => setOrderSubTab("cancelled")}
@@ -824,40 +848,18 @@ export default function ProfilePage() {
                       </div>
                     )}
 
+                    {/* ── Empty State ── */}
+                    {!ordersLoading && !ordersError && filteredConfirmed.length === 0 && filteredLeads.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+                        <FileText className="h-12 w-12 text-slate-200" />
+                        <p className="text-sm text-gray-400">No orders in this category.</p>
+                      </div>
+                    )}
+
                     {/* ── Confirmed Orders Table ── */}
-                    {!ordersLoading && !ordersError && orderSubTab !== "quotes" && (
-                      <>
-                        {(() => {
-                          const filteredConfirmed = confirmedOrders.filter((order) => {
-                            const s = (order.status || "").toLowerCase();
-                            
-                            // Apply Tab Filter
-                            let tabMatches = true;
-                            if (orderSubTab === "processing") tabMatches = s === "processing" || s === "in progress" || s === "";
-                            else if (orderSubTab === "pending") tabMatches = s === "pending";
-                            else if (orderSubTab === "cancelled") tabMatches = s === "cancelled";
-                            else if (orderSubTab === "overdue") tabMatches = isOrderOverdue(order.delivery_date, order.status);
-                            else if (orderSubTab === "completed") tabMatches = s === "completed" || s === "done" || s === "delivered";
-
-                            // Apply Search Filter
-                            const q = searchQuery.toLowerCase();
-                            const searchMatches = !q || (order.order_id || "").toLowerCase().includes(q) || (order.subject || "").toLowerCase().includes(q);
-
-                            return tabMatches && searchMatches;
-                          });
-
-                          if (filteredConfirmed.length === 0) {
-                            return (
-                              <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                                <FileText className="h-12 w-12 text-slate-200" />
-                                <p className="text-sm text-gray-400">No orders in this category.</p>
-                              </div>
-                            );
-                          }
-                          
-                          return (
-                          <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white">
-                            <table className="w-full text-left border-collapse">
+                    {!ordersLoading && !ordersError && filteredConfirmed.length > 0 && (
+                      <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white mb-6">
+                        <table className="w-full text-left border-collapse">
                               <thead className="sticky top-0 z-20 shadow-sm bg-slate-50">
                                 <tr className="border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
                                   <th className="py-4 px-5">Order</th>
@@ -941,33 +943,13 @@ export default function ProfilePage() {
                                 ))}
                               </tbody>
                             </table>
-                          </div>
-                          );
-                        })()}
-                      </>
+                      </div>
                     )}
 
                     {/* ── Pending / Non-Confirmed Leads Table ── */}
-                    {!ordersLoading && !ordersError && orderSubTab === "quotes" && (
-                      <>
-                        {(() => {
-                          const filteredLeads = pendingLeads.filter(lead => {
-                            const q = searchQuery.toLowerCase();
-                            return !q || (lead.order_id || "").toLowerCase().includes(q) || (lead.subject || "").toLowerCase().includes(q);
-                          });
-
-                          if (filteredLeads.length === 0) {
-                            return (
-                              <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                                <CheckCircle className="h-12 w-12 text-slate-200" />
-                                <p className="text-sm text-gray-400">No pending quotes found.</p>
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white">
-                            <table className="w-full text-left border-collapse">
+                    {!ordersLoading && !ordersError && filteredLeads.length > 0 && (
+                      <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white">
+                        <table className="w-full text-left border-collapse">
                               <thead className="sticky top-0 z-20 shadow-sm bg-slate-50">
                                 <tr className="border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
                                   <th className="py-4 px-5">Order</th>
@@ -1021,10 +1003,7 @@ export default function ProfilePage() {
                                 ))}
                               </tbody>
                             </table>
-                          </div>
-                          );
-                        })()}
-                      </>
+                      </div>
                     )}
                   </motion.div>
                 )}
