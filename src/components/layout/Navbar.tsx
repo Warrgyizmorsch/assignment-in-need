@@ -446,6 +446,7 @@ export const Navbar = () => {
   const [userProfile, setUserProfile] = useState<{
     name: string;
     email: string;
+    photo?: string | null;
   } | null>(null);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
@@ -584,7 +585,7 @@ export const Navbar = () => {
       const storedName = window.localStorage.getItem("ain_user_name");
       const storedUserData = window.localStorage.getItem("ain_user_data");
 
-      let parsedUserData: { name?: string; email?: string } | null = null;
+      let parsedUserData: { name?: string; email?: string; photo?: string | null } | null = null;
       if (storedUserData) {
         try {
           parsedUserData = JSON.parse(storedUserData);
@@ -600,6 +601,7 @@ export const Navbar = () => {
           ? {
             name: parsedUserData?.name || storedName || "Student",
             email: parsedUserData?.email || storedEmail || "",
+            photo: parsedUserData?.photo || null,
           }
           : null,
       );
@@ -992,8 +994,10 @@ export const Navbar = () => {
                   {isLoggedIn ? (
                     <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4 text-white">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white font-bold text-sm">
-                          {isLoggedIn && userProfile?.name ? (
+                        <div className="flex h-11 w-11 overflow-hidden items-center justify-center rounded-full bg-white/10 text-white font-bold text-sm">
+                          {isLoggedIn && userProfile?.photo ? (
+                            <img src={userProfile.photo} alt={userProfile.name} className="h-full w-full object-cover" />
+                          ) : isLoggedIn && userProfile?.name ? (
                             userProfile.name.charAt(0).toUpperCase()
                           ) : (
                             <User className="h-5 w-5" />
@@ -1073,7 +1077,9 @@ export const Navbar = () => {
                 className="znh-account-button desktop-account font-bold text-base"
                 aria-label="Account"
               >
-                {isLoggedIn && userProfile?.name ? (
+                {isLoggedIn && userProfile?.photo ? (
+                  <img src={userProfile.photo} alt={userProfile.name} className="h-full w-full object-cover rounded-full border border-white/20" />
+                ) : isLoggedIn && userProfile?.name ? (
                   userProfile.name.charAt(0).toUpperCase()
                 ) : (
                   <User className="h-5 w-5" />
@@ -1085,8 +1091,10 @@ export const Navbar = () => {
                   <div className="bg-[#f8f4ff] px-4 py-4">
                     {isLoggedIn ? (
                       <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ede9fe] text-[#4a17a3] font-bold text-lg">
-                          {isLoggedIn && userProfile?.name ? (
+                        <div className="flex h-12 w-12 overflow-hidden items-center justify-center rounded-full bg-[#ede9fe] text-[#4a17a3] font-bold text-lg shrink-0">
+                          {isLoggedIn && userProfile?.photo ? (
+                            <img src={userProfile.photo} alt={userProfile.name} className="h-full w-full object-cover" />
+                          ) : isLoggedIn && userProfile?.name ? (
                             userProfile.name.charAt(0).toUpperCase()
                           ) : (
                             <User className="h-5 w-5" />

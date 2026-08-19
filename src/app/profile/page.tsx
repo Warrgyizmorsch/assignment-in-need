@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,11 +27,12 @@ import {
   Hourglass,
   ReceiptText,
   Search,
+  Camera,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 type ActiveTab = "overview" | "orders" | "edit-profile" | "rewards" | "security";
-type OrderSubTab = "all" | "processing" | "pending" | "cancelled" | "overdue" | "quotes" | "completed";
+type OrderSubTab = "all" | "active" | "completed" | "drafts" | "cancelled";
 
 /* ── API Types ─────────────────────────────────────────────────────────────── */
 interface ConfirmedOrder {
@@ -94,11 +95,20 @@ interface OrderListData {
 // These hit Next.js proxy routes (src/app/api/app/*/route.ts)
 // which forward the request server-side — no CORS issues.
 const PROFILE_API = "/api/app/profile";
+const PROFILE_UPDATE_API = "/api/app/profile-update";
 const ORDER_LIST_API = "/api/app/order-list";
 
 
 /* ── Status badge helper ────────────────────────────────────────────────────── */
-function StatusBadge({ status }: { status: string | null }) {
+function StatusBadge({ status, isLead }: { status: string | null, isLead?: boolean }) {
+  if (isLead) {
+    return (
+      <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
+        <Clock className="h-3.5 w-3.5" /> Processing
+      </span>
+    );
+  }
+
   if (!status) {
     return (
       <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
@@ -106,14 +116,16 @@ function StatusBadge({ status }: { status: string | null }) {
       </span>
     );
   }
+
   const s = status.toLowerCase();
-  if (s === "completed" || s === "delivered") {
+  if (s === "completed" || s === "delivered" || s === "done") {
     return (
       <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
         <CheckCircle className="h-3.5 w-3.5" /> {status}
       </span>
     );
   }
+  
   if (s === "cancelled") {
     return (
       <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
@@ -121,19 +133,32 @@ function StatusBadge({ status }: { status: string | null }) {
       </span>
     );
   }
-  if (s === "pending" || s === "new" || s === "awaiting" || s === "awaiting confirmation" || s === "unpaid") {
-    return (
-      <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
-        <Hourglass className="h-3.5 w-3.5" /> Pending
-      </span>
-    );
-  }
+  
   return (
-    <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
-      <Clock className="h-3.5 w-3.5" /> {status}
+    <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
+      <Hourglass className="h-3.5 w-3.5" /> In Progress
     </span>
   );
 }
+
+const resolveCountry = (country?: string | null, code?: string | null) => {
+  if (country) return country;
+  if (code === "91" || code === "+91") return "India";
+  if (code === "44" || code === "+44") return "United Kingdom";
+  if (code === "61" || code === "+61") return "Australia";
+  if (code === "1" || code === "+1") return "United States / Canada";
+  if (code === "971" || code === "+971") return "United Arab Emirates";
+  return null;
+};
+
+const getCountryCodeFromLocation = (loc: string) => {
+  const lower = loc.toLowerCase();
+  if (lower.includes("india")) return "91";
+  if (lower.includes("australia")) return "61";
+  if (lower.includes("states") || lower.includes("canada") || lower.includes("usa")) return "1";
+  if (lower.includes("emirates") || lower.includes("uae")) return "971";
+  return "44";
+};
 
 function isOrderOverdue(dateString: string | null, status: string | null): boolean {
   if (!dateString) return false;
@@ -208,6 +233,34 @@ function CircularProgress({ progress }: { progress: number }) {
   );
 }
 
+const getLiveLocation = (): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      reject(new Error("Geolocation not supported"));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+          if (res.ok) {
+            const data = await res.json();
+            const city = data.address?.city || data.address?.town || data.address?.village || data.address?.state_district;
+            const country = data.address?.country;
+            resolve(city ? `${city}, ${country}` : country || "");
+          } else {
+            reject(new Error("Reverse geocoding failed"));
+          }
+        } catch (e) {
+          reject(e);
+        }
+      },
+      (err) => reject(err),
+      { timeout: 10000, maximumAge: 0 }
+    );
+  });
+};
+
 /* ── Main Component ─────────────────────────────────────────────────────────── */
 export default function ProfilePage() {
   const router = useRouter();
@@ -222,8 +275,11 @@ export default function ProfilePage() {
     phone_no: "+44 7300 000000",
     location: "United Kingdom",
     created_at: "2026-03-10",
+    photo: null as string | null,
   });
   const [editForm, setEditForm] = useState({ ...profile });
+  const [isUpdating, setIsUpdating] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -277,20 +333,7 @@ export default function ProfilePage() {
           if (json?.success && json?.data) {
             const pd = json.data as Record<string, string>;
             
-            let resolvedLocation = pd.country || pd.location || "";
-            if (!resolvedLocation) {
-              try {
-                const ipRes = await fetch("https://ipapi.co/json/");
-                if (ipRes.ok) {
-                  const ipData = await ipRes.json();
-                  if (ipData.country_name) {
-                    resolvedLocation = ipData.city ? `${ipData.city}, ${ipData.country_name}` : ipData.country_name;
-                  }
-                }
-              } catch (e) {
-                // fallback gracefully
-              }
-            }
+            let resolvedLocation = resolveCountry(pd.country, pd.countrycode) || pd.location || "United Kingdom";
 
             const merged = {
               name: pd.name || "",
@@ -298,6 +341,7 @@ export default function ProfilePage() {
               phone_no: pd.mobile_no || pd.phone_no || pd.phone || "+44 7300 000000",
               location: resolvedLocation || "United Kingdom",
               created_at: pd.created_at || new Date().toISOString(),
+              photo: pd.photo || null,
             };
             setProfile(merged);
             setEditForm(merged);
@@ -339,8 +383,9 @@ export default function ProfilePage() {
           name: parsed.name || localName || "Student",
           email: parsed.email || localEmail || "",
           phone_no: parsed.mobile_no || parsed.phone_no || parsed.phone || "+44 7300 000000",
-          location: parsed.country || parsed.location || "United Kingdom",
+          location: resolveCountry(parsed.country, parsed.countrycode) || parsed.location || "United Kingdom",
           created_at: parsed.created_at || "2026-03-10",
+          photo: parsed.photo || null,
         };
         setProfile(cached);
         setEditForm(cached);
@@ -354,6 +399,7 @@ export default function ProfilePage() {
         phone_no: "+44 7300 000000",
         location: "United Kingdom",
         created_at: "2026-03-10",
+        photo: null as string | null,
       };
       setProfile(fallback);
       setEditForm(fallback);
@@ -365,14 +411,77 @@ export default function ProfilePage() {
 
 
   /* ── Handlers ── */
-  const handleProfileUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    setProfile(editForm);
-    localStorage.setItem("ain_user_name", editForm.name);
-    localStorage.setItem("ain_user_email", editForm.email);
-    localStorage.setItem("ain_user_data", JSON.stringify(editForm));
-    window.dispatchEvent(new Event("ain-auth-change"));
-    toast.success("Profile updated successfully!");
+  const handleProfileUpdate = async (e: React.FormEvent, customPhotoFile?: File) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setIsUpdating(true);
+    try {
+      const token = localStorage.getItem("ain_auth_token");
+      if (!token) throw new Error("Please login to access your profile.");
+
+      const formData = new FormData();
+      formData.append("name", editForm.name);
+      formData.append("email", editForm.email);
+      formData.append("mobile_no", editForm.phone_no);
+      formData.append("country", editForm.location);
+      formData.append("countrycode", getCountryCodeFromLocation(editForm.location));
+
+      if (customPhotoFile) {
+        formData.append("photo", customPhotoFile);
+      }
+
+      const res = await fetch(PROFILE_UPDATE_API, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        try {
+          const freshRes = await fetch(PROFILE_API, {
+            headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+          });
+          if (freshRes.ok) {
+            const json = await freshRes.json().catch(() => null);
+            if (json?.success && json?.data) {
+              const pd = json.data as Record<string, string>;
+              let resolvedLocation = resolveCountry(pd.country, pd.countrycode) || pd.location || editForm.location;
+              const merged = {
+                name: pd.name || editForm.name,
+                email: pd.email || editForm.email,
+                phone_no: pd.mobile_no || pd.phone_no || pd.phone || editForm.phone_no,
+                location: resolvedLocation,
+                created_at: pd.created_at || profile.created_at,
+                photo: pd.photo || null,
+              };
+              setProfile(merged);
+              setEditForm(merged);
+              localStorage.setItem("ain_user_name", merged.name);
+              localStorage.setItem("ain_user_email", merged.email);
+              pd.location = merged.location;
+              localStorage.setItem("ain_user_data", JSON.stringify(pd));
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch fresh profile data:", error);
+        }
+        window.dispatchEvent(new Event("ain-auth-change"));
+        toast.success("Profile updated successfully!");
+      } else {
+        throw new Error(data.message || "Failed to update profile");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Error updating profile");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      handleProfileUpdate(e as any, file);
+    }
   };
 
   const handlePasswordUpdate = (e: React.FormEvent) => {
@@ -400,48 +509,68 @@ export default function ProfilePage() {
     if (token) fetchOrders(token);
   };
 
-  if (!isClient) return null;
+  const allOrders = useMemo(() => {
+    const leads = (orderData?.non_confirmed_leads || []).map((lead: any) => ({
+      order_db_id: `lead_${lead.lead_id}`,
+      order_id: lead.order_id,
+      subject: lead.subject,
+      title: lead.service ? `${lead.service} - ${lead.work_type}` : "New Order",
+      created_at: lead.created_at,
+      status: "Processing", // match mobile app exactly
+      delivery_date: lead.deadline || lead.delivery_time,
+      amount: lead.price,
+      due_amount: Number(lead.price || 0),
+      received_amount: "0",
+      files: lead.files || [],
+      progress_percentage: lead.progress_percentage ?? 0,
+      word_count: lead.word_count
+    }));
 
-  /* ── Derived data ── */
-  const confirmedOrders = [...(orderData?.confirmed_orders ?? [])].sort((a, b) => 
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-  
-  const pendingLeads = [...(orderData?.non_confirmed_leads ?? [])].sort((a, b) => 
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+    const confirmed = [...(orderData?.confirmed_orders ?? [])];
+
+    return [...leads, ...confirmed].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [orderData]);
+
   const summary = orderData?.summary;
 
-  const processingCount = confirmedOrders.filter(o => {
-    const s = (o.status || "").toLowerCase();
-    return s === "processing" || s === "in progress" || s === "";
-  }).length;
-  const pendingCount = confirmedOrders.filter(o => {
+  const activeCount = allOrders.filter(o => {
+    if (o.order_db_id.toString().startsWith("lead_")) return false;
     const s = (o.status || "").toLowerCase().trim();
-    return s === "pending" || s === "new" || s === "awaiting" || s === "awaiting confirmation" || s === "unpaid";
+    return s !== "completed" && s !== "done" && s !== "delivered" && s !== "cancelled";
   }).length;
-  const cancelledCount = confirmedOrders.filter(o => (o.status || "").toLowerCase() === "cancelled").length;
-  const overdueCount = confirmedOrders.filter(o => isOrderOverdue(o.delivery_date, o.status)).length;
-  const completedCount = confirmedOrders.filter(o => {
-    const s = (o.status || "").toLowerCase();
+
+  const completedCount = allOrders.filter(o => {
+    if (o.order_db_id.toString().startsWith("lead_")) return false;
+    const s = (o.status || "").toLowerCase().trim();
     return s === "completed" || s === "done" || s === "delivered";
   }).length;
 
+  const draftsCount = allOrders.filter(o => {
+    return o.order_db_id.toString().startsWith("lead_");
+  }).length;
+
+  const cancelledCount = allOrders.filter(o => {
+    const s = (o.status || "").toLowerCase().trim();
+    return s === "cancelled";
+  }).length;
+
   // Latest active confirmed order for the dashboard overview panel
-  const latestActiveOrder = confirmedOrders.find(
+  const latestActiveOrder = allOrders.find(
     (o) => !o.status || (o.status !== "Cancelled" && o.status !== "Completed")
   );
 
-  const filteredConfirmed = confirmedOrders.filter((order) => {
-    const s = (order.status || "").toLowerCase();
+  const filteredConfirmed = allOrders.filter((order) => {
+    const isLead = order.order_db_id.toString().startsWith("lead_");
+    const s = (order.status || "").toLowerCase().trim();
     
     // Apply Tab Filter
     let tabMatches = true;
-    if (orderSubTab === "processing") tabMatches = s === "processing" || s === "in progress" || s === "";
-    else if (orderSubTab === "pending") tabMatches = s === "pending" || s === "new" || s === "awaiting" || s === "awaiting confirmation" || s === "unpaid";
+    if (orderSubTab === "active") tabMatches = !isLead && (s !== "completed" && s !== "done" && s !== "delivered" && s !== "cancelled");
+    else if (orderSubTab === "completed") tabMatches = !isLead && (s === "completed" || s === "done" || s === "delivered");
+    else if (orderSubTab === "drafts") tabMatches = isLead;
     else if (orderSubTab === "cancelled") tabMatches = s === "cancelled";
-    else if (orderSubTab === "overdue") tabMatches = isOrderOverdue(order.delivery_date, order.status);
-    else if (orderSubTab === "completed") tabMatches = s === "completed" || s === "done" || s === "delivered";
 
     // Apply Search Filter
     const q = searchQuery.toLowerCase();
@@ -450,11 +579,8 @@ export default function ProfilePage() {
     return tabMatches && searchMatches;
   });
 
-  const showLeads = orderSubTab === "pending" || orderSubTab === "all";
-  const filteredLeads = showLeads ? pendingLeads.filter(lead => {
-    const q = searchQuery.toLowerCase();
-    return !q || (lead.order_id || "").toLowerCase().includes(q) || (lead.subject || "").toLowerCase().includes(q);
-  }) : [];
+
+  if (!isClient) return null;
 
   /* ── Render ── */
   return (
@@ -471,8 +597,29 @@ export default function ProfilePage() {
           <div className="lg:col-span-1 flex flex-col gap-6">
             {/* Profile Card */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-6 text-center">
-              <div className="mx-auto w-24 h-24 rounded-full bg-gradient-to-tr from-[#3f159a] to-[#7e22ce] text-white flex items-center justify-center font-bold text-3xl shadow-[0_8px_20px_rgba(63,21,154,0.2)] mb-4">
-                {profile.name.charAt(0).toUpperCase()}
+              <div className="mx-auto w-24 h-24 relative mb-4 group">
+                <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#3f159a] to-[#7e22ce] text-white flex items-center justify-center font-bold text-3xl shadow-[0_8px_20px_rgba(63,21,154,0.2)] overflow-hidden">
+                  {profile.photo ? (
+                    <img src={profile.photo} alt={profile.name} className="w-full h-full object-cover" />
+                  ) : (
+                    profile.name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUpdating}
+                  className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md text-[#3f159a] hover:bg-slate-50 transition border border-slate-100 disabled:opacity-50"
+                  title="Update Profile Photo"
+                >
+                  {isUpdating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
               </div>
               <h3 className="text-xl font-bold text-[#1e1b4b] truncate">{profile.name}</h3>
               <p className="text-xs text-gray-400 mt-1 font-semibold tracking-wide uppercase">UK Student Member</p>
@@ -576,7 +723,7 @@ export default function ProfilePage() {
                       <div className="bg-gradient-to-tr from-purple-50 to-indigo-50 border border-purple-100 p-5 rounded-2xl flex items-center justify-between">
                         <div>
                           <span className="text-[1.8rem] font-black text-[#3f159a]">
-                            {ordersLoading ? "—" : (summary?.confirmed_count ?? 0)}
+                            {ordersLoading ? "—" : (orderData?.confirmed_orders?.length ?? 0)}
                           </span>
                           <h4 className="text-sm font-bold text-slate-700 mt-1">Confirmed Orders</h4>
                         </div>
@@ -588,7 +735,7 @@ export default function ProfilePage() {
                       <div className="bg-gradient-to-tr from-sky-50 to-cyan-50 border border-sky-100 p-5 rounded-2xl flex items-center justify-between">
                         <div>
                           <span className="text-[1.8rem] font-black text-sky-700">
-                            {ordersLoading ? "—" : (summary?.non_confirmed_count ?? 0)}
+                            {ordersLoading ? "—" : (orderData?.non_confirmed_leads?.length ?? 0)}
                           </span>
                           <h4 className="text-sm font-bold text-slate-700 mt-1">Pending Orders</h4>
                         </div>
@@ -622,11 +769,16 @@ export default function ProfilePage() {
                               <div className="bg-red-50 text-red-600 font-bold text-xs px-3 py-2 rounded-xl flex flex-col items-center justify-center shrink-0 border border-red-100 h-16 w-16 shadow-sm">
                                 <AlertCircle className="h-5 w-5 mb-1" /> Overdue
                               </div>
-                            ) : (
+                            ) : (!latestActiveOrder.order_db_id?.toString().startsWith("lead_") && 
+                                 !["completed", "done", "delivered", "cancelled"].includes((latestActiveOrder.status || "").toLowerCase().trim())) ? (
                               <CircularProgress progress={latestActiveOrder.progress_percentage ?? 0} />
+                            ) : (
+                              <div className="flex items-center justify-center shrink-0 h-16 w-16 bg-slate-50 border border-slate-100 rounded-full text-slate-300 font-bold text-2xl">
+                                —
+                              </div>
                             )}
                             <div>
-                              <StatusBadge status={latestActiveOrder.status} />
+                              <StatusBadge status={latestActiveOrder.status} isLead={latestActiveOrder.order_db_id.toString().startsWith("lead_")} />
                               <h3 className="text-lg font-bold text-[#1e1b4b] mt-2">
                                 {latestActiveOrder.order_id} • {latestActiveOrder.subject ?? latestActiveOrder.title ?? "Assignment"}
                               </h3>
@@ -756,7 +908,7 @@ export default function ProfilePage() {
                       <div className="flex gap-2 bg-slate-50 p-1 rounded-xl w-fit border border-slate-100 overflow-x-auto max-w-full">
                         <button
                           onClick={() => setOrderSubTab("all")}
-                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all flex items-center whitespace-nowrap ${
                             orderSubTab === "all"
                               ? "bg-white text-[#3f159a] shadow-sm"
                               : "text-gray-500 hover:text-gray-700"
@@ -765,49 +917,19 @@ export default function ProfilePage() {
                           All
                           {summary && (
                             <span className="ml-1.5 bg-purple-100 text-purple-700 text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                              {summary.confirmed_count + summary.non_confirmed_count}
+                              {allOrders.length}
                             </span>
                           )}
                         </button>
                         <button
-                          onClick={() => setOrderSubTab("processing")}
+                          onClick={() => setOrderSubTab("active")}
                           className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
-                            orderSubTab === "processing"
+                            orderSubTab === "active"
                               ? "bg-white text-[#3f159a] shadow-sm"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
-                          Processing ({processingCount})
-                        </button>
-                        <button
-                          onClick={() => setOrderSubTab("pending")}
-                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
-                            orderSubTab === "pending"
-                              ? "bg-white text-[#3f159a] shadow-sm"
-                              : "text-gray-500 hover:text-gray-700"
-                          }`}
-                        >
-                          Pending ({pendingCount + (summary?.non_confirmed_count ?? 0)})
-                        </button>
-                        <button
-                          onClick={() => setOrderSubTab("cancelled")}
-                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
-                            orderSubTab === "cancelled"
-                              ? "bg-white text-[#3f159a] shadow-sm"
-                              : "text-gray-500 hover:text-gray-700"
-                          }`}
-                        >
-                          Cancelled ({cancelledCount})
-                        </button>
-                        <button
-                          onClick={() => setOrderSubTab("overdue")}
-                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
-                            orderSubTab === "overdue"
-                              ? "bg-white text-red-600 shadow-sm"
-                              : "text-gray-500 hover:text-gray-700"
-                          }`}
-                        >
-                          Overdue ({overdueCount})
+                          Active ({activeCount})
                         </button>
                         <button
                           onClick={() => setOrderSubTab("completed")}
@@ -818,6 +940,26 @@ export default function ProfilePage() {
                           }`}
                         >
                           Completed ({completedCount})
+                        </button>
+                        <button
+                          onClick={() => setOrderSubTab("drafts")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "drafts"
+                              ? "bg-white text-[#f97316] shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Drafts ({draftsCount})
+                        </button>
+                        <button
+                          onClick={() => setOrderSubTab("cancelled")}
+                          className={`text-xs font-bold px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                            orderSubTab === "cancelled"
+                              ? "bg-white text-red-600 shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Cancelled ({cancelledCount})
                         </button>
                       </div>
 
@@ -857,74 +999,14 @@ export default function ProfilePage() {
                     )}
 
                     {/* ── Empty State ── */}
-                    {!ordersLoading && !ordersError && filteredConfirmed.length === 0 && filteredLeads.length === 0 && (
+                    {!ordersLoading && !ordersError && filteredConfirmed.length === 0 && (
                       <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
                         <FileText className="h-12 w-12 text-slate-200" />
                         <p className="text-sm text-gray-400">No orders in this category.</p>
                       </div>
                     )}
 
-                    {/* ── Pending / Non-Confirmed Leads Table ── */}
-                    {!ordersLoading && !ordersError && filteredLeads.length > 0 && (
-                      <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white mb-6">
-                        <table className="w-full text-left border-collapse">
-                              <thead className="sticky top-0 z-20 shadow-sm bg-slate-50">
-                                <tr className="border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                  <th className="py-4 px-5">Order</th>
-                                  <th className="py-4 px-5">Subject</th>
-                                  <th className="py-4 px-5 text-left">Progress</th>
-                                  <th className="py-4 px-5">Deadline</th>
-                                  <th className="py-4 px-5">Quote</th>
-                                  <th className="py-4 px-5 text-right">Status</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-slate-100 text-sm text-gray-600">
-                                {filteredLeads.map((lead) => (
-                                  <tr key={lead.lead_id} className="hover:bg-slate-50/50 transition">
-                                    <td className="py-4 px-5">
-                                      <span className="font-bold text-[#1e1b4b] block text-xs">{lead.order_id}</span>
-                                      <span className="text-[10px] text-gray-400 block mt-0.5">
-                                        {lead.service} • {lead.work_type}
-                                      </span>
-                                      {lead.requirements && (
-                                        <p className="text-[10px] text-gray-300 mt-1 max-w-[200px] truncate">{lead.requirements}</p>
-                                      )}
-                                      <span className="text-[10px] text-gray-300 block mt-1">
-                                        {new Date(lead.created_at).toLocaleDateString(undefined, {
-                                          year: "numeric", month: "short", day: "numeric",
-                                        })}
-                                      </span>
-                                    </td>
-                                    <td className="py-4 px-5">
-                                      <span className="text-xs font-semibold text-purple-700">{lead.subject}</span>
-                                      <span className="text-[10px] text-gray-400 block mt-0.5">
-                                        {Number(lead.word_count).toLocaleString()} words
-                                      </span>
-                                    </td>
-                                    <td className="py-4 px-5 text-left">
-                                      <CircularProgress progress={lead.progress_percentage ?? 0} />
-                                    </td>
-                                    <td className="py-4 px-5 whitespace-nowrap text-xs text-slate-600">
-                                      {new Date(lead.deadline).toLocaleDateString(undefined, {
-                                        year: "numeric", month: "short", day: "numeric",
-                                      })}
-                                    </td>
-                                    <td className="py-4 px-5 whitespace-nowrap">
-                                      <span className="font-bold text-slate-800 text-xs">£{lead.price}</span>
-                                    </td>
-                                    <td className="py-4 px-5 text-right whitespace-nowrap">
-                                      <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                        <Hourglass className="h-3 w-3" /> Pending
-                                      </span>
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                      </div>
-                    )}
-
-                    {/* ── Confirmed Orders Table ── */}
+                    {/* ── Orders Table ── */}
                     {!ordersLoading && !ordersError && filteredConfirmed.length > 0 && (
                       <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white mb-6">
                         <table className="w-full text-left border-collapse">
@@ -956,20 +1038,19 @@ export default function ProfilePage() {
                                       </span>
                                     </td>
                                     <td className="py-4 px-5 text-left">
-                                      {order.status?.toLowerCase() === "cancelled" ? (
-                                        <span className="text-gray-300 font-bold">—</span>
-                                      ) : order.status?.toLowerCase() === "completed" || order.status?.toLowerCase() === "delivered" ? (
-                                        <CircularProgress progress={100} />
-                                      ) : isOrderOverdue(order.delivery_date, order.status) ? (
+                                      {isOrderOverdue(order.delivery_date, order.status) ? (
                                         <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 font-bold text-[10px] px-2 py-1 rounded-md border border-red-100 uppercase tracking-wider">
                                           <AlertCircle className="h-3 w-3" /> Overdue
                                         </span>
-                                      ) : (
+                                      ) : (!order.order_db_id?.toString().startsWith("lead_") && 
+                                           !["completed", "done", "delivered", "cancelled"].includes((order.status || "").toLowerCase().trim())) ? (
                                         <CircularProgress progress={order.progress_percentage ?? 0} />
+                                      ) : (
+                                        <span className="text-gray-300 font-bold px-4">—</span>
                                       )}
                                     </td>
                                     <td className="py-4 px-5">
-                                      <StatusBadge status={order.status} />
+                                      <StatusBadge status={order.status} isLead={order.order_db_id.toString().startsWith("lead_")} />
                                     </td>
                                     <td className="py-4 px-5 whitespace-nowrap text-slate-600 text-xs">
                                       {order.delivery_date
@@ -1055,9 +1136,11 @@ export default function ProfilePage() {
                       <div className="pt-3 border-t border-gray-100 flex justify-end">
                         <button
                           type="submit"
-                          className="btn-shutter-blue-open bg-[#3f159a] text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg transition"
+                          disabled={isUpdating}
+                          className="btn-shutter-blue-open bg-[#3f159a] text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
                         >
-                          Save Profile Changes
+                          {isUpdating && <RefreshCw className="h-4 w-4 animate-spin" />}
+                          {isUpdating ? "Saving..." : "Save Profile Changes"}
                         </button>
                       </div>
                     </form>
