@@ -121,7 +121,7 @@ function StatusBadge({ status }: { status: string | null }) {
       </span>
     );
   }
-  if (s === "pending") {
+  if (s === "pending" || s === "new" || s === "awaiting" || s === "awaiting confirmation" || s === "unpaid") {
     return (
       <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
         <Hourglass className="h-3.5 w-3.5" /> Pending
@@ -403,15 +403,23 @@ export default function ProfilePage() {
   if (!isClient) return null;
 
   /* ── Derived data ── */
-  const confirmedOrders = orderData?.confirmed_orders ?? [];
-  const pendingLeads = orderData?.non_confirmed_leads ?? [];
+  const confirmedOrders = [...(orderData?.confirmed_orders ?? [])].sort((a, b) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+  
+  const pendingLeads = [...(orderData?.non_confirmed_leads ?? [])].sort((a, b) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
   const summary = orderData?.summary;
 
   const processingCount = confirmedOrders.filter(o => {
     const s = (o.status || "").toLowerCase();
     return s === "processing" || s === "in progress" || s === "";
   }).length;
-  const pendingCount = confirmedOrders.filter(o => (o.status || "").toLowerCase() === "pending").length;
+  const pendingCount = confirmedOrders.filter(o => {
+    const s = (o.status || "").toLowerCase().trim();
+    return s === "pending" || s === "new" || s === "awaiting" || s === "awaiting confirmation" || s === "unpaid";
+  }).length;
   const cancelledCount = confirmedOrders.filter(o => (o.status || "").toLowerCase() === "cancelled").length;
   const overdueCount = confirmedOrders.filter(o => isOrderOverdue(o.delivery_date, o.status)).length;
   const completedCount = confirmedOrders.filter(o => {
@@ -430,7 +438,7 @@ export default function ProfilePage() {
     // Apply Tab Filter
     let tabMatches = true;
     if (orderSubTab === "processing") tabMatches = s === "processing" || s === "in progress" || s === "";
-    else if (orderSubTab === "pending") tabMatches = s === "pending";
+    else if (orderSubTab === "pending") tabMatches = s === "pending" || s === "new" || s === "awaiting" || s === "awaiting confirmation" || s === "unpaid";
     else if (orderSubTab === "cancelled") tabMatches = s === "cancelled";
     else if (orderSubTab === "overdue") tabMatches = isOrderOverdue(order.delivery_date, order.status);
     else if (orderSubTab === "completed") tabMatches = s === "completed" || s === "done" || s === "delivered";
@@ -582,7 +590,7 @@ export default function ProfilePage() {
                           <span className="text-[1.8rem] font-black text-sky-700">
                             {ordersLoading ? "—" : (summary?.non_confirmed_count ?? 0)}
                           </span>
-                          <h4 className="text-sm font-bold text-slate-700 mt-1">Pending Quotes</h4>
+                          <h4 className="text-sm font-bold text-slate-700 mt-1">Pending Orders</h4>
                         </div>
                         <div className="h-10 w-10 bg-sky-100 rounded-xl flex items-center justify-center text-sky-700">
                           <Clock className="h-5 w-5" />
@@ -757,7 +765,7 @@ export default function ProfilePage() {
                           All
                           {summary && (
                             <span className="ml-1.5 bg-purple-100 text-purple-700 text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                              {summary.confirmed_count}
+                              {summary.confirmed_count + summary.non_confirmed_count}
                             </span>
                           )}
                         </button>
@@ -856,6 +864,66 @@ export default function ProfilePage() {
                       </div>
                     )}
 
+                    {/* ── Pending / Non-Confirmed Leads Table ── */}
+                    {!ordersLoading && !ordersError && filteredLeads.length > 0 && (
+                      <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white mb-6">
+                        <table className="w-full text-left border-collapse">
+                              <thead className="sticky top-0 z-20 shadow-sm bg-slate-50">
+                                <tr className="border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                  <th className="py-4 px-5">Order</th>
+                                  <th className="py-4 px-5">Subject</th>
+                                  <th className="py-4 px-5 text-left">Progress</th>
+                                  <th className="py-4 px-5">Deadline</th>
+                                  <th className="py-4 px-5">Quote</th>
+                                  <th className="py-4 px-5 text-right">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100 text-sm text-gray-600">
+                                {filteredLeads.map((lead) => (
+                                  <tr key={lead.lead_id} className="hover:bg-slate-50/50 transition">
+                                    <td className="py-4 px-5">
+                                      <span className="font-bold text-[#1e1b4b] block text-xs">{lead.order_id}</span>
+                                      <span className="text-[10px] text-gray-400 block mt-0.5">
+                                        {lead.service} • {lead.work_type}
+                                      </span>
+                                      {lead.requirements && (
+                                        <p className="text-[10px] text-gray-300 mt-1 max-w-[200px] truncate">{lead.requirements}</p>
+                                      )}
+                                      <span className="text-[10px] text-gray-300 block mt-1">
+                                        {new Date(lead.created_at).toLocaleDateString(undefined, {
+                                          year: "numeric", month: "short", day: "numeric",
+                                        })}
+                                      </span>
+                                    </td>
+                                    <td className="py-4 px-5">
+                                      <span className="text-xs font-semibold text-purple-700">{lead.subject}</span>
+                                      <span className="text-[10px] text-gray-400 block mt-0.5">
+                                        {Number(lead.word_count).toLocaleString()} words
+                                      </span>
+                                    </td>
+                                    <td className="py-4 px-5 text-left">
+                                      <CircularProgress progress={lead.progress_percentage ?? 0} />
+                                    </td>
+                                    <td className="py-4 px-5 whitespace-nowrap text-xs text-slate-600">
+                                      {new Date(lead.deadline).toLocaleDateString(undefined, {
+                                        year: "numeric", month: "short", day: "numeric",
+                                      })}
+                                    </td>
+                                    <td className="py-4 px-5 whitespace-nowrap">
+                                      <span className="font-bold text-slate-800 text-xs">£{lead.price}</span>
+                                    </td>
+                                    <td className="py-4 px-5 text-right whitespace-nowrap">
+                                      <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                                        <Hourglass className="h-3 w-3" /> Pending
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                      </div>
+                    )}
+
                     {/* ── Confirmed Orders Table ── */}
                     {!ordersLoading && !ordersError && filteredConfirmed.length > 0 && (
                       <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white mb-6">
@@ -938,66 +1006,6 @@ export default function ProfilePage() {
                                       ) : (
                                         <span className="text-[10px] text-gray-300 font-medium">No files yet</span>
                                       )}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                      </div>
-                    )}
-
-                    {/* ── Pending / Non-Confirmed Leads Table ── */}
-                    {!ordersLoading && !ordersError && filteredLeads.length > 0 && (
-                      <div className="overflow-auto max-h-[550px] border border-slate-100 rounded-2xl bg-white">
-                        <table className="w-full text-left border-collapse">
-                              <thead className="sticky top-0 z-20 shadow-sm bg-slate-50">
-                                <tr className="border-b border-slate-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                  <th className="py-4 px-5">Order</th>
-                                  <th className="py-4 px-5">Subject</th>
-                                  <th className="py-4 px-5 text-left">Progress</th>
-                                  <th className="py-4 px-5">Deadline</th>
-                                  <th className="py-4 px-5">Quote</th>
-                                  <th className="py-4 px-5 text-right">Status</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-slate-100 text-sm text-gray-600">
-                                {filteredLeads.map((lead) => (
-                                  <tr key={lead.lead_id} className="hover:bg-slate-50/50 transition">
-                                    <td className="py-4 px-5">
-                                      <span className="font-bold text-[#1e1b4b] block text-xs">{lead.order_id}</span>
-                                      <span className="text-[10px] text-gray-400 block mt-0.5">
-                                        {lead.service} • {lead.work_type}
-                                      </span>
-                                      {lead.requirements && (
-                                        <p className="text-[10px] text-gray-300 mt-1 max-w-[200px] truncate">{lead.requirements}</p>
-                                      )}
-                                      <span className="text-[10px] text-gray-300 block mt-1">
-                                        {new Date(lead.created_at).toLocaleDateString(undefined, {
-                                          year: "numeric", month: "short", day: "numeric",
-                                        })}
-                                      </span>
-                                    </td>
-                                    <td className="py-4 px-5">
-                                      <span className="text-xs font-semibold text-purple-700">{lead.subject}</span>
-                                      <span className="text-[10px] text-gray-400 block mt-0.5">
-                                        {Number(lead.word_count).toLocaleString()} words
-                                      </span>
-                                    </td>
-                                    <td className="py-4 px-5 text-left">
-                                      <CircularProgress progress={lead.progress_percentage ?? 0} />
-                                    </td>
-                                    <td className="py-4 px-5 whitespace-nowrap text-xs text-slate-600">
-                                      {new Date(lead.deadline).toLocaleDateString(undefined, {
-                                        year: "numeric", month: "short", day: "numeric",
-                                      })}
-                                    </td>
-                                    <td className="py-4 px-5 whitespace-nowrap">
-                                      <span className="font-bold text-slate-800 text-xs">£{lead.price}</span>
-                                    </td>
-                                    <td className="py-4 px-5 text-right whitespace-nowrap">
-                                      <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                        <Hourglass className="h-3 w-3" /> Awaiting Confirmation
-                                      </span>
                                     </td>
                                   </tr>
                                 ))}

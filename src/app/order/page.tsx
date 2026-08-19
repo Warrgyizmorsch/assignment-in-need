@@ -103,18 +103,6 @@ export default function OrderPage() {
   const [countryCode, setCountryCode] = useState("+44");
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  const [hiredExpert, setHiredExpert] = useState<any>(null);
-
-  useEffect(() => {
-    try {
-      const expertData = localStorage.getItem('hiredExpert');
-      if (expertData) {
-        setHiredExpert(JSON.parse(expertData));
-      }
-    } catch (e) {
-      console.error("Could not parse hired expert", e);
-    }
-  }, []);
 
   // Step 2: Assignment Details
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -709,76 +697,7 @@ export default function OrderPage() {
         }}
       />
       {/* 1. Hero Title Header Block */}
-      {hiredExpert && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
-          <div className="bg-[#fff5f0] border border-orange-200 rounded-2xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden shadow-sm w-full z-20">
-            
-            {/* Left Side: Text */}
-            <div className="text-left relative z-20 md:w-5/12 shrink-0">
-              <h3 className="text-lg md:text-[20px] font-black text-gray-900 leading-tight">
-                Your Professional Expert Helper
-              </h3>
-              <p className="text-xs md:text-[14px] text-gray-600 font-medium mt-1">
-                Ready to assist with your assignment
-              </p>
-              
-              {/* Curved Dashed Arrow (Desktop only) */}
-              <div className="hidden md:block absolute -right-12 top-4 w-16 h-6 opacity-60">
-                <svg viewBox="0 0 100 40" fill="none" className="w-full h-full overflow-visible">
-                  <path d="M0,35 Q50,45 95,15" stroke="#f97316" strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
-                  <path d="M85,10 L98,12 L92,25" stroke="#f97316" strokeWidth="1.5" fill="none" />
-                </svg>
-              </div>
-            </div>
 
-            {/* Right Side: Expert Mini Card */}
-            <div className="bg-white rounded-xl border border-gray-150 p-2.5 shadow-sm w-full md:w-[58%] lg:max-w-[450px] flex items-start gap-2 relative z-20 shrink-0 ml-auto">
-              <div className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-lg overflow-hidden bg-gray-100 relative">
-                <img 
-                   src={hiredExpert.avatar} 
-                   alt={hiredExpert.name} 
-                   className="w-full h-full object-cover object-top" 
-                   onError={(e) => {
-                     e.currentTarget.src = "/new-home-page-images/expert3.webp";
-                   }} 
-                />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start w-full gap-2">
-                  <div className="shrink-0 max-w-[120px]">
-                    <div className="flex items-center gap-1">
-                      <h4 className="font-bold text-gray-900 text-xs md:text-[14px] leading-tight truncate">
-                        {hiredExpert.name}
-                      </h4>
-                      <ShieldCheck className="w-3.5 h-3.5 text-green-500 shrink-0" />
-                    </div>
-                    <div className="flex items-center gap-0.5 mt-0.5 border-l border-gray-200 pl-1.5">
-                      {[...Array(5)].map((_, i) => <Star key={i} className="w-2.5 h-2.5 text-amber-500 fill-current" />)}
-                    </div>
-                    <span className="text-[9px] md:text-[10px] text-gray-500 font-medium flex items-center gap-1 mt-1 truncate"><GraduationCap className="w-2.5 h-2.5 shrink-0" /> {hiredExpert.qualifications}</span>
-                  </div>
-                  
-                  {/* Stats Column */}
-                  <div className="flex flex-col gap-0.5 text-[9px] md:text-[10px] shrink-0 text-right">
-                    <div className="flex items-center justify-end gap-1 text-slate-700">
-                      <ShoppingCart className="w-2.5 h-2.5 text-[#f97316]" />
-                      <span className="font-bold">{hiredExpert.ordersCompleted} <span className="font-medium text-slate-500">Completed orders</span></span>
-                    </div>
-                    <div className="flex items-center justify-end gap-1 text-slate-700">
-                      <Clock className="w-2.5 h-2.5 text-[#f97316]" />
-                      <span className="font-bold">1 <span className="font-medium text-slate-500">In progress order</span></span>
-                    </div>
-                    <div className="flex items-center justify-end gap-1 text-slate-700">
-                      <ShieldCheck className="w-2.5 h-2.5 text-[#f97316]" />
-                      <span className="font-bold">{parseInt(hiredExpert.experience || "6")} <span className="font-medium text-slate-500">Years of Experience</span></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       <section className="relative  w-full bg-gradient-to-r from-white via-purple-50/20 to-purple-50/40 overflow-hidden">
         {/* Soft background shape */}
         <div
