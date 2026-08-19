@@ -189,7 +189,7 @@ export default function ReferAndEarnPage() {
   return (
     <div className="min-h-screen bg-[#fafbfc] pb-12">
       {/* ── HERO SECTION ── */}
-      <section className="relative bg-white overflow-hidden py-10 md:py-24 border-b border-slate-100">
+      <section className="relative bg-white overflow-hidden py-10 md:py-12 border-b border-slate-100">
 
         <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-12 relative z-10">
 
@@ -426,7 +426,7 @@ export default function ReferAndEarnPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="py-20 max-w-5xl mx-auto px-4 text-center">
+      <section className="py-10 max-w-5xl mx-auto px-4 text-center">
         <h2 className="text-3xl md:text-4xl font-extrabold text-[#1e1b4b] mb-4">How Our Refer-a-Friend Program Works</h2>
         <p className="text-gray-500 mb-16 font-medium">It's simple. Just share, and get rewarded!</p>
 
