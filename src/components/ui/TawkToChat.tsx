@@ -10,18 +10,18 @@ export function TawkToChat() {
     var Tawk_API = (window as any).Tawk_API || {};
     var Tawk_LoadStart = new Date();
     
-    // Set custom positioning to move it up slightly and keep it proper on mobile
+    // Add custom styling to push the widget up from the bottom edge
     Tawk_API.customStyle = {
       visibility: {
         desktop: {
           position: 'br',
           xOffset: '20px',
-          yOffset: '30px'
+          yOffset: '30px' // Moves it 30px UP from the bottom on PC
         },
         mobile: {
           position: 'br',
           xOffset: '15px',
-          yOffset: '80px' // moved higher on mobile to avoid bottom nav bars usually
+          yOffset: '75px' // Moves it 75px UP on mobile
         }
       }
     };
