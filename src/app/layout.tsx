@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import { CanonicalHeader } from "@/components/layout/CanonicalHeader";
-import { ChatBot } from "@/components/ui/ChatBot";
+import { TawkToChat } from "@/components/ui/TawkToChat";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { ReferWidget } from "@/components/ui/ReferWidget";
 import { QuoteModal } from "@/components/ui/QuoteModal";
@@ -190,7 +190,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <Footer />
         <WhatsAppButton />
         <ReferWidget />
-        <ChatBot />
+        <TawkToChat />
         <QuoteModal />
         <PromoModal />
         <Toaster
