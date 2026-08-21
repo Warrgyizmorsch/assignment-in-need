@@ -79,6 +79,26 @@
     line-height: 1.7;
   }
 
+  /* CMS / API-rendered content links */
+  .prose a,
+  .rich-text-content a,
+  .html-desc a,
+  .blog-content-container a,
+  .prose-content a {
+    color: #4a17a3;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+
+  .prose a:hover,
+  .rich-text-content a:hover,
+  .html-desc a:hover,
+  .blog-content-container a:hover,
+  .prose-content a:hover {
+    color: #f97316;
+  }
+
   /* Primary Button Shutter Effect (Slides in on hover) */
   .btn-shutter-primary {
     position: relative;
@@ -709,15 +729,20 @@
 
 /* Promo illustration floating animation */
 @keyframes promo-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
+
   25% {
     transform: translateY(-8px) rotate(1.5deg);
   }
+
   50% {
     transform: translateY(-4px) rotate(-1deg);
   }
+
   75% {
     transform: translateY(-10px) rotate(0.5deg);
   }
@@ -735,13 +760,25 @@
 
 /* Modal entrance animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.92) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .animate-fadeIn {
