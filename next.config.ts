@@ -48,6 +48,21 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns,
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "assignmentinneed.co.uk",
+          },
+        ],
+        destination: "https://www.assignmentinneed.co.uk/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
