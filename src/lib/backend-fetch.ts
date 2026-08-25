@@ -67,7 +67,12 @@ export async function fetchBackend(
   }
 
   if (lastResponse) return lastResponse;
-  throw lastError instanceof Error
-    ? lastError
-    : new Error("Backend request failed");
+  
+  const errorMessage = lastError instanceof Error ? lastError.message : "Backend request failed";
+  const finalError = new Error(errorMessage);
+  if (lastError instanceof Error) {
+    finalError.name = lastError.name;
+    finalError.cause = lastError;
+  }
+  throw finalError;
 }

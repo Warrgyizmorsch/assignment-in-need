@@ -14,12 +14,22 @@ import { Loader2 } from "lucide-react";
 import { getBaseUrl, getImageUrl } from "@/lib/api";
 import { SidebarQuoteForm } from "@/components/ui/SidebarQuoteForm";
 
-export default function BlogPage() {
-  const [blogs, setBlogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+type Props = {
+  initialBlogs?: any[];
+  initialCurrentPage?: number;
+  initialLastPage?: number;
+};
+
+export default function BlogPage({
+  initialBlogs = [],
+  initialCurrentPage = 1,
+  initialLastPage = 1,
+}: Props = {}) {
+  const [blogs, setBlogs] = useState<any[]>(initialBlogs);
+  const [loading, setLoading] = useState(initialBlogs.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialCurrentPage);
+  const [lastPage, setLastPage] = useState(initialLastPage);
 
   const fetchBlogs = async (page: number = 1) => {
     try {
@@ -51,8 +61,9 @@ export default function BlogPage() {
   };
 
   useEffect(() => {
+    if (initialBlogs && initialBlogs.length > 0) return;
     fetchBlogs(1);
-  }, []);
+  }, [initialBlogs]);
 
 
   const handleShowMore = () => {

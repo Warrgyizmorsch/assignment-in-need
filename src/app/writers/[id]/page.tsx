@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           const name = expert.name || expert.expert_name;
           const role = expert.role || "Expert Academic Writer";
           const title = expert.meta_tag || expert.meta_title || `${name} - ${role} | Assignment In Need`;
-          const description = expert.meta_description || 
+          const description = expert.meta_description ||
             (expert.about && expert.about[0] ? expert.about[0].slice(0, 160) : "") ||
             `${name} is a ${expert.qualifications || ""} ${role} with ${expert.experience || "years of"} experience. Hire top academic writers at Assignment In Need.`;
-            
+
           return constructMetadata({
             title,
             description,

@@ -143,11 +143,11 @@
   }
 
   .btn-shutter-primary:hover::before {
-    transform: translateY(-50%);
+    transform: translateY(-49%);
   }
 
   .btn-shutter-primary:hover::after {
-    transform: translateY(50%);
+    transform: translateY(49%);
   }
 
   /* Secondary Button Shutter Effect (Reverse - Slides away on hover) */
@@ -181,11 +181,11 @@
 
   /* Covers the button by default (showing white background) */
   .btn-shutter-secondary::before {
-    transform: translateY(-50%);
+    transform: translateY(-49%);
   }
 
   .btn-shutter-secondary::after {
-    transform: translateY(50%);
+    transform: translateY(49%);
   }
 
   .btn-shutter-secondary:hover {
@@ -295,11 +295,11 @@
   }
 
   .btn-shutter-orange-open:hover::before {
-    transform: translateY(-50%);
+    transform: translateY(-49%);
   }
 
   .btn-shutter-orange-open:hover::after {
-    transform: translateY(50%);
+    transform: translateY(49%);
   }
 
   /* 2. Orange Close (White to Solid Orange background on hover) */
@@ -345,11 +345,11 @@
   }
 
   .btn-shutter-orange-close:hover::before {
-    transform: translateY(-50%);
+    transform: translateY(-49%);
   }
 
   .btn-shutter-orange-close:hover::after {
-    transform: translateY(50%);
+    transform: translateY(49%);
   }
 
   /* 3. Blue Open (Solid Blue to White background on hover) */
@@ -395,11 +395,11 @@
   }
 
   .btn-shutter-blue-open:hover::before {
-    transform: translateY(-50%);
+    transform: translateY(-49%);
   }
 
   .btn-shutter-blue-open:hover::after {
-    transform: translateY(50%);
+    transform: translateY(49%);
   }
 
   /* 4. Blue Close (White to Solid Blue background on hover) */
@@ -445,11 +445,11 @@
   }
 
   .btn-shutter-blue-close:hover::before {
-    transform: translateY(-50%);
+    transform: translateY(-49%);
   }
 
   .btn-shutter-blue-close:hover::after {
-    transform: translateY(50%);
+    transform: translateY(49%);
   }
 }
 

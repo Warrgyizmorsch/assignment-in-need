@@ -156,7 +156,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                 if (
                   list.length > 0 ||
                   catParam ===
-                    categoryParamsToTry[categoryParamsToTry.length - 1]
+                  categoryParamsToTry[categoryParamsToTry.length - 1]
                 ) {
                   sampleData = json.data;
                   break;
@@ -476,7 +476,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     return (
                       catName.toLowerCase() !== category.toLowerCase() &&
                       catName.toLowerCase().replace(/-/g, " ") !==
-                        category.toLowerCase().replace(/-/g, " ")
+                      category.toLowerCase().replace(/-/g, " ")
                     );
                   })
                   .slice(0, 8)

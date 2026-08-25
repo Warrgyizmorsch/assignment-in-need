@@ -75,26 +75,42 @@ const mapReviewToTestimonial = (review: any) => ({
   avatar: review?.name?.charAt(0) || "S",
 });
 
-export default function ServiceLanding() {
+type Props = {
+  initialPageData?: any;
+  initialExperts?: any[];
+  initialExpertsFromPage?: boolean;
+  initialReviews?: any[];
+  initialAllServicePages?: any[];
+  initialSlug?: string;
+};
+
+export default function ServiceLanding({
+  initialPageData = null,
+  initialExperts = [],
+  initialExpertsFromPage = false,
+  initialReviews = [],
+  initialAllServicePages = [],
+  initialSlug = ""
+}: Props = {}) {
   const params = useParams();
   const slugArray = params?.slug;
-  const fullSlug = Array.isArray(slugArray)
+  const fullSlug = initialSlug || (Array.isArray(slugArray)
     ? slugArray.join("/")
-    : (slugArray as string) || "";
+    : (slugArray as string) || "");
 
-  const [pageData, setPageData] = useState<any>(null);
-  const [experts, setExperts] = useState<any[]>([]);
-  const [expertsFromPage, setExpertsFromPage] = useState(false); // NEW: track source of experts
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [allServicePages, setAllServicePages] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [pageData, setPageData] = useState<any>(initialPageData);
+  const [experts, setExperts] = useState<any[]>(initialExperts);
+  const [expertsFromPage, setExpertsFromPage] = useState(initialExpertsFromPage); // NEW: track source of experts
+  const [reviews, setReviews] = useState<any[]>(initialReviews);
+  const [allServicePages, setAllServicePages] = useState<any[]>(initialAllServicePages);
+  const [loading, setLoading] = useState(!initialPageData && initialAllServicePages.length === 0);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const fetchServicePage = async () => {
-      if (!fullSlug) return;
+      if (!fullSlug || initialPageData || initialAllServicePages.length > 0) return;
       try {
         setLoading(true);
 
@@ -266,7 +282,7 @@ export default function ServiceLanding() {
       }
     };
     fetchServicePage();
-  }, [fullSlug]);
+  }, [fullSlug, initialPageData, initialAllServicePages, router]);
 
 
   const childServicePages = allServicePages.filter((service) => {

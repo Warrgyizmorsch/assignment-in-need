@@ -389,7 +389,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
                     return (
                       catName.toLowerCase() !== category.toLowerCase() &&
                       catName.toLowerCase().replace(/-/g, " ") !==
-                        category.toLowerCase().replace(/-/g, " ")
+                      category.toLowerCase().replace(/-/g, " ")
                     );
                   })
                   .slice(0, 8)

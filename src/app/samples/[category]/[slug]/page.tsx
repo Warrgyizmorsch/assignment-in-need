@@ -20,10 +20,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
         if (sample) {
           const title = sample.meta_title || sample.title || `${sample.title || "Sample Paper"} | Assignment In Need`;
-          const description = sample.meta_description || 
+          const description = sample.meta_description ||
             (sample.description ? sample.description.replace(/<[^>]*>/g, "").slice(0, 160) : "") ||
             `Read free university sample paper for ${sample.title || "academic writing"}. Standard UK university example.`;
-            
+
           return constructMetadata({
             title,
             description,
