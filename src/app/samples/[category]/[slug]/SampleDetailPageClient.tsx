@@ -45,13 +45,36 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
       setLoading(true);
       setError(null);
       try {
-        // Fetch specific sample detail
-        const response = await fetch(
-          `/api/samples/${encodeURIComponent(slug)}`,
-        );
-        if (!response.ok) {
-          throw new Error("Sample paper not found.");
+        // Fetch specific sample detail with retry logic
+        let response;
+        let retries = 3;
+        let lastErrorMsg = "Sample paper not found.";
+
+        while (retries > 0) {
+          try {
+            response = await fetch(`/api/samples/${encodeURIComponent(slug)}`);
+            if (response.ok) {
+              break;
+            } else if (response.status === 404) {
+              lastErrorMsg = "Sample paper not found.";
+              break; // Don't retry 404s
+            } else {
+              const errJson = await response.json().catch(() => null);
+              lastErrorMsg = errJson?.message || `Server error (${response.status})`;
+              retries--;
+              if (retries > 0) await new Promise(res => setTimeout(res, 1000));
+            }
+          } catch (e: any) {
+            lastErrorMsg = e.message || "Network error occurred.";
+            retries--;
+            if (retries > 0) await new Promise(res => setTimeout(res, 1000));
+          }
         }
+
+        if (!response || !response.ok) {
+          throw new Error(lastErrorMsg);
+        }
+        
         const json = await response.json();
 
         if (json.success && json.data) {

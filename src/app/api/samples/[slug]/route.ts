@@ -15,7 +15,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const { slug } = await context.params;
 
   try {
-    const response = await fetch(`${BACKEND_URL}/api/samples/${slug}`, {
+    const response = await fetch(`${BACKEND_URL}/api/samples/${encodeURIComponent(slug)}`, {
       headers: {
         Accept: "application/json",
       },
