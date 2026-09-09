@@ -161,8 +161,8 @@ export default function WritersDirectory() {
           ) {
             const mapped = payload.data.map((sub: any) => {
               const cleanSlug = (sub.slug || "").replace(/^\/+/, "");
-              const finalSlug = cleanSlug.startsWith("subject/")
-                ? cleanSlug.replace("subject/", "")
+              const finalSlug = cleanSlug.match(/^subjects?\//)
+                ? cleanSlug.replace(/^subjects?\//, "")
                 : cleanSlug;
               const humanized = finalSlug
                 .replace(/-/g, " ")

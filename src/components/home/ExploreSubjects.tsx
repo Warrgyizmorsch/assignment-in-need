@@ -62,6 +62,13 @@ export default function ExploreSubjects() {
     wrapper.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      slideSubjects(1);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
   const fallbackSubjects = [
     {
       name: "Business",
@@ -161,17 +168,17 @@ export default function ExploreSubjects() {
               Expert help in 150+ subjects
             </p>
           </AnimateIn>
-          {/* <a
-            href="/services"
+          <Link
+            href="/subjects"
             className="hidden md:flex text-[0.95rem] font-bold text-[#4f46e5] hover:text-[#3730a3] items-center gap-2 transition-colors duration-300"
           >
-            View All Subjects &rarr;
-          </a> */}
+            Explore All Subjects &rarr;
+          </Link>
         </div>
 
         <div className="relative flex items-center gap-4">
           <button
-            className="hidden md:flex bg-white border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer text-[#4f46e5] items-center justify-center w-8 h-8 rounded-full transition-all duration-300 hover:bg-[#f3e8ff] hover:border-[#d8b4fe] shrink-0 z-[2]"
+            className="flex bg-white border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer text-[#4f46e5] items-center justify-center w-8 h-8 rounded-full transition-all duration-300 hover:bg-[#f3e8ff] hover:border-[#d8b4fe] shrink-0 z-[2]"
             onClick={() => slideSubjects(-1)}
             aria-label="Previous subjects"
           >
@@ -187,16 +194,16 @@ export default function ExploreSubjects() {
           </button>
 
           <div
-            className="w-full overflow-x-auto scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] py-2 [mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)] md:[mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)] max-md:overflow-visible max-md:mask-none"
+            className="w-full overflow-x-auto scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] py-2 [mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)] md:[mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)]"
             id="znhSubjectsTrackWrapper"
             ref={trackWrapperRef}
           >
-            <StaggerContainer className="flex gap-3 w-max px-2.5 max-md:grid max-md:grid-cols-3 max-md:gap-2 max-md:w-full max-md:p-0">
+            <StaggerContainer className="flex gap-3 w-max px-2.5">
               {subjectsList.length > 0
-                ? subjectsList.map((sub: any, i: number) => {
+                ? subjectsList.slice(0, 10).map((sub: any, i: number) => {
                     const cleanSlug = (sub.slug || "").replace(/^\/+/, "");
-                    const finalSlug = cleanSlug.startsWith("subject/")
-                      ? cleanSlug.replace("subject/", "")
+                    const finalSlug = cleanSlug.match(/^subjects?\//)
+                      ? cleanSlug.replace(/^subjects?\//, "")
                       : cleanSlug;
                     const humanized = finalSlug
                       .replace(/-/g, " ")
@@ -208,26 +215,26 @@ export default function ExploreSubjects() {
                       <StaggerItem key={sub.id || i}>
                         <Link
                           href={canonicalSubjectPath(finalSlug)}
-                          className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff] max-md:min-w-0 max-md:p-3 max-md:flex-col max-md:justify-center max-md:items-center max-md:gap-2"
+                          className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff]"
                         >
                           <div
-                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${color.bg} ${color.text} max-md:w-9 max-md:h-9 max-md:rounded-full`}
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${color.bg} ${color.text}`}
                           >
                             <svg
                               viewBox="0 0 24 24"
                               fill="none"
                               stroke="currentColor"
                               strokeWidth="2"
-                              className="w-[15px] h-[15px] max-md:w-[18px] max-md:h-[18px]"
+                              className="w-[15px] h-[15px]"
                             >
                               <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                             </svg>
                           </div>
-                          <div className="flex flex-col gap-1 max-md:items-center max-md:gap-[2px]">
-                            <p className="m-0 text-[0.68rem] font-bold text-gray-900 max-md:text-[0.65rem] max-md:text-center max-md:whitespace-nowrap">
+                          <div className="flex flex-col gap-1">
+                            <p className="m-0 text-[0.68rem] font-bold text-gray-900">
                               {name.split(" Help")[0].split(" Assignment")[0]}
                             </p>
-                            <span className="text-[0.68rem] text-gray-500 font-medium max-md:text-[0.55rem] max-md:text-center">
+                            <span className="text-[0.68rem] text-gray-500 font-medium">
                               {(12500 - i * 1250 > 1000
                                 ? 12500 - i * 1250
                                 : 2200
@@ -239,22 +246,22 @@ export default function ExploreSubjects() {
                       </StaggerItem>
                     );
                   })
-                : fallbackSubjects.map((sub: any, i: number) => {
+                : fallbackSubjects.slice(0, 10).map((sub: any, i: number) => {
                     return (
                       <StaggerItem key={i}>
                         <Link
                           href={canonicalSubjectPath(sub.slug)}
-                          className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff] max-md:min-w-0 max-md:p-3 max-md:flex-col max-md:justify-center max-md:items-center max-md:gap-2"
+                          className="bg-white rounded-lg p-[0.6rem_0.8rem] flex items-center gap-2.5 min-w-[180px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-0.75 hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] border border-transparent hover:border-[#f3e8ff]"
                         >
                         <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${sub.bg} ${sub.text} max-md:w-9 max-md:h-9 max-md:rounded-full`}
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${sub.bg} ${sub.text}`}
                         >
                           <svg
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
-                            className="w-[15px] h-[15px] max-md:w-[18px] max-md:h-[18px]"
+                            className="w-[15px] h-[15px]"
                           >
                             {sub.icon === "grid" && (
                               <rect x="3" y="3" width="7" height="7" />
@@ -273,11 +280,11 @@ export default function ExploreSubjects() {
                             )}
                           </svg>
                         </div>
-                        <div className="flex flex-col gap-1 max-md:items-center max-md:gap-[2px]">
-                          <p className="m-0 text-[0.68rem] font-bold text-gray-900 max-md:text-[0.65rem] max-md:text-center max-md:whitespace-nowrap">
+                        <div className="flex flex-col gap-1">
+                          <p className="m-0 text-[0.68rem] font-bold text-gray-900">
                             {sub.name}
                           </p>
-                          <span className="text-[0.68rem] text-gray-500 font-medium max-md:text-[0.55rem] max-md:text-center">
+                          <span className="text-[0.68rem] text-gray-500 font-medium">
                             {sub.count} Orders
                           </span>
                         </div>
@@ -289,7 +296,7 @@ export default function ExploreSubjects() {
           </div>
 
           <button
-            className="hidden md:flex bg-white border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer text-[#4f46e5] items-center justify-center w-8 h-8 rounded-full transition-all duration-300 hover:bg-[#f3e8ff] hover:border-[#d8b4fe] shrink-0 z-[2]"
+            className="flex bg-white border border-gray-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] cursor-pointer text-[#4f46e5] items-center justify-center w-8 h-8 rounded-full transition-all duration-300 hover:bg-[#f3e8ff] hover:border-[#d8b4fe] shrink-0 z-[2]"
             onClick={() => slideSubjects(1)}
             aria-label="Next subjects"
           >
@@ -306,10 +313,10 @@ export default function ExploreSubjects() {
         </div>
 
         <Link
-          href="/services"
+          href="/subjects"
           className="flex md:hidden justify-center items-center w-full p-3 mt-5 bg-white border border-gray-200 rounded-lg text-[#4f46e5] hover:bg-gray-50 font-semibold text-[0.68rem] transition-all duration-300"
         >
-          View All Subjects &rarr;
+          Explore All Subjects &rarr;
         </Link>
       </div>
     </section>

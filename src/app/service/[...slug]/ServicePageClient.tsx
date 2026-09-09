@@ -603,7 +603,7 @@ export default function ServiceLanding({
           <div className="flex items-center gap-1.5 text-[12px] text-gray-400 mb-6 font-medium">
             <Link href="/" className="hover:text-gray-600 transition-colors">Home</Link>
             <span>&gt;</span>
-            <Link href="/services" className="hover:text-gray-600 transition-colors">Services</Link>
+            <Link href="/service" className="hover:text-gray-600 transition-colors">Service</Link>
             <span>&gt;</span>
             <span className="text-[#3f159a] font-semibold">{title}</span>
           </div>

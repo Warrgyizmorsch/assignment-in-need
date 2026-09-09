@@ -197,8 +197,8 @@ export default async function BlogDetailPage({ params }: Props) {
                     let name = "";
                     if (s.title) {
                       const cleanSlug = (s.slug || "").replace(/^\/+/, "");
-                      finalSlug = cleanSlug.startsWith("subject/")
-                        ? cleanSlug.replace("subject/", "")
+                      finalSlug = cleanSlug.match(/^subjects?\//)
+                        ? cleanSlug.replace(/^subjects?\//, "")
                         : cleanSlug;
                       const humanized = finalSlug
                         .replace(/-/g, " ")

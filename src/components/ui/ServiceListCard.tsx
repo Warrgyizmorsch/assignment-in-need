@@ -3,12 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import * as Icons from "lucide-react";
-import { canonicalSubjectPath } from "@/lib/utils";
 import { Card } from "./Card";
 import { Heading } from "./Heading";
 import { cn } from "@/lib/utils";
 
-interface SubjectCardProps {
+interface ServiceListCardProps {
   name: string;
   iconName: string;
   orderCount?: string;
@@ -19,7 +18,7 @@ interface SubjectCardProps {
   className?: string;
 }
 
-export const SubjectCard: React.FC<SubjectCardProps> = ({
+export const ServiceListCard: React.FC<ServiceListCardProps> = ({
   name,
   iconName,
   orderCount,
@@ -37,11 +36,8 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
       >
     )[iconName] || Icons.BookOpen;
 
-  const cleanSlug = (slug || "").replace(/^\/+/, "");
-  const finalSlug = cleanSlug.match(/^subjects?\//)
-    ? cleanSlug.replace(/^subjects?\//, "")
-    : cleanSlug;
-  const path = canonicalSubjectPath(finalSlug);
+  // For services, link directly to the slug which contains full path (e.g. /service/assignment)
+  const path = `/${slug.replace(/^\/+/, "")}`;
 
   return (
     <Link href={path} className="block">
@@ -88,4 +84,4 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
     </Link>
   );
 };
-SubjectCard.displayName = "SubjectCard";
+ServiceListCard.displayName = "ServiceListCard";

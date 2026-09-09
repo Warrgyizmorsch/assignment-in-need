@@ -115,13 +115,13 @@ async function getAllApiSlugs(): Promise<string[]> {
     "service/assignment/economics",
     "service/dissertation",
     "service/dissertation/literature-review",
-    "subject/management-assignment-help",
-    "subject/maths",
-    "subject/chemistry",
-    "subject/history",
+    "subjects/management-assignment-help",
+    "subjects/maths",
+    "subjects/chemistry",
+    "subjects/history",
     "service/do-my-assignment",
-    "subject/marketing",
-    "subject/business",
+    "subjects/marketing",
+    "subjects/business",
   ];
 }
 
@@ -170,7 +170,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/writers") ||
     pathname.startsWith("/profile") ||
     pathname.startsWith("/cities") ||
-    pathname.startsWith("/subjects") ||
+    pathname === "/subjects" ||
+    pathname === "/service" ||
+    pathname === "/subject" ||
     pathname.startsWith("/style-guide") ||
     pathname === "/about" ||
     pathname === "/contact" ||
@@ -191,10 +193,10 @@ export async function proxy(request: NextRequest) {
   }
 
   // 3.5. Keep one canonical URL for every subject page.
-  if (pathname.startsWith("/subject/")) {
+  if (pathname.startsWith("/subject/") || pathname.startsWith("/subjects/")) {
     const requestedPath = pathname.replace(/\/+$/, "").toLowerCase();
     const canonicalPath = canonicalSubjectPath(
-      pathname.replace(/^\/subject\//, "").replace(/\/+$/, ""),
+      pathname.replace(/^\/subjects?\//, "").replace(/\/+$/, ""),
     );
 
     if (requestedPath !== canonicalPath) {
@@ -293,7 +295,8 @@ export async function proxy(request: NextRequest) {
   if (matchedApiSlug) {
     if (
       matchedApiSlug.startsWith("service/assignment/") ||
-      matchedApiSlug.startsWith("subject/")
+      matchedApiSlug.startsWith("subject/") ||
+      matchedApiSlug.startsWith("subjects/")
     ) {
       const childSeg = matchedApiSlug.split("/").pop() || "";
       return NextResponse.redirect(new URL(canonicalSubjectPath(childSeg), request.url), 301);

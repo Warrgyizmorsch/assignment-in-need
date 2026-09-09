@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 const stripSubjectPrefix = (value: string) =>
-  value.trim().replace(/^\/+|\/+$/g, "").replace(/^subject\//i, "");
+  value.trim().replace(/^\/+|\/+$/g, "").replace(/^(subjects|subject)\//i, "");
 
 export function canonicalSubjectSlug(value: string): string {
   let slug = stripSubjectPrefix(value).toLowerCase();
@@ -23,7 +23,7 @@ export function canonicalSubjectSlug(value: string): string {
 }
 
 export function canonicalSubjectPath(value: string): string {
-  return `/subject/${canonicalSubjectSlug(value)}`;
+  return `/subjects/${canonicalSubjectSlug(value)}`;
 }
 
 export function subjectDataSlug(value: string): string {

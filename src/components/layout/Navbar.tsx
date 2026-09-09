@@ -105,7 +105,9 @@ const isNonServicePage = (item: ServicePageApiItem) => {
     rawSlug.includes("/city/") ||
     rawSlug.startsWith("assignment-help-") ||
     rawSlug.startsWith("subject/") ||
+    rawSlug.startsWith("subjects/") ||
     rawSlug.includes("/subject/") ||
+    rawSlug.includes("/subjects/") ||
     rawSlug.includes("management-assignment-help")
   ) {
     return true;
@@ -173,20 +175,20 @@ const mapServicePagesToMenu = (
 };
 
 const SUBJECTS: NavLinkItem[] = [
-  ["Math Assignment Help", "subject/maths"],
-  ["Chemistry Assignment Help", "subject/chemistry"],
-  ["History Assignment Help UK", "subject/history"],
-  ["Marketing Assignment Help UK", "subject/marketing"],
-  ["Business Assignment Help", "subject/business"],
-  ["MBA Assignment Help", "subject/mba-assignment-help"],
-  ["Finance Assignment Help", "subject/finance-assignment-help"],
-  ["Accounting Assignment Help", "subject/accounting-assignment-help"],
-  ["Statistics Assignment Help", "subject/statistics-assignment-help"],
-  ["Law Assignment Help", "subject/law-assignment-help"],
-  ["Corporate Law Assignment Help", "subject/corporate-law-assignment-help"],
-  ["HR Assignment Help", "subject/hr-assignment-help"],
-  ["Project Management Assignment Help", "subject/project-management-assignment-help"],
-  ["Programming Assignment Help", "subject/programming-assignment-help"],
+  ["Math Assignment Help", "subjects/maths"],
+  ["Chemistry Assignment Help", "subjects/chemistry"],
+  ["History Assignment Help UK", "subjects/history"],
+  ["Marketing Assignment Help UK", "subjects/marketing"],
+  ["Business Assignment Help", "subjects/business"],
+  ["MBA Assignment Help", "subjects/mba-assignment-help"],
+  ["Finance Assignment Help", "subjects/finance-assignment-help"],
+  ["Accounting Assignment Help", "subjects/accounting-assignment-help"],
+  ["Statistics Assignment Help", "subjects/statistics-assignment-help"],
+  ["Law Assignment Help", "subjects/law-assignment-help"],
+  ["Corporate Law Assignment Help", "subjects/corporate-law-assignment-help"],
+  ["HR Assignment Help", "subjects/hr-assignment-help"],
+  ["Project Management Assignment Help", "subjects/project-management-assignment-help"],
+  ["Programming Assignment Help", "subjects/programming-assignment-help"],
 ].map(([name, slug]) => {
   return { name, path: canonicalSubjectPath(slug) };
 });

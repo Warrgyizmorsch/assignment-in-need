@@ -228,7 +228,7 @@ export default function OrderPage() {
     if (dynamicSubjects.length > 0) {
       return dynamicSubjects.map((sub: any) => {
         const cleanSlug = (sub.slug || "").replace(/^\/+/, "");
-        const finalSlug = cleanSlug.startsWith("subject/") ? cleanSlug.replace("subject/", "") : cleanSlug;
+        const finalSlug = cleanSlug.match(/^subjects?\//) ? cleanSlug.replace(/^subjects?\//, "") : cleanSlug;
         const humanized = finalSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
         const label = sub.title || humanized;
         return { label, value: finalSlug };
