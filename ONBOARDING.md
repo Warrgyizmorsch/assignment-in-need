@@ -33,6 +33,7 @@ assignment-in-need/
 │   │   ├── about/          # About Us page
 │   │   ├── blog/           # Blog pages
 │   │   ├── cities/         # City-specific landing pages
+│   │   ├── discounts-offers/ # Discounts & Offers page (Pricing Calculator & Lead Generation)
 │   │   ├── order/          # Order placement flow
 │   │   ├── profile/        # User profile
 │   │   ├── service/        # Services offered
@@ -107,7 +108,25 @@ Search Engine Optimization (SEO) is a core aspect of the project. Various `sitem
 
 ---
 
-## 5. Common Scripts
+## 5. Discounts & Offers Page Architecture (`src/app/discounts-offers/page.tsx`)
+
+The Discounts & Offers page is a specialized landing page with dynamic calculators and lead generation capabilities. It strictly adheres to the global UI design system.
+
+### **Key Features & Files:**
+- **`src/app/discounts-offers/page.tsx`**: The main page component that renders the hero section, dynamic calculators, active offers, and promotional CTAs.
+- **Synced Pricing Engine**: The calculator mirrors the main `order/page.tsx` mathematical pricing logic.
+  - It fetches word count multipliers from `/api/app/word-count`.
+  - It fetches urgency multipliers from `/api/app/urgencies`.
+  - Service-specific and deadline-specific multipliers (e.g., Dissertation 1.1x) are applied perfectly inline with the main order pricing logic.
+- **Typography & Styling**: Uses global components like `<Heading level={1|2}>` and standard button variants (`size="md"`) to ensure the page remains consistent with the website's core aesthetics (no custom responsive text classes).
+- **Lead Generation System**:
+  - When a user calculates their price and clicks "GET MY DISCOUNT", the system checks `localStorage` for their name/email.
+  - **Logged In (Silent Submit)**: If data exists, it sends a silent POST request to `/api/web-submit-quote` and shows a success animation.
+  - **Guest User**: If no data exists, it opens the global **Quote Modal** (`src/components/ui/QuoteModal.tsx`) for manual entry.
+
+---
+
+## 6. Common Scripts
 
 - `npm run dev` - Starts the development server.
 - `npm run build` - Builds the project for production deployment.

@@ -244,10 +244,7 @@ export function openQuoteModal() {
 
       if (isQuoteTrigger) {
         e.preventDefault();
-        const won = localStorage.getItem("ain_won_discount");
-        if (won === "10% OFF") setDynamicDiscount("50");
-        else if (won === "20% OFF") setDynamicDiscount("60");
-        else setDynamicDiscount("40");
+        setDynamicDiscount("40");
         setIsOpen(true);
       }
     };
@@ -290,6 +287,11 @@ export function openQuoteModal() {
       const cleanWc = String(wordCount || 250);
       const calcPages = Math.max(1, Math.ceil(wordCount / 250));
 
+      const wonDiscount = localStorage.getItem("ain_won_discount") || "40% OFF";
+      const wonCode = localStorage.getItem("ain_won_code") || "AIN40";
+      
+      const baseDesc = requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc}`;
+
       const payload = {
         name: fullName.trim(),
         user_name: fullName.trim(),
@@ -309,13 +311,13 @@ export function openQuoteModal() {
         wordCount: cleanWc,
         word_count: cleanWc,
         pages: calcPages,
-        description: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc}`,
-        message: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc}`,
-        requirements: requirements ? requirements.trim() : `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc}`,
-        notes: `Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc} | Requirements: ${requirements}`,
-        coupon_code: "AIN40",
-        promo_code: "AIN40",
-        coupon: "AIN40",
+        description: `[Discount: ${wonDiscount} | Code: ${wonCode}] ${baseDesc}`,
+        message: `[Discount: ${wonDiscount} | Code: ${wonCode}] ${baseDesc}`,
+        requirements: `[Discount: ${wonDiscount} | Code: ${wonCode}] ${baseDesc}`,
+        notes: `[Discount: ${wonDiscount} | Code: ${wonCode}] Subject: ${subject} | Deadline: ${deadline} | Word Count: ${cleanWc} | Requirements: ${requirements}`,
+        coupon_code: wonCode,
+        promo_code: wonCode,
+        coupon: wonCode,
         source_page: typeof window !== "undefined" ? window.location.href : "https://www.assignmentinneed.co.uk/",
       };
 
