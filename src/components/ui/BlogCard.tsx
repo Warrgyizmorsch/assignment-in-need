@@ -17,13 +17,13 @@ export const BlogCard: React.FC<BlogCardProps> = ({ title, excerpt, date, image,
       className={`rounded-[2rem] overflow-hidden border border-slate-100 bg-white shadow-[0_15px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col h-full cursor-pointer no-underline group ${className ?? ""}`} 
       {...props}
     >
-      <div className="relative overflow-hidden h-56 w-full">
+      <div className="relative overflow-hidden w-full bg-white">
         <img
           src={image}
           alt={title}
-          width={360}
-          height={224}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          width={800}
+          height={600}
+          className="w-full h-auto object-cover transition-transform duration-500"
         />
       </div>
       <div className="p-6 flex flex-col flex-grow text-left">

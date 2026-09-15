@@ -812,7 +812,27 @@ export default function SubjectLanding({
     );
   }
 
-  const parsedSubjectFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
+  let parsedSubjectFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
+  if (parsedSubjectFaqs.length === 0) {
+    parsedSubjectFaqs = [
+      {
+        question: `Why should I choose your ${subject.name} assignment help?`,
+        answer: `Our ${subject.name} experts hold advanced Master's and Ph.D. degrees. They write plagiarism-free assignments adhering strictly to UK university guidelines.`,
+      },
+      {
+        question: `Are your ${subject.name} assignments 100% original?`,
+        answer: `Yes, every paper is written from scratch. We provide free plagiarism and AI-check reports with every completed assignment.`,
+      },
+      {
+        question: `Can I request revisions for my ${subject.name} coursework?`,
+        answer: `We offer unlimited free revisions until you are completely satisfied with your ${subject.name} paper.`,
+      },
+      {
+        question: `How quickly can an expert deliver my ${subject.name} assignment?`,
+        answer: `We accommodate urgent requests with turnarounds starting as fast as 24 hours while maintaining exceptional quality.`,
+      },
+    ];
+  }
 
   return (
     <div className="font-sans text-[#111827] bg-white overflow-hidden">
@@ -1372,7 +1392,7 @@ export default function SubjectLanding({
                 </p>
               </div>
               <div className="space-y-3">
-                {faqsList.map((faq: any, idx: number) => {
+                {parsedSubjectFaqs.map((faq: any, idx: number) => {
                   const isOpen = activeFaq === idx;
                   return (
                     <div

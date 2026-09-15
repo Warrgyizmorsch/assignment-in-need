@@ -21,8 +21,8 @@ import { constructMetadata } from "@/lib/metadata";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/blogs/${slug}`);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
+    const res = await fetch(`${backendUrl}/api/blogs/${slug}`);
     if (res.ok) {
       const result = await res.json();
       if (result.success && result.data) {
@@ -59,8 +59,8 @@ export default async function BlogDetailPage({ params }: Props) {
   let post = null;
   let subjects: any[] = [];
   try {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/blogs/${slug}`, {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
+    const res = await fetch(`${backendUrl}/api/blogs/${slug}`, {
       cache: "no-store",
     });
     if (res.ok) {
@@ -135,7 +135,7 @@ export default async function BlogDetailPage({ params }: Props) {
       />
       <SectionContainer>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8">
-          <div>
+          <div className="lg:col-span-8">
             <h1 className="text-3xl md:text-4xl font-extrabold mb-4 text-text-heading">
               {post.tittle}
             </h1>
@@ -143,12 +143,13 @@ export default async function BlogDetailPage({ params }: Props) {
               {dateFormatted} • by Admin
             </div>
 
-            <div className="w-full h-64 sm:h-[380px] relative mb-8 rounded-2xl overflow-hidden shadow-md">
+            <div className="w-full relative mb-8 rounded-2xl overflow-hidden shadow-md bg-white">
               <Image
                 src={getImageUrl(post.images)}
                 alt={post.tittle}
-                fill
-                className="object-cover"
+                width={1200}
+                height={630}
+                className="w-full h-auto object-cover"
                 priority
               />
             </div>

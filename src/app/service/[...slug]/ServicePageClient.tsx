@@ -581,7 +581,15 @@ export default function ServiceLanding({
     },
   ];
 
-  const parsedServiceFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
+  let parsedServiceFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
+  if (parsedServiceFaqs.length === 0) {
+    parsedServiceFaqs = [
+      { question: "How does your assignment writing service work?", answer: "Place your order by uploading your assignment instructions. Our subject matter experts write your paper from scratch following UK university standards." },
+      { question: "Is your assignment help plagiarism free?", answer: "Yes, 100% plagiarism free. Every paper is written from scratch and checked with premium plagiarism detection software before delivery." },
+      { question: "Can I request revisions if needed?", answer: "Absolutely. We offer unlimited free revisions to ensure your complete satisfaction with the delivered assignment." },
+      { question: "How fast can you complete an urgent assignment?", answer: "We handle urgent requests with deadlines as short as 24 hours while maintaining top academic quality." }
+    ];
+  }
 
   return (
     <div className="bg-white">
@@ -1118,14 +1126,6 @@ export default function ServiceLanding({
 
       {/* 8. Dynamic FAQ Accordion */}
       {(() => {
-        const parsedFaqs = normalizeArray(pageData?.faqs || pageData?.faq);
-        const faqsList = parsedFaqs.length > 0 ? parsedFaqs : [
-          { question: "How does your assignment writing service work?", answer: "Place your order by uploading your assignment instructions. Our subject matter experts write your paper from scratch following UK university standards." },
-          { question: "Is your assignment help plagiarism free?", answer: "Yes, 100% plagiarism free. Every paper is written from scratch and checked with premium plagiarism detection software before delivery." },
-          { question: "Can I request revisions if needed?", answer: "Absolutely. We offer unlimited free revisions to ensure your complete satisfaction with the delivered assignment." },
-          { question: "How fast can you complete an urgent assignment?", answer: "We handle urgent requests with deadlines as short as 24 hours while maintaining top academic quality." }
-        ];
-
         return (
           <SectionContainer className="bg-white border-t border-slate-100 py-6 md:py-8 lg:py-10">
             <div className="max-w-4xl mx-auto flex flex-col gap-8">
@@ -1136,7 +1136,7 @@ export default function ServiceLanding({
               </div>
 
               <div className="space-y-4 text-left">
-                {faqsList.map((faq: any, idx: number) => {
+                {parsedServiceFaqs.map((faq: any, idx: number) => {
                   const isOpen = activeFaq === idx;
                   return (
                     <div key={idx} className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
