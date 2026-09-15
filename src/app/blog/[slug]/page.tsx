@@ -21,7 +21,7 @@ import { constructMetadata } from "@/lib/metadata";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
+    const backendUrl = getBaseUrl() || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
     const res = await fetch(`${backendUrl}/api/blogs/${slug}`);
     if (res.ok) {
       const result = await res.json();
@@ -59,7 +59,7 @@ export default async function BlogDetailPage({ params }: Props) {
   let post = null;
   let subjects: any[] = [];
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
+    const backendUrl = getBaseUrl() || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
     const res = await fetch(`${backendUrl}/api/blogs/${slug}`, {
       cache: "no-store",
     });
@@ -74,8 +74,7 @@ export default async function BlogDetailPage({ params }: Props) {
   }
 
   try {
-    const backendUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
+    const backendUrl = getBaseUrl() || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
     const res = await fetch(`${backendUrl}/api/subject-pages`, {
       headers: { Accept: "application/json" },
       cache: "no-store",
