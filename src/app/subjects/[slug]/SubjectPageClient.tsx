@@ -852,8 +852,7 @@ export default function SubjectLanding({
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative min-h-0">
             {/* Left Content Column */}
-            <AnimateIn
-              variant="fadeUp"
+            <div
               className="lg:col-span-7 flex flex-col justify-start items-start text-left z-20 pb-4 lg:pb-0 order-1 relative pt-2"
             >
               {/* Star Badge */}
@@ -967,7 +966,7 @@ export default function SubjectLanding({
                   View Samples <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-            </AnimateIn>
+            </div>
 
             {/* Student Image: centered at the background of the section */}
             <div
@@ -1383,6 +1382,8 @@ export default function SubjectLanding({
                       <button
                         onClick={() => setActiveFaq(isOpen ? null : idx)}
                         className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-bold text-[#0f1b3d] text-sm md:text-base hover:bg-gray-50/50 transition-colors cursor-pointer"
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-answer-${idx}`}
                       >
                         <span className="flex items-center gap-2.5">
                           <HelpCircle className="w-4 h-4 text-[#3f159a] shrink-0" />
@@ -1394,6 +1395,7 @@ export default function SubjectLanding({
                         />
                       </button>
                       <motion.div
+                        id={`faq-answer-${idx}`}
                         initial={false}
                         animate={{
                           height: isOpen ? "auto" : 0,

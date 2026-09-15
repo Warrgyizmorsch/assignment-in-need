@@ -72,14 +72,14 @@ export default function NotFound() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-orange-50/50 blur-[120px] pointer-events-none" />
 
       {/* Header Block */}
-      <AnimateIn variant="fadeDown" className="max-w-[700px] text-center mb-8 relative z-20">
+      <div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0f1b3d] tracking-tight leading-tight mb-3 font-heading">
           Sorry, we couldn't find that page
         </h1>
         <p className="text-sm sm:text-base text-gray-500 font-semibold max-w-[550px] mx-auto leading-relaxed">
           Make sure you've typed the URL correctly or explore the key sections of our website below to get back on track.
         </p>
-      </AnimateIn>
+      </div>
 
       {/* Main interactive diagram block */}
       <div className="w-full max-w-[1100px] relative z-10 my-4">

@@ -135,7 +135,7 @@ export default async function BlogDetailPage({ params }: Props) {
       />
       <SectionContainer>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8">
-          <AnimateIn variant="fadeUp" className="lg:col-span-8">
+          <div>
             <h1 className="text-3xl md:text-4xl font-extrabold mb-4 text-text-heading">
               {post.tittle}
             </h1>
@@ -159,7 +159,7 @@ export default async function BlogDetailPage({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
             </article>
-          </AnimateIn>
+          </div>
 
           <AnimateIn variant="fadeUp" delay={0.15} className="lg:col-span-4">
             <div className="space-y-6 lg:sticky lg:top-24">

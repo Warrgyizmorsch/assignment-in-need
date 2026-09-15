@@ -216,7 +216,7 @@ export default function ContactPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
             {/* Left Column: Intro + Contact Methods */}
-            <AnimateIn variant="fadeUp" className="lg:col-span-6 flex flex-col gap-6 text-left w-full">
+            <div>
               {/* Badge */}
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100 text-[#3f159a] text-[10px] font-extrabold uppercase tracking-widest w-fit mb-1">
                 💬 Get In Touch
@@ -426,7 +426,7 @@ export default function ContactPage() {
                   ))}
                 </div>
               </div>
-            </AnimateIn>
+            </div>
 
             {/* Right Column: Enquiry Form Card */}
             <AnimateIn variant="fadeUp" delay={0.2} className="lg:col-span-6 flex justify-center lg:justify-end items-start w-full">

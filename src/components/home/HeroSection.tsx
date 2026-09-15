@@ -90,10 +90,7 @@ export default function HeroSection() {
         <div className="max-w-[1200px] mx-auto px-4">
           <div className="flex flex-row items-center justify-between gap-8 max-lg:flex-col max-lg:items-center max-lg:gap-8">
             {/* Left Content Column */}
-            <AnimateIn
-              variant="fadeUp"
-              className="flex-1 max-w-[650px] z-[2] max-lg:w-full max-lg:max-w-full max-lg:text-center max-lg:flex-none max-md:text-left max-md:items-start"
-            >
+            <div>
               <div className="inline-flex items-center gap-2.5 bg-transparent mb-3 text-[0.78rem] max-[480px]:text-[0.65rem] font-semibold text-gray-800 max-lg:justify-center max-md:justify-start max-md:flex-nowrap max-md:whitespace-nowrap">
                 <div className="flex bg-green-800 py-[3px] px-1.5 rounded gap-0.5 max-[480px]:py-[2px] max-[480px]:px-1">
                   {[...Array(5)].map((_, i) => (
@@ -210,7 +207,7 @@ export default function HeroSection() {
                   View Our Experts &rarr;
                 </Link>
               </div>
-            </AnimateIn>
+            </div>
 
             {/* Middle Image Column */}
             <AnimateIn

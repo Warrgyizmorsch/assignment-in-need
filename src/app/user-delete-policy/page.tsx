@@ -110,7 +110,7 @@ Thank you.`;
       <section className="relative w-full bg-gradient-to-r from-[#3f159a] to-[#250d5e] text-white py-10 sm:py-14 md:py-16 overflow-hidden">
         <div className="absolute top-0 right-0 w-64 sm:w-80 h-64 sm:h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-[1000px] mx-auto px-4 sm:px-6 text-left relative z-10">
-          <AnimateIn variant="fadeUp">
+          <div>
             {/* Breadcrumbs */}
             <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-purple-200 uppercase tracking-widest mb-3">
               <Link href="/" className="hover:text-white transition-colors">
@@ -126,7 +126,7 @@ Thank you.`;
             <p className="text-xs sm:text-sm text-purple-100 font-semibold max-w-xl leading-relaxed">
               Official policy for requesting account and associated personal data deletion.
             </p>
-          </AnimateIn>
+          </div>
         </div>
       </section>
 

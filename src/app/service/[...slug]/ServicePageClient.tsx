@@ -609,8 +609,7 @@ export default function ServiceLanding({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative min-h-0">
-            <AnimateIn
-              variant="fadeUp"
+            <div
               className="lg:col-span-7 flex flex-col justify-start items-start text-left z-20 pb-4 lg:pb-0 order-1 relative pt-2"
             >
               <div className="w-full max-w-full lg:max-w-[560px] xl:max-w-[600px] flex flex-col items-start relative z-20">
@@ -704,7 +703,7 @@ export default function ServiceLanding({
                   </Link>
                 </div>
               </div>
-            </AnimateIn>
+            </div>
 
             <div
               className="absolute left-[54%] top-[20px] -translate-x-1/2 w-[420px] h-[450px] select-none pointer-events-none hidden lg:block z-0"
@@ -1144,6 +1143,8 @@ export default function ServiceLanding({
                       <button
                         onClick={() => setActiveFaq(isOpen ? null : idx)}
                         className="w-full flex items-center justify-between p-5 text-left font-heading font-extrabold text-sm sm:text-base text-text-heading hover:bg-slate-50 transition-colors outline-none cursor-pointer"
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-answer-${idx}`}
                       >
                         <span>{faq.question}</span>
                         <ChevronDown
@@ -1154,6 +1155,7 @@ export default function ServiceLanding({
                         />
                       </button>
                       <motion.div
+                        id={`faq-answer-${idx}`}
                         initial={false}
                         animate={{
                           height: isOpen ? "auto" : 0,

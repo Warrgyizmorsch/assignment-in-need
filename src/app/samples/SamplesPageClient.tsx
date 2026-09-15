@@ -378,10 +378,7 @@ export default function SamplesPage({ initialCategories = [] }: { initialCategor
           />
         </div>
 
-        <AnimateIn
-          variant="fadeUp"
-          className="lg:w-1/2 relative z-20 text-left"
-        >
+        <div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-purple-700 text-sm font-semibold mb-6">
             <svg
               className="w-4 h-4"
@@ -452,7 +449,7 @@ export default function SamplesPage({ initialCategories = [] }: { initialCategor
               Get Expert Help &rarr;
             </a>
           </div>
-        </AnimateIn>
+        </div>
 
         <AnimateIn
           variant="scaleUp"

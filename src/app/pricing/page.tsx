@@ -516,7 +516,7 @@ export default function PricingPage() {
         />
 
         {/* Hero Left Content */}
-        <AnimateIn variant="fadeUp" className="lg:w-1/2 pt-0 relative z-10 text-left">
+        <div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wide mb-6">
             <FileText className="w-4 h-4 text-purple-700" />
             Get Instant Quote
@@ -558,7 +558,7 @@ export default function PricingPage() {
               className="w-full h-auto drop-shadow-2xl"
             />
           </div>
-        </AnimateIn>
+        </div>
 
         {/* Hero Right Column Quote Form */}
         <AnimateIn

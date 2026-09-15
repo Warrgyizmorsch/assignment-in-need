@@ -238,7 +238,7 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_12%,rgba(255,112,18,0.11),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(105,53,219,0.14),transparent_32%),linear-gradient(135deg,#ffffff_0%,#f8f9fc_55%,#f3edff_100%)]" />
 
       <main className="relative z-10 mx-auto flex w-full max-w-[1000px] justify-center">
-        <AnimateIn variant="scaleUp" className="w-full flex justify-center">
+        <div>
           <div
             className={`auth-panel-container shadow-[0_8px_32px_rgba(25,28,30,0.06)] ${
               isRegister ? "right-panel-active" : isForgot ? "forgot-panel-active" : ""
@@ -536,7 +536,7 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
               </div>
             </div>
           </div>
-        </AnimateIn>
+        </div>
       </main>
 
       <style jsx>{`

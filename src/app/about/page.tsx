@@ -207,10 +207,7 @@ export default function AboutPage() {
           {/* 3.2 HERO */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-6">
             {/* Left Column Content */}
-            <AnimateIn
-              variant="fadeUp"
-              className="lg:col-span-7 flex flex-col gap-6 text-left"
-            >
+            <div>
               {/* Badge */}
               <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#f3f0ff] text-[#3f159a] text-[10px] font-extrabold uppercase tracking-widest w-fit mb-1 shadow-sm">
                 ABOUT ASSIGNMENT IN NEED
@@ -290,7 +287,7 @@ export default function AboutPage() {
                   </Button>
                 </Link>
               </div>
-            </AnimateIn>
+            </div>
 
             {/* Right Column Illustration */}
             <AnimateIn

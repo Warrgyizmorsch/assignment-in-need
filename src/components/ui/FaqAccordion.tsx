@@ -53,6 +53,8 @@ export function FaqAccordion({
                   type="button"
                   onClick={() => setActiveIndex(isOpen ? null : idx)}
                   className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-bold text-[#0f1b3d] text-sm md:text-base hover:bg-slate-50 transition-colors cursor-pointer"
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${idx}`}
                 >
                   <span className="flex items-center gap-2.5">
                     <HelpCircle className="w-4 h-4 text-[#3f159a] shrink-0" />
@@ -65,6 +67,7 @@ export function FaqAccordion({
                   />
                 </button>
                 <motion.div
+                  id={`faq-answer-${idx}`}
                   initial={false}
                   animate={{
                     height: isOpen ? "auto" : 0,

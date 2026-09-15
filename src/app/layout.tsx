@@ -4,7 +4,6 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
-import { CanonicalHeader } from "@/components/layout/CanonicalHeader";
 import { TawkToChat } from "@/components/ui/TawkToChat";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { ReferWidget } from "@/components/ui/ReferWidget";
@@ -27,22 +26,7 @@ export const metadata: Metadata = {
   title: "Assignment Help UK | Human-Written Academic Support",
   description:
     "Need reliable Assignment Help UK? Get human-written essays, reports, coursework, and dissertations from subject specialists who understand UK universities.",
-  keywords: [
-    "assignment help",
-    "assignment help uk",
-    "assignment service",
-    "online assignment help",
-    "assignment helper",
-    "assignment writing services",
-    "assignment help online",
-    "assignment help online uk",
-    "plagiarism-free writing",
-    "case study writing",
-    "business law essays",
-    "nursing assignment help",
-    "engineering report help",
 
-  ],
   robots: {
     index: true,
     follow: true,
@@ -101,7 +85,6 @@ export default function RootLayout({
       className={`${roboto.variable} ${roboto.className}`}
     >
       <head>
-        <CanonicalHeader />
         <Script
           id="chunk-error-handler"
           dangerouslySetInnerHTML={{

@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
         {/* Soft background glow */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-[1000px] mx-auto px-6 text-left relative z-10">
-          <AnimateIn variant="fadeUp">
+          <div>
             {/* Breadcrumbs */}
             <div className="flex items-center gap-1.5 text-[10px] font-bold text-purple-200 uppercase tracking-widest mb-4">
               <Link href="/" className="hover:text-white transition-colors">
@@ -62,7 +62,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-xs md:text-sm text-purple-100 font-semibold max-w-xl">
               At Assignment In Need, we prioritise the security and privacy of our students and clients.
             </p>
-          </AnimateIn>
+          </div>
         </div>
       </section>
 

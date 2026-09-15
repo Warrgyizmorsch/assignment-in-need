@@ -359,10 +359,7 @@ export default function CityDetailPage({
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative min-h-0">
             {/* Left Content Column */}
-            <AnimateIn
-              variant="fadeUp"
-              className="lg:col-span-7 flex flex-col justify-start items-start text-left z-20 pb-4 lg:pb-0 order-1 relative pt-2"
-            >
+            <div>
               {/* Star Badge */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center bg-[#1a6c38] text-white text-[9px] px-1.5 py-0.5 rounded font-black tracking-tight select-none">
@@ -454,7 +451,7 @@ export default function CityDetailPage({
                   View Samples <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-            </AnimateIn>
+            </div>
 
             {/* Student Image - centered at the background */}
             <div

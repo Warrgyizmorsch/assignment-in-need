@@ -319,7 +319,7 @@ export default function ReviewsAndFaq() {
       {/* 1. Replicated Header Banner (Same as Experts page styling) */}
       <section className="znw-hero-section">
         <div className="znw-hero-top">
-          <AnimateIn variant="fadeUp" className="znw-hero-content text-left">
+          <div>
             <span className="znw-badge">⭐ Student Testimonials</span>
             <h1 className="znw-hero-title">
               What Students Say About <br />
@@ -344,7 +344,7 @@ export default function ReviewsAndFaq() {
                 </div>
               ))}
             </div>
-          </AnimateIn>
+          </div>
           <AnimateIn variant="scaleUp" className="znw-hero-image-wrapper hidden lg:flex">
             <img
               src="/new-home-page-images/Writer-Hero-bg.webp"

@@ -315,10 +315,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Main Content Area */}
-          <AnimateIn
-            variant="fadeUp"
-            className="w-full lg:w-2/3 flex flex-col gap-6 text-left"
-          >
+          <div>
             <div>
               <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
                 {sample.type_name || "Assignment Sample"}
@@ -387,7 +384,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
                 </p>
               </div>
             </div>
-          </AnimateIn>
+          </div>
 
           {/* Right Sidebar Form & Widgets */}
           <AnimateIn
