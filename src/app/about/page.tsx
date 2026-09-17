@@ -207,7 +207,7 @@ export default function AboutPage() {
           {/* 3.2 HERO */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-6">
             {/* Left Column Content */}
-            <div>
+            <div className="lg:col-span-7">
               {/* Badge */}
               <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#f3f0ff] text-[#3f159a] text-[10px] font-extrabold uppercase tracking-widest w-fit mb-1 shadow-sm">
                 ABOUT ASSIGNMENT IN NEED

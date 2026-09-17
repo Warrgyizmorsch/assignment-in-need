@@ -359,7 +359,7 @@ export default function CityDetailPage({
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative min-h-0">
             {/* Left Content Column */}
-            <div>
+            <div className="lg:col-span-7 relative z-20 order-1">
               {/* Star Badge */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center bg-[#1a6c38] text-white text-[9px] px-1.5 py-0.5 rounded font-black tracking-tight select-none">
