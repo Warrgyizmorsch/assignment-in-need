@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
+import { X } from "lucide-react";
 import { mapExpertToWriter } from "@/lib/api";
 import { buildPageSchema } from "@/lib/data";
 
@@ -201,7 +202,9 @@ export default function SubjectLanding({
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [samplesList, setSamplesList] = useState<any[]>([]);
-
+  const [showSampleLeadModal, setShowSampleLeadModal] = useState(false);
+  const [pendingSampleLink, setPendingSampleLink] = useState("");
+  const [leadForm, setLeadForm] = useState({ name: '', email: '', phone: '', countryCode: '+44' });
 
   useEffect(() => {
     const fetchSamples = async () => {
@@ -1547,6 +1550,14 @@ export default function SubjectLanding({
                         key={sample.id}
                         href={`/samples/${slug}/${sample.slug}`}
                         className="w-full bg-white border-b border-gray-100 last:border-0 pb-6 last:pb-0 flex flex-col md:flex-row md:items-center justify-between gap-4 group cursor-pointer"
+                        onClick={(e) => {
+                          const hasSubmitted = localStorage.getItem('sample_lead_submitted');
+                          if (!hasSubmitted) {
+                            e.preventDefault();
+                            setPendingSampleLink(`/samples/${slug}/${sample.slug}`);
+                            setShowSampleLeadModal(true);
+                          }
+                        }}
                       >
                         <div className="flex items-start gap-4 flex-1">
                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg ${colorClass}`}>
@@ -1652,12 +1663,15 @@ export default function SubjectLanding({
                 </div>
 
                 <div className="relative z-10 mt-auto pt-2">
-                  <Link
-                    href="/order"
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.dispatchEvent(new CustomEvent('open-quote-modal'));
+                    }}
                     className="btn-shutter-blue-open text-white font-extrabold py-4 px-6 rounded-xl text-[14px] md:text-[15px] uppercase tracking-wider shadow-md transition duration-200 whitespace-nowrap w-full text-center cursor-pointer border-none flex items-center justify-center"
                   >
                     Order Now
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1734,6 +1748,104 @@ export default function SubjectLanding({
           color: #0f1b3d !important;
         }
       `}</style>
+
+      {/* Sample Lead Modal */}
+      <AnimatePresence>
+        {showSampleLeadModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowSampleLeadModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto z-10"
+            >
+              <div className="p-6 md:p-8">
+                <button
+                  onClick={() => setShowSampleLeadModal(false)}
+                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-full text-gray-500 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                
+                <h3 className="text-2xl font-extrabold text-[#0f1b3d] mb-2 font-heading tracking-tight">
+                  Unlock Free Sample
+                </h3>
+                <p className="text-sm text-gray-500 mb-6 font-medium">
+                  Please provide your details to view this high-quality academic sample. You only need to do this once.
+                </p>
+                
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if(!leadForm.name || !leadForm.email || !leadForm.phone) {
+                      toast.error("Please fill in all fields");
+                      return;
+                    }
+                    localStorage.setItem('sample_lead_submitted', 'true');
+                    setShowSampleLeadModal(false);
+                    if(pendingSampleLink) window.location.href = pendingSampleLink;
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Full Name</label>
+                    <input 
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={leadForm.name}
+                      onChange={(e) => setLeadForm({...leadForm, name: e.target.value})}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Email Address</label>
+                    <input 
+                      type="email"
+                      placeholder="Enter your email"
+                      value={leadForm.email}
+                      onChange={(e) => setLeadForm({...leadForm, email: e.target.value})}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">WhatsApp Number</label>
+                    <div className="flex gap-2">
+                      <select 
+                        value={leadForm.countryCode}
+                        onChange={(e) => setLeadForm({...leadForm, countryCode: e.target.value})}
+                        className="w-[110px] px-2 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all"
+                      >
+                        {COUNTRY_CODES.map(c => (
+                          <option key={c.label} value={c.value}>{c.label}</option>
+                        ))}
+                      </select>
+                      <input 
+                        type="tel"
+                        placeholder="WhatsApp number"
+                        value={leadForm.phone}
+                        onChange={(e) => setLeadForm({...leadForm, phone: e.target.value})}
+                        className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all"
+                      />
+                    </div>
+                  </div>
+                  
+                  <button type="submit" className="w-full mt-2 btn-shutter-blue-open text-white font-extrabold py-3.5 rounded-xl text-[14px] uppercase tracking-wider shadow-lg transition duration-200 border-none cursor-pointer flex items-center justify-center">
+                    View Sample Now
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
