@@ -85,6 +85,7 @@ import {
   Network,
   PaintRoller,
   HelpCircle,
+  ArrowDown,
 } from "lucide-react";
 import { AnimateIn } from "@/components/ui/AnimateIn";
 import { QuoteForm } from "@/components/ui/QuoteForm";
@@ -200,6 +201,7 @@ export default function SubjectLanding({
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [samplesList, setSamplesList] = useState<any[]>([]);
+
 
   useEffect(() => {
     const fetchSamples = async () => {
@@ -1505,63 +1507,93 @@ export default function SubjectLanding({
       })()}
 
       {/* Subject Samples Section */}
-      {samplesList && samplesList.length > 0 && (
-        <section className="py-10 md:py-14 bg-white border-b border-gray-50 overflow-hidden">
-          <div className="max-w-[1250px] mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-[22px] md:text-[28px] font-[900] text-[#0f1b3d] tracking-tight font-heading mb-2">
-                Free {subject.name} Samples With Academic Features
+      {samplesList && (
+        <section className="pt-6 pb-10 md:pt-10 md:pb-16 bg-[#f4f7fb] border-b border-gray-50 overflow-hidden relative">
+          <div className="max-w-[1200px] mx-auto px-4">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 className="text-[22px] md:text-[28px] font-[900] text-[#0f1b3d] tracking-tight font-heading">
+                Free Samples with Advanced Academic Features
               </h2>
-              <p className="text-xs text-gray-500 font-medium">
-                Review verified solutions and explore the premium academic features you get with every order.
-              </p>
             </div>
             
-            <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+            <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-stretch justify-center">
               {/* Left Column - Vertical Samples List */}
               <div 
-                className="w-full lg:w-2/3 flex flex-col gap-3 h-[500px] overflow-y-auto pr-3 pb-2 scroll-smooth"
-                style={{ scrollbarWidth: "thin", scrollbarColor: "#e5e7eb transparent" }}
+                className="w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-auto lg:h-[550px] overflow-y-auto scroll-smooth custom-scrollbar relative z-10 flex flex-col justify-between"
+                style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}
               >
-                {samplesList.map((sample: any) => {
-                  const words = ((sample.id * 7) % 1500) + 1000;
-                  const downloads = ((sample.id * 13) % 2000) + 1200;
-                  
-                  return (
-                    <Link
-                      key={sample.id}
-                      href={`/samples/${slug}/${sample.slug}`}
-                      className="w-full shrink-0 bg-[#faf9fe] border border-blue-50 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-blue-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col group cursor-pointer text-left"
-                    >
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                        <div className="flex flex-col gap-1">
-                          <h3 className="font-extrabold text-[#0f1b3d] text-[15px] group-hover:text-blue-600 transition-colors leading-snug line-clamp-1 font-heading">
-                            {sample.title}
-                          </h3>
-                          <div className="flex flex-wrap items-center gap-2 text-[12px] text-gray-500 font-medium mt-1">
-                            <span>
-                              Type: <span className="text-gray-700">{sample.type_name || "Assignment"}</span>
-                            </span>
-                            <span className="text-gray-300">|</span>
-                            <span>
-                              Downloads: <span className="text-gray-700">{downloads}</span>
-                            </span>
-                            <span className="text-gray-300">|</span>
-                            <span>
-                              Words: <span className="text-gray-700">{words}</span>
+                <div className="flex flex-col gap-6">
+                  {samplesList.length === 0 ? (
+                    Array(5).fill(0).map((_, i) => (
+                      <div key={i} className="w-full h-32 bg-gray-100 rounded-xl animate-pulse"></div>
+                    ))
+                  ) : (
+                    samplesList.slice(0, 5).map((sample: any, idx: number) => {
+                    const words = ((sample.id * 7) % 1500) + 1000;
+                    const downloads = ((sample.id * 13) % 2000) + 1200;
+                    const initials = (sample.title || 'Sample').split(' ').map((w:string)=>w[0]).join('').substring(0, 2).toUpperCase() || 'SA';
+                    
+                    const colors = [
+                      'bg-[#FFD12B] text-black', 
+                      'bg-[#9EBBF7] text-black', 
+                      'bg-[#FFB5CA] text-black', 
+                      'bg-[#28E0B3] text-black', 
+                      'bg-[#D0B3FF] text-black'
+                    ];
+                    const colorClass = colors[idx % colors.length];
+
+                    return (
+                      <Link
+                        key={sample.id}
+                        href={`/samples/${slug}/${sample.slug}`}
+                        className="w-full bg-white border-b border-gray-100 last:border-0 pb-6 last:pb-0 flex flex-col md:flex-row md:items-center justify-between gap-4 group cursor-pointer"
+                      >
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg ${colorClass}`}>
+                            {initials}
+                          </div>
+                          <div className="flex flex-col gap-1.5 w-full">
+                            <h3 className="font-extrabold text-[#0f1b3d] text-[15px] group-hover:text-[#3B28CC] transition-colors leading-snug line-clamp-2">
+                              {sample.title}
+                            </h3>
+                            <div className="flex flex-wrap items-center gap-3 text-[12px] font-medium mt-1 w-full max-w-sm">
+                              <span className="bg-gray-50 border border-gray-200 text-gray-700 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                {sample.type_name || 'Assignment'}
+                              </span>
+                              
+                              <div className="flex-1 min-w-[80px] h-1.5 bg-gray-100 rounded-full overflow-hidden relative">
+                                <div className="absolute top-0 left-0 h-full bg-[#3B28CC] rounded-full" style={{ width: `${Math.max(30, (downloads / 3000) * 100)}%` }}></div>
+                              </div>
+                              
+                              <span className="text-gray-500 whitespace-nowrap">
+                                {downloads.toLocaleString()} downloads
+                              </span>
+                            </div>
+                            <span className="text-[12px] text-gray-500 font-medium">
+                              {words.toLocaleString()} words
                             </span>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+                        
+                        <div className="shrink-0 flex items-center gap-2 text-[#3B28CC] font-bold text-sm bg-white border border-[#3B28CC]/20 px-4 py-2 rounded-full group-hover:bg-[#3B28CC] group-hover:text-white transition-all self-start md:self-center">
+                          Download <ArrowDown className="w-4 h-4" />
+                        </div>
+                      </Link>
+                    );
+                  }))}
+                </div>
+                
+                {/* Browse All Button */}
+                <div className="mt-8 pt-6 border-t border-gray-100 text-center relative z-10">
+                   <Link href="/samples" className="inline-flex items-center justify-center gap-2 text-[#3B28CC] font-extrabold text-[15px] hover:text-[#0f1b3d] transition-colors group">
+                      Browse all samples
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                   </Link>
+                </div>
               </div>
 
-              {/* Right Column - Need Help Promo Box */}
-              <div className="w-full lg:w-1/3 lg:h-[500px] bg-[#faf9fe] border border-purple-100 rounded-2xl p-7 shadow-sm sticky top-6 flex flex-col justify-between">
-                
+              {/* Right Column - Original Need Help Promo Box restored */}
+              <div className="w-full lg:w-1/3 lg:h-[550px] bg-[#faf9fe] border border-purple-100 rounded-2xl p-7 shadow-sm sticky top-6 flex flex-col justify-between z-10">
                 <div className="relative z-10">
                   <div className="inline-flex items-center gap-1.5 bg-purple-100 text-[#3f159a] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-5">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
@@ -1576,7 +1608,7 @@ export default function SubjectLanding({
                     Don't let tight deadlines stress you out. Hire a PhD-qualified expert to write your assignment from scratch.
                   </p>
                   
-                  <div className="space-y-4 mb-8">
+                  <div className="space-y-6 mb-8">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
                         <span className="text-xl">⭐</span>
@@ -1606,19 +1638,25 @@ export default function SubjectLanding({
                         <div className="text-[11px] text-gray-500">Zero plagiarism guaranteed</div>
                       </div>
                     </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
+                        <span className="text-xl">💬</span>
+                      </div>
+                      <div>
+                        <div className="text-[13px] font-bold text-[#0f1b3d]">24/7 Expert Support</div>
+                        <div className="text-[11px] text-gray-500">Always here to help you</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div className="relative z-10 mt-auto pt-2">
                   <Link
-                    href="#order-now"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('order-form')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="flex items-center justify-center gap-2 w-full text-center bg-[#ffc107] hover:bg-[#ffb300] text-[#0f1b3d] font-bold text-[15px] py-4 rounded-xl transition-all shadow-sm hover:shadow-md"
+                    href="/order"
+                    className="btn-shutter-blue-open text-white font-extrabold py-4 px-6 rounded-xl text-[14px] md:text-[15px] uppercase tracking-wider shadow-md transition duration-200 whitespace-nowrap w-full text-center cursor-pointer border-none flex items-center justify-center"
                   >
-                    Hire an Expert Now
+                    Order Now
                   </Link>
                 </div>
               </div>
