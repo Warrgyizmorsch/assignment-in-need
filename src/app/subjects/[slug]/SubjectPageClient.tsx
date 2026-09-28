@@ -199,6 +199,73 @@ export default function SubjectLanding({
   const [loading, setLoading] = useState(!initialPageData);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [samplesList, setSamplesList] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSamples = async () => {
+      if (!slug) return;
+      try {
+        let categoryId: string | null = null;
+        try {
+          const catRes = await fetch("/api/sample-categories");
+          if (catRes.ok) {
+            const catJson = await catRes.json();
+            if (catJson.success && Array.isArray(catJson.data)) {
+              const cleanSubject = (subject.name || "").toLowerCase().trim();
+              const slugClean = slug.replace(/-assignment-writing-help$/, "").replace(/-assignment-help$/, "").replace(/-assignment$/, "").replace(/-help$/, "").replace(/-/g, " ").trim().toLowerCase();
+              
+              const matched = catJson.data.find((catItem: any) => {
+                const catName = (catItem.name || "").toLowerCase().trim();
+                const cleanCatName = catName.replace(/-/g, " ").trim();
+                
+                if (cleanCatName === cleanSubject || cleanCatName === slugClean) return true;
+                if (cleanCatName.includes(cleanSubject) || cleanSubject.includes(cleanCatName)) return true;
+                if (cleanCatName.includes(slugClean) || slugClean.includes(cleanCatName)) return true;
+                return false;
+              });
+              if (matched) {
+                categoryId = String(matched.id);
+              }
+            }
+          }
+        } catch (e) {}
+
+        const categoryParamsToTry = [];
+        if (categoryId !== null) {
+          categoryParamsToTry.push(categoryId);
+        }
+        categoryParamsToTry.push(slug);
+        const cleanSlugParam = slug.replace(/-assignment-writing-help$/, "").replace(/-assignment-help$/, "").replace(/-assignment$/, "").replace(/-help$/, "");
+        categoryParamsToTry.push(cleanSlugParam);
+
+        let finalSamples: any[] = [];
+        
+        for (const catParam of categoryParamsToTry) {
+          try {
+            const response = await fetch(`/api/samples?category=${encodeURIComponent(catParam)}&page=1`);
+            if (response.ok) {
+              const json = await response.json();
+              if (json.success && json.data && json.data.data) {
+                const list = json.data.data || [];
+                if (list.length > 0) {
+                  finalSamples = list;
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+        
+        setSamplesList(finalSamples);
+
+      } catch (e) {
+        console.error("Failed to load samples for subject page:", e);
+      }
+    };
+    fetchSamples();
+  }, [slug, subject.name]);
 
   // Map backend helper to match Writer model
   const mapExpertToWriterLocal = (expert: any) => {
@@ -1436,6 +1503,129 @@ export default function SubjectLanding({
           </section>
         );
       })()}
+
+      {/* Subject Samples Section */}
+      {samplesList && samplesList.length > 0 && (
+        <section className="py-10 md:py-14 bg-white border-b border-gray-50 overflow-hidden">
+          <div className="max-w-[1250px] mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 className="text-[22px] md:text-[28px] font-[900] text-[#0f1b3d] tracking-tight font-heading mb-2">
+                Free {subject.name} Samples With Academic Features
+              </h2>
+              <p className="text-xs text-gray-500 font-medium">
+                Review verified solutions and explore the premium academic features you get with every order.
+              </p>
+            </div>
+            
+            <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+              {/* Left Column - Vertical Samples List */}
+              <div 
+                className="w-full lg:w-2/3 flex flex-col gap-3 h-[500px] overflow-y-auto pr-3 pb-2 scroll-smooth"
+                style={{ scrollbarWidth: "thin", scrollbarColor: "#e5e7eb transparent" }}
+              >
+                {samplesList.map((sample: any) => {
+                  const words = ((sample.id * 7) % 1500) + 1000;
+                  const downloads = ((sample.id * 13) % 2000) + 1200;
+                  
+                  return (
+                    <Link
+                      key={sample.id}
+                      href={`/samples/${slug}/${sample.slug}`}
+                      className="w-full shrink-0 bg-[#faf9fe] border border-blue-50 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-blue-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col group cursor-pointer text-left"
+                    >
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                        <div className="flex flex-col gap-1">
+                          <h3 className="font-extrabold text-[#0f1b3d] text-[15px] group-hover:text-blue-600 transition-colors leading-snug line-clamp-1 font-heading">
+                            {sample.title}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-2 text-[12px] text-gray-500 font-medium mt-1">
+                            <span>
+                              Type: <span className="text-gray-700">{sample.type_name || "Assignment"}</span>
+                            </span>
+                            <span className="text-gray-300">|</span>
+                            <span>
+                              Downloads: <span className="text-gray-700">{downloads}</span>
+                            </span>
+                            <span className="text-gray-300">|</span>
+                            <span>
+                              Words: <span className="text-gray-700">{words}</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Right Column - Need Help Promo Box */}
+              <div className="w-full lg:w-1/3 lg:h-[500px] bg-[#faf9fe] border border-purple-100 rounded-2xl p-7 shadow-sm sticky top-6 flex flex-col justify-between">
+                
+                <div className="relative z-10">
+                  <div className="inline-flex items-center gap-1.5 bg-purple-100 text-[#3f159a] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    Experts Available Now
+                  </div>
+                  
+                  <h3 className="font-extrabold text-[#0f1b3d] text-[22px] md:text-[24px] font-heading leading-tight mb-3">
+                    Struggling with {subject.name}?
+                  </h3>
+                  
+                  <p className="text-gray-600 text-[13px] font-medium leading-relaxed mb-6">
+                    Don't let tight deadlines stress you out. Hire a PhD-qualified expert to write your assignment from scratch.
+                  </p>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
+                        <span className="text-xl">⭐</span>
+                      </div>
+                      <div>
+                        <div className="text-[13px] font-bold text-[#0f1b3d]">4.9/5 Average Rating</div>
+                        <div className="text-[11px] text-gray-500">Trusted by 10,000+ students</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
+                        <span className="text-xl">⚡</span>
+                      </div>
+                      <div>
+                        <div className="text-[13px] font-bold text-[#0f1b3d]">Fastest Turnaround</div>
+                        <div className="text-[11px] text-gray-500">Delivery in as little as 3 hours</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
+                        <span className="text-xl">🛡️</span>
+                      </div>
+                      <div>
+                        <div className="text-[13px] font-bold text-[#0f1b3d]">100% Original Work</div>
+                        <div className="text-[11px] text-gray-500">Zero plagiarism guaranteed</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative z-10 mt-auto pt-2">
+                  <Link
+                    href="#order-now"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('order-form')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="flex items-center justify-center gap-2 w-full text-center bg-[#ffc107] hover:bg-[#ffb300] text-[#0f1b3d] font-bold text-[15px] py-4 rounded-xl transition-all shadow-sm hover:shadow-md"
+                  >
+                    Hire an Expert Now
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Custom Stylesheet for Select Box arrows and custom focus styles matching HeroSection.tsx */}
       <style>{`

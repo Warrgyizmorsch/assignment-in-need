@@ -83,6 +83,7 @@ export default function RootLayout({
       lang="en"
       data-scroll-behavior="smooth"
       className={`${roboto.variable} ${roboto.className}`}
+      suppressHydrationWarning
     >
       <head>
         <Script
@@ -158,7 +159,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           }}
         />
       </head>
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen" suppressHydrationWarning>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe

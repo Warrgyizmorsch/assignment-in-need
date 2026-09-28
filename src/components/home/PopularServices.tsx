@@ -207,8 +207,8 @@ function ServiceTile({
   
 
   const imageSize = isFeature
-    ? "absolute bottom-[-15%] right-[-15%] w-[100%] max-h-[70%]"
-    : "absolute bottom-[-35px] right-[-35px] w-[62%] max-h-[80%]";
+    ? "absolute bottom-[-15%] right-[-15%] w-[100%] h-auto max-h-[70%]"
+    : "absolute bottom-[-35px] right-[-35px] w-[62%] h-auto max-h-[80%]";
   const minHeight = isFeature
     ? "min-h-[320px] md:min-h-[380px]"
     : "min-h-[150px] md:min-h-[180px]";
