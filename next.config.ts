@@ -61,6 +61,11 @@ const nextConfig: NextConfig = {
         destination: "https://www.assignmentinneed.co.uk/:path*",
         permanent: true,
       },
+      {
+        source: "/subject/:path*",
+        destination: "/subjects/:path*",
+        permanent: true,
+      },
     ];
   },
   async headers() {
