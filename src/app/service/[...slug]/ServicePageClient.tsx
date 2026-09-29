@@ -132,18 +132,19 @@ export default function ServiceLanding({
   const [showSampleLeadModal, setShowSampleLeadModal] = useState(false);
   const [pendingSampleLink, setPendingSampleLink] = useState("");
   const [leadForm, setLeadForm] = useState({ name: '', email: '', phone: '', countryCode: '+44' });
+  const [isSamplesHovered, setIsSamplesHovered] = useState(false);
 
   const samplesPerPage = 5;
   const totalSamplePages = Math.ceil(samplesList.length / samplesPerPage);
 
   // Auto-rotate samples every 3.5s
   useEffect(() => {
-    if (totalSamplePages <= 1) return;
+    if (totalSamplePages <= 1 || isSamplesHovered) return;
     const interval = setInterval(() => {
       setSamplesPageIndex((prev) => (prev + 1) % totalSamplePages);
     }, 3500);
     return () => clearInterval(interval);
-  }, [totalSamplePages]);
+  }, [totalSamplePages, isSamplesHovered]);
 
   // Fetch samples
   useEffect(() => {
@@ -1256,7 +1257,11 @@ export default function ServiceLanding({
 
             <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-stretch justify-center">
               {/* Left Column - Samples List (no scroller, 5 at a time, auto-rotate) */}
-              <div className="w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative z-10 flex flex-col justify-between">
+              <div 
+                className="w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative z-10 flex flex-col justify-between"
+                onMouseEnter={() => setIsSamplesHovered(true)}
+                onMouseLeave={() => setIsSamplesHovered(false)}
+              >
                 <div className="flex flex-col gap-6">
                   {samplesList.slice(samplesPageIndex * samplesPerPage, (samplesPageIndex + 1) * samplesPerPage).map((sample: any, idx: number) => {
                     const words = ((sample.id * 7) % 1500) + 1000;
