@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { fetchBackend } from "@/lib/backend-fetch";
 
+export const revalidate = 3600;
+
 const BACKEND_URL = "https://ain.warrgyizmorsch.com";
 
 export async function GET(request: Request) {
@@ -17,7 +19,6 @@ export async function GET(request: Request) {
       headers: {
         Accept: "application/json",
       },
-      cache: "no-store",
     });
 
     const text = await response.text();
@@ -39,9 +40,7 @@ export async function GET(request: Request) {
 
     try {
       const parsed = JSON.parse(text);
-      return NextResponse.json(parsed, {
-        headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
-      });
+      return NextResponse.json(parsed);
     } catch {
       return NextResponse.json(
         {

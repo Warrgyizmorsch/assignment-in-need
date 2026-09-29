@@ -99,10 +99,12 @@ export default function SubjectLanding({
   initialPageData = null,
   initialExperts = [],
   initialReviews = [],
+  initialSamples = [],
 }: {
   initialPageData?: any;
   initialExperts?: any[];
   initialReviews?: any[];
+  initialSamples?: any[];
 }) {
   const params = useParams();
   const rawSlug = params?.slug;
@@ -201,14 +203,15 @@ export default function SubjectLanding({
   const [loading, setLoading] = useState(!initialPageData);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [samplesList, setSamplesList] = useState<any[]>([]);
+  const [samplesList, setSamplesList] = useState<any[]>(initialSamples);
   const [showSampleLeadModal, setShowSampleLeadModal] = useState(false);
   const [pendingSampleLink, setPendingSampleLink] = useState("");
   const [leadForm, setLeadForm] = useState({ name: '', email: '', phone: '', countryCode: '+44' });
+  const [isSamplesLoading, setIsSamplesLoading] = useState(initialSamples.length === 0);
 
   useEffect(() => {
     const fetchSamples = async () => {
-      if (!slug) return;
+      if (!slug || initialSamples.length > 0) { setIsSamplesLoading(false); return; }
       try {
         let categoryId: string | null = null;
         try {
@@ -264,8 +267,10 @@ export default function SubjectLanding({
         }
         
         setSamplesList(finalSamples);
+        setIsSamplesLoading(false);
 
       } catch (e) {
+        setIsSamplesLoading(false);
         console.error("Failed to load samples for subject page:", e);
       }
     };
@@ -1510,7 +1515,7 @@ export default function SubjectLanding({
       })()}
 
       {/* Subject Samples Section */}
-      {samplesList && (
+      {samplesList && samplesList.length > 0 && (
         <section className="pt-6 pb-10 md:pt-10 md:pb-16 bg-[#f4f7fb] border-b border-gray-50 overflow-hidden relative">
           <div className="max-w-[1200px] mx-auto px-4">
             <div className="text-center mb-6 md:mb-8">
@@ -1522,16 +1527,11 @@ export default function SubjectLanding({
             <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-stretch justify-center">
               {/* Left Column - Vertical Samples List */}
               <div 
-                className="w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-auto lg:h-[550px] overflow-y-auto scroll-smooth custom-scrollbar relative z-10 flex flex-col justify-between"
-                style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}
+                className={`w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-auto ${samplesList.length > 3 ? 'lg:h-[580px] overflow-y-auto scroll-smooth custom-scrollbar' : ''} relative z-10 flex flex-col`}
+                style={samplesList.length > 3 ? { scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' } : {}}
               >
                 <div className="flex flex-col gap-6">
-                  {samplesList.length === 0 ? (
-                    Array(5).fill(0).map((_, i) => (
-                      <div key={i} className="w-full h-32 bg-gray-100 rounded-xl animate-pulse"></div>
-                    ))
-                  ) : (
-                    samplesList.slice(0, 5).map((sample: any, idx: number) => {
+                  {samplesList.slice(0, 5).map((sample: any, idx: number) => {
                     const words = ((sample.id * 7) % 1500) + 1000;
                     const downloads = ((sample.id * 13) % 2000) + 1200;
                     const initials = (sample.title || 'Sample').split(' ').map((w:string)=>w[0]).join('').substring(0, 2).toUpperCase() || 'SA';
@@ -1591,7 +1591,7 @@ export default function SubjectLanding({
                         </div>
                       </Link>
                     );
-                  }))}
+                  })}
                 </div>
                 
                 {/* Browse All Button */}
@@ -1604,74 +1604,58 @@ export default function SubjectLanding({
               </div>
 
               {/* Right Column - Original Need Help Promo Box restored */}
-              <div className="w-full lg:w-1/3 lg:h-[550px] bg-[#faf9fe] border border-purple-100 rounded-2xl p-7 shadow-sm sticky top-6 flex flex-col justify-between z-10">
-                <div className="relative z-10">
-                  <div className="inline-flex items-center gap-1.5 bg-purple-100 text-[#3f159a] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-5">
+              <div className={`w-full lg:w-1/3 ${samplesList.length > 3 ? 'lg:h-[580px]' : ''} bg-gradient-to-b from-[#faf9fe] to-[#f4f2fd] border border-purple-100 rounded-3xl p-6 lg:p-8 shadow-sm sticky top-6 flex flex-col justify-between z-10 overflow-hidden`}>
+                {/* Background decorative elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-200/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+                <div className="relative z-10 flex flex-col h-full flex-1">
+                  <div className="inline-flex items-center gap-1.5 bg-white shadow-sm border border-purple-100 text-[#3f159a] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-6 w-fit">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                     Experts Available Now
                   </div>
                   
-                  <h3 className="font-extrabold text-[#0f1b3d] text-[22px] md:text-[24px] font-heading leading-tight mb-3">
+                  <h3 className="font-extrabold text-[#0f1b3d] text-[24px] lg:text-[26px] font-heading leading-tight mb-4">
                     Struggling with {subject.name}?
                   </h3>
                   
-                  <p className="text-gray-600 text-[13px] font-medium leading-relaxed mb-6">
+                  <p className="text-gray-600 text-[14px] font-medium leading-relaxed mb-6">
                     Don't let tight deadlines stress you out. Hire a PhD-qualified expert to write your assignment from scratch.
                   </p>
                   
-                  <div className="space-y-6 mb-8">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
-                        <span className="text-xl">⭐</span>
-                      </div>
-                      <div>
-                        <div className="text-[13px] font-bold text-[#0f1b3d]">4.9/5 Average Rating</div>
-                        <div className="text-[11px] text-gray-500">Trusted by 10,000+ students</div>
-                      </div>
+                  <div className="flex-1 flex flex-col justify-center gap-4 mb-5 mt-2">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">⭐</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">4.9/5 Average Rating</div><div className="text-[11px] text-gray-500 font-medium">Trusted by 10,000+ students</div></div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
-                        <span className="text-xl">⚡</span>
-                      </div>
-                      <div>
-                        <div className="text-[13px] font-bold text-[#0f1b3d]">Fastest Turnaround</div>
-                        <div className="text-[11px] text-gray-500">Delivery in as little as 3 hours</div>
-                      </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">⚡</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">Fastest Turnaround</div><div className="text-[11px] text-gray-500 font-medium">Delivery in as little as 3 hours</div></div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
-                        <span className="text-xl">🛡️</span>
-                      </div>
-                      <div>
-                        <div className="text-[13px] font-bold text-[#0f1b3d]">100% Original Work</div>
-                        <div className="text-[11px] text-gray-500">Zero plagiarism guaranteed</div>
-                      </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">🛡️</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">100% Original Work</div><div className="text-[11px] text-gray-500 font-medium">Zero plagiarism guaranteed</div></div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50">
-                        <span className="text-xl">💬</span>
-                      </div>
-                      <div>
-                        <div className="text-[13px] font-bold text-[#0f1b3d]">24/7 Expert Support</div>
-                        <div className="text-[11px] text-gray-500">Always here to help you</div>
-                      </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">💬</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">24/7 Expert Support</div><div className="text-[11px] text-gray-500 font-medium">Always here to help you</div></div>
                     </div>
                   </div>
-                </div>
-
-                <div className="relative z-10 mt-auto pt-2">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.dispatchEvent(new CustomEvent('open-quote-modal'));
-                    }}
-                    className="btn-shutter-blue-open text-white font-extrabold py-4 px-6 rounded-xl text-[14px] md:text-[15px] uppercase tracking-wider shadow-md transition duration-200 whitespace-nowrap w-full text-center cursor-pointer border-none flex items-center justify-center"
-                  >
-                    Order Now
-                  </button>
+                  
+                  <div className="relative z-10 mt-auto pt-2">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.dispatchEvent(new CustomEvent('open-quote-modal'));
+                      }}
+                      className="w-full btn-shutter-blue-open text-white h-[50px] rounded-xl font-extrabold text-[14px] tracking-wide flex items-center justify-center shadow-[0_4px_14px_rgba(59,40,204,0.3)] hover:shadow-[0_6px_20px_rgba(59,40,204,0.4)] transition-all cursor-pointer border-none"
+                    >
+                      ORDER NOW
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

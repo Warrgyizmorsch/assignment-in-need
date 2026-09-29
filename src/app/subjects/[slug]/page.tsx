@@ -58,12 +58,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SubjectPage({ params }: Props) {
   const { slug } = await params;
   const initialData = await getFreshSubjectPage(slug);
+
+  // Server-side samples fetch for instant loading
+  let initialSamples: any[] = [];
+  try {
+    const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
+    const cleanSlug = slug.replace(/-assignment-writing-help$/, "").replace(/-assignment-help$/, "").replace(/-assignment$/, "").replace(/-help$/, "");
+
+    // Try fetching by slug variants in parallel
+    const categoryParamsToTry = Array.from(new Set([slug, cleanSlug]));
+    const fetchPromises = categoryParamsToTry.map(catParam => 
+      fetch(`${BACKEND_URL}/api/samples?category=${encodeURIComponent(catParam)}&page=1&limit=100`, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(5000),
+      }).then(res => res.ok ? res.json() : null).catch(() => null)
+    );
+
+    const results = await Promise.all(fetchPromises);
+    for (const json of results) {
+      const list = json?.data?.data || [];
+      if (list.length > 0) { 
+        initialSamples = list; 
+        break; 
+      }
+    }
+  } catch (e) {}
+
   return (
     <SubjectPageClient
       key={canonicalSubjectPath(slug)}
       initialPageData={initialData?.page || null}
       initialExperts={initialData?.experts || []}
       initialReviews={initialData?.reviews || []}
+      initialSamples={initialSamples}
     />
   );
 }

@@ -44,18 +44,22 @@ export const getFreshSubjectPage = cache(
       new Set([canonicalSubjectSlug(slug), subjectDataSlug(slug)]),
     );
 
-    for (const candidate of candidates) {
-      const response = await fetchBackend(
+    const fetchPromises = candidates.map(candidate => 
+      fetchBackend(
         `${CONTENT_BACKEND_URL}/api/subject-pages/subject/${encodeURIComponent(candidate)}?_fresh=${Date.now()}`,
         {
           headers: { Accept: "application/json" },
-          signal: AbortSignal.timeout(15000),
+          signal: AbortSignal.timeout(5000), // Reduced timeout to 5s to avoid huge delays
         },
-      ).catch(() => null);
+      ).then(res => res?.ok ? res.json() : null).catch(() => null)
+    );
 
-      if (!response?.ok) continue;
-      const payload = normalizePayload(await response.json().catch(() => null));
-      if (payload) return payload;
+    const results = await Promise.all(fetchPromises);
+    for (const data of results) {
+      if (data) {
+        const payload = normalizePayload(data);
+        if (payload) return payload;
+      }
     }
 
     return null;

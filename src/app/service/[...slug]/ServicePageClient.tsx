@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { QuoteForm } from "@/components/ui/QuoteForm";
@@ -33,6 +34,8 @@ import {
   ArrowRight,
   Star,
   Headset,
+  ArrowDown,
+  X,
   Heart,
 } from "lucide-react";
 import {
@@ -40,6 +43,20 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/ui/AnimateIn";
+import { getCountries, getCountryCallingCode } from "react-phone-number-input";
+import en from "react-phone-number-input/locale/en.json";
+
+const SAMPLE_COUNTRY_CODES = getCountries()
+  .map((country) => {
+    const code = getCountryCallingCode(country);
+    const name = (en as any)[country] || country;
+    return { label: `+${code} (${country === "GB" ? "UK" : name})`, value: `+${code}`, country };
+  })
+  .sort((a, b) => {
+    if (a.country === "GB") return -1;
+    if (b.country === "GB") return 1;
+    return a.label.localeCompare(b.label);
+  });
 
 // NOTE: these are now ONLY used when the backend genuinely has nothing
 // configured for a field. They must never override real API data.
@@ -107,6 +124,56 @@ export default function ServiceLanding({
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const router = useRouter();
+
+  // Samples state
+  const [samplesList, setSamplesList] = useState<any[]>([]);
+  const [samplesPageIndex, setSamplesPageIndex] = useState(0);
+  const [isSamplesLoading, setIsSamplesLoading] = useState(true);
+  const [showSampleLeadModal, setShowSampleLeadModal] = useState(false);
+  const [pendingSampleLink, setPendingSampleLink] = useState("");
+  const [leadForm, setLeadForm] = useState({ name: '', email: '', phone: '', countryCode: '+44' });
+
+  const samplesPerPage = 5;
+  const totalSamplePages = Math.ceil(samplesList.length / samplesPerPage);
+
+  // Auto-rotate samples every 3.5s
+  useEffect(() => {
+    if (totalSamplePages <= 1) return;
+    const interval = setInterval(() => {
+      setSamplesPageIndex((prev) => (prev + 1) % totalSamplePages);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [totalSamplePages]);
+
+  // Fetch samples
+  useEffect(() => {
+    const fetchSamples = async () => {
+      if (!fullSlug) return;
+      try {
+        const categoryParamsToTry = [fullSlug, fullSlug.split('/').pop() || fullSlug];
+        let finalSamples: any[] = [];
+        for (const catParam of categoryParamsToTry) {
+          try {
+            const response = await fetch(`/api/samples?category=${encodeURIComponent(catParam)}&page=1&limit=100`);
+            if (response.ok) {
+              const json = await response.json();
+              const list = json.data?.data || [];
+              if (list.length > 0) { finalSamples = list; break; }
+            }
+          } catch (e) { continue; }
+        }
+        if (finalSamples.length === 0) {
+          const res = await fetch(`/api/samples?page=1&limit=100`);
+          if (res.ok) { const j = await res.json(); finalSamples = j.data?.data || []; }
+        }
+        setSamplesList(finalSamples);
+        setIsSamplesLoading(false);
+      } catch (e) {
+        setIsSamplesLoading(false);
+      }
+    };
+    fetchSamples();
+  }, [fullSlug]);
 
   useEffect(() => {
     const fetchServicePage = async () => {
@@ -1177,7 +1244,169 @@ export default function ServiceLanding({
         );
       })()}
 
-      {/* 9. Bottom Stats Strip */}
+      {/* 9. Samples Section */}
+      {samplesList && samplesList.length > 0 && (
+        <section className="pt-6 pb-10 md:pt-10 md:pb-16 bg-[#f4f7fb] border-b border-gray-50 overflow-hidden relative">
+          <div className="max-w-[1200px] mx-auto px-4">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 className="text-[22px] md:text-[28px] font-[900] text-[#0f1b3d] tracking-tight font-heading">
+                Free Samples with Advanced Academic Features
+              </h2>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-stretch justify-center">
+              {/* Left Column - Samples List (no scroller, 5 at a time, auto-rotate) */}
+              <div className="w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative z-10 flex flex-col justify-between">
+                <div className="flex flex-col gap-6">
+                  {samplesList.slice(samplesPageIndex * samplesPerPage, (samplesPageIndex + 1) * samplesPerPage).map((sample: any, idx: number) => {
+                    const words = ((sample.id * 7) % 1500) + 1000;
+                    const downloads = ((sample.id * 13) % 2000) + 1200;
+                    const initials = (sample.title || 'Sample').split(' ').map((w: string) => w[0]).join('').substring(0, 2).toUpperCase() || 'SA';
+                    const colors = ['bg-[#FFD12B] text-black', 'bg-[#9EBBF7] text-black', 'bg-[#FFB5CA] text-black', 'bg-[#28E0B3] text-black', 'bg-[#D0B3FF] text-black'];
+                    const colorClass = colors[idx % colors.length];
+                    return (
+                      <Link
+                        key={sample.id}
+                        href={`/samples/${fullSlug}/${sample.slug}`}
+                        className="w-full bg-white border-b border-gray-100 last:border-0 pb-6 last:pb-0 flex flex-col md:flex-row md:items-center justify-between gap-4 group cursor-pointer"
+                        onClick={(e) => {
+                          const hasSubmitted = localStorage.getItem('sample_lead_submitted');
+                          if (!hasSubmitted) {
+                            e.preventDefault();
+                            setPendingSampleLink(`/samples/${fullSlug}/${sample.slug}`);
+                            setShowSampleLeadModal(true);
+                          }
+                        }}
+                      >
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg ${colorClass}`}>{initials}</div>
+                          <div className="flex flex-col gap-1.5 w-full">
+                            <h3 className="font-extrabold text-[#0f1b3d] text-[15px] group-hover:text-[#3B28CC] transition-colors leading-snug line-clamp-2">{sample.title}</h3>
+                            <div className="flex flex-wrap items-center gap-3 text-[12px] font-medium mt-1 w-full max-w-sm">
+                              <span className="bg-gray-50 border border-gray-200 text-gray-700 px-2.5 py-0.5 rounded-full whitespace-nowrap">{sample.type_name || 'Assignment'}</span>
+                              <span className="text-gray-400">•</span>
+                              <span className="text-gray-600 font-bold">{words} Words</span>
+                              <div className="flex-1 min-w-[80px] h-1.5 bg-gray-100 rounded-full overflow-hidden relative">
+                                <div className="absolute top-0 left-0 h-full bg-[#3B28CC] rounded-full" style={{ width: `${Math.max(30, (downloads / 3000) * 100)}%` }}></div>
+                              </div>
+                              <span className="text-gray-500 whitespace-nowrap">{downloads.toLocaleString()} downloads</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-2 text-[#3B28CC] font-bold text-sm bg-white border border-[#3B28CC]/20 px-4 py-2 rounded-full group-hover:bg-[#3B28CC] group-hover:text-white transition-all self-start md:self-center">
+                          Download <ArrowDown className="w-4 h-4" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+                {/* Pagination Dots & Browse Button */}
+                <div className="mt-8 pt-6 border-t border-gray-100 text-center relative z-10">
+                  <div className="flex flex-col items-center gap-4">
+                    {totalSamplePages > 1 && (
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        {Array.from({ length: totalSamplePages }).map((_, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => setSamplesPageIndex(idx)}
+                            className={`w-2 h-2 rounded-full cursor-pointer transition-colors ${idx === samplesPageIndex ? 'bg-[#3B28CC]' : 'bg-gray-200'}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <Link href="/samples" className="inline-flex items-center justify-center gap-2 text-[#3B28CC] font-extrabold text-[15px] hover:text-[#0f1b3d] transition-colors group">
+                      Browse all samples
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Need Help Promo Box */}
+              <div className={`w-full lg:w-1/3 ${samplesList.length > 3 ? 'lg:h-[580px]' : ''} bg-gradient-to-b from-[#faf9fe] to-[#f4f2fd] border border-purple-100 rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col justify-between z-10 relative overflow-hidden`}>
+                {/* Background decorative elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-200/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+                <div className="relative z-10 flex flex-col h-full flex-1">
+                  <div className="inline-flex items-center gap-1.5 bg-white shadow-sm border border-purple-100 text-[#3f159a] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-6 w-fit">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    Experts Available Now
+                  </div>
+                  
+                  <h3 className="font-extrabold text-[#0f1b3d] text-[24px] lg:text-[28px] font-heading leading-tight mb-4">Struggling with your assignments?</h3>
+                  <p className="text-gray-600 text-[14px] font-medium leading-relaxed mb-6">Don't let tight deadlines stress you out. Hire a PhD-qualified expert to write your assignment from scratch.</p>
+                  
+                  <div className="flex-1 flex flex-col justify-center gap-4 mb-5 mt-2">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">⭐</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">4.9/5 Average Rating</div><div className="text-[11px] text-gray-500 font-medium">Trusted by 10,000+ students</div></div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">⚡</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">Fastest Turnaround</div><div className="text-[11px] text-gray-500 font-medium">Delivery in as little as 3 hours</div></div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">🛡️</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">100% Original Work</div><div className="text-[11px] text-gray-500 font-medium">Zero plagiarism guaranteed</div></div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">💬</div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">24/7 Expert Support</div><div className="text-[11px] text-gray-500 font-medium">Always here to help you</div></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="relative z-10 mt-auto pt-2">
+                  <button
+                    onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('open-quote-modal')); }}
+                    className="btn-shutter-blue-open text-white font-extrabold h-[50px] rounded-xl text-[14px] md:text-[15px] uppercase tracking-wider shadow-[0_4px_14px_rgba(59,40,204,0.3)] hover:shadow-[0_6px_20px_rgba(59,40,204,0.4)] transition duration-200 whitespace-nowrap w-full text-center cursor-pointer border-none flex items-center justify-center"
+                  >
+                    Order Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Sample Lead Modal */}
+      <AnimatePresence>
+        {showSampleLeadModal && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSampleLeadModal(false)} />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto z-10">
+              <div className="p-6 md:p-8">
+                <button onClick={() => setShowSampleLeadModal(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-full text-gray-500 transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
+                <h3 className="text-2xl font-extrabold text-[#0f1b3d] mb-2 font-heading tracking-tight">Unlock Free Sample</h3>
+                <p className="text-sm text-gray-500 mb-6 font-medium">Please provide your details to view this high-quality academic sample. You only need to do this once.</p>
+                <form onSubmit={(e) => { e.preventDefault(); if (!leadForm.name || !leadForm.email || !leadForm.phone) { toast.error("Please fill in all fields"); return; } localStorage.setItem('sample_lead_submitted', 'true'); setShowSampleLeadModal(false); if (pendingSampleLink) window.location.href = pendingSampleLink; }} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Full Name</label>
+                    <input type="text" placeholder="Enter your full name" value={leadForm.name} onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">Email Address</label>
+                    <input type="email" placeholder="Enter your email" value={leadForm.email} onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1.5 ml-1">WhatsApp Number</label>
+                    <div className="flex gap-2">
+                      <select value={leadForm.countryCode} onChange={(e) => setLeadForm({ ...leadForm, countryCode: e.target.value })} className="w-[110px] px-2 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all">
+                        {SAMPLE_COUNTRY_CODES.map(c => (<option key={c.label} value={c.value}>{c.label}</option>))}
+                      </select>
+                      <input type="tel" placeholder="WhatsApp number" value={leadForm.phone} onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })} className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#3B28CC]/30 focus:border-[#3B28CC] transition-all" />
+                    </div>
+                  </div>
+                  <button type="submit" className="w-full mt-2 btn-shutter-blue-open text-white font-extrabold py-3.5 rounded-xl text-[14px] uppercase tracking-wider shadow-lg transition duration-200 border-none cursor-pointer flex items-center justify-center">View Sample Now</button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 10. Bottom Stats Strip */}
       <StatsStrip />
     </div>
   );

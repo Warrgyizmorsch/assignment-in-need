@@ -15,28 +15,6 @@ async function fetchServiceData(fullSlug: string) {
   
   let pageResult: any = null;
 
-  try {
-    const pageRes0 = await fetch(`${baseUrl}/api/service-pages/service/${fullSlug}`, { cache: "no-store" });
-    if (pageRes0.ok) {
-      const temp = await pageRes0.json();
-      if (temp && temp.success && temp.data && temp.data.page) {
-        pageResult = temp;
-      }
-    }
-  } catch (e) { }
-
-  if (!pageResult) {
-    try {
-      const pageResSub = await fetch(`${baseUrl}/api/service-pages/subject/${fullSlug}`, { cache: "no-store" });
-      if (pageResSub.ok) {
-        const temp = await pageResSub.json();
-        if (temp && temp.success && temp.data && temp.data.page) {
-          pageResult = temp;
-        }
-      }
-    } catch (e) { }
-  }
-
   let apiSlug = fullSlug;
   if (fullSlug === "assignment-writing-uk" || fullSlug === "service/assignment") { apiSlug = "assignment"; }
   else if (fullSlug === "dissertation-writing-services" || fullSlug === "service/dissertation") { apiSlug = "dissertation"; }
@@ -46,16 +24,25 @@ async function fetchServiceData(fullSlug: string) {
   else if (fullSlug.endsWith("-dissertation-writing-help")) { apiSlug = fullSlug.replace("-dissertation-writing-help", ""); }
   else if (fullSlug.includes("/")) { apiSlug = fullSlug.split("/").pop() || fullSlug; }
 
-  if (!pageResult) {
-    try {
-      const pageRes = await fetch(`${baseUrl}/api/service-pages/${apiSlug}`, { cache: "no-store" });
-      if (pageRes.ok) {
-        const temp = await pageRes.json();
-        if (temp && temp.success && temp.data && temp.data.page) {
-          pageResult = temp;
-        }
-      }
-    } catch (e) { }
+  const urlsToTry = [
+    `${baseUrl}/api/service-pages/service/${fullSlug}`,
+    `${baseUrl}/api/service-pages/subject/${fullSlug}`,
+    `${baseUrl}/api/service-pages/${apiSlug}`
+  ];
+
+  const fetchPromises = urlsToTry.map(url => 
+    fetch(url, { cache: "no-store", signal: AbortSignal.timeout(5000) })
+      .then(res => res.ok ? res.json() : null)
+      .catch(() => null)
+  );
+
+  const results = await Promise.all(fetchPromises);
+  
+  for (const temp of results) {
+    if (temp && temp.success && temp.data && temp.data.page) {
+      pageResult = temp;
+      break;
+    }
   }
 
   if (!pageResult) {

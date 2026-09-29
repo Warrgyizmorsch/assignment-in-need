@@ -14,7 +14,7 @@ export const getClientBaseUrl = () => {
 export const getImageUrl = (imagePath: string) => {
   if (!imagePath) return "/assets/bg/blog-bg.png";
   if (imagePath.startsWith("http")) return imagePath;
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
   const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
   return `${baseUrl}${cleanPath}`;
 };
