@@ -329,7 +329,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     return (
                       <StaggerItem key={sample.id}>
                         <Link
-                          href={`/samples/${category}/${sample.slug}`}
+                          href={`/samples/${sample.category_name ? sample.category_name.toLowerCase().replace(/ /g, '-') : category}/${sample.slug}`}
                           className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group cursor-pointer text-left h-full"
                         >
                           <div>

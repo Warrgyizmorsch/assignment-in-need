@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
@@ -522,20 +522,7 @@ export default function ServiceLanding({
       );
     }
 
-    return (
-      <div className="bg-white min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center px-4">
-        <h1 className="text-3xl font-extrabold text-gray-800">
-          404 - Page Not Found
-        </h1>
-        <p className="text-gray-500 max-w-md">
-          The requested service page does not exist or has not been published
-          yet.
-        </p>
-        <Link href="/">
-          <Button variant="blueOpen">Go back to Home</Button>
-        </Link>
-      </div>
-    );
+    notFound();
   }
 
   // Header and content selection
@@ -1272,13 +1259,13 @@ export default function ServiceLanding({
                     return (
                       <Link
                         key={sample.id}
-                        href={`/samples/${fullSlug}/${sample.slug}`}
+                        href={`/samples/${sample.category_name ? sample.category_name.toLowerCase().replace(/ /g, '-') : 'general'}/${sample.slug}`}
                         className="w-full bg-white border-b border-gray-100 last:border-0 pb-6 last:pb-0 flex flex-col md:flex-row md:items-center justify-between gap-4 group cursor-pointer"
                         onClick={(e) => {
                           const hasSubmitted = localStorage.getItem('sample_lead_submitted');
                           if (!hasSubmitted) {
                             e.preventDefault();
-                            setPendingSampleLink(`/samples/${fullSlug}/${sample.slug}`);
+                            setPendingSampleLink(`/samples/${sample.category_name ? sample.category_name.toLowerCase().replace(/ /g, '-') : 'general'}/${sample.slug}`);
                             setShowSampleLeadModal(true);
                           }
                         }}

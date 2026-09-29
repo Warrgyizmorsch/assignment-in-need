@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   BookOpen,
   FileText,
@@ -266,23 +267,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
   }
 
   if (error || !sample) {
-    return (
-      <div className="py-24 max-w-lg mx-auto text-center px-4 bg-white min-h-[60vh] flex flex-col justify-center items-center">
-        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Failed to load Sample
-        </h2>
-        <p className="text-gray-500 text-sm mb-6">
-          {error || "The requested sample paper does not exist."}
-        </p>
-        <Link
-          href="/samples"
-          className="bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-purple-800 transition"
-        >
-          Return to Samples
-        </Link>
-      </div>
-    );
+    notFound();
   }
 
   const readableCategory =
@@ -303,8 +288,8 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
           Samples
         </Link>
         <span className="mx-2">&gt;</span>
-        <Link href={`/samples/${category}`} className="hover:text-purple-700">
-          {readableCategory}
+        <Link href={`/samples/${sample.category_name ? sample.category_name.toLowerCase().replace(/ /g, '-') : category}`} className="hover:text-purple-700">
+          {sample.category_name || readableCategory}
         </Link>
         <span className="mx-2">&gt;</span>
         <span className="text-gray-900 font-medium truncate max-w-xs inline-block align-bottom">
@@ -480,7 +465,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
                           </span>
                         </div>
                         <Link
-                          href={`/samples/${category}/${rel.slug}`}
+                          href={`/samples/${rel.category_name ? rel.category_name.toLowerCase().replace(/ /g, '-') : 'general'}/${rel.slug}`}
                           className="flex items-center justify-between font-bold text-[11px] text-purple-700 group-hover:text-purple-800 hover:underline"
                         >
                           View or Download &rarr;

@@ -1548,13 +1548,13 @@ export default function SubjectLanding({
                     return (
                       <Link
                         key={sample.id}
-                        href={`/samples/${slug}/${sample.slug}`}
+                        href={`/samples/${sample.category_name ? sample.category_name.toLowerCase().replace(/ /g, '-') : 'general'}/${sample.slug}`}
                         className="w-full bg-white border-b border-gray-100 last:border-0 pb-6 last:pb-0 flex flex-col md:flex-row md:items-center justify-between gap-4 group cursor-pointer"
                         onClick={(e) => {
                           const hasSubmitted = localStorage.getItem('sample_lead_submitted');
                           if (!hasSubmitted) {
                             e.preventDefault();
-                            setPendingSampleLink(`/samples/${slug}/${sample.slug}`);
+                            setPendingSampleLink(`/samples/${sample.category_name ? sample.category_name.toLowerCase().replace(/ /g, '-') : 'general'}/${sample.slug}`);
                             setShowSampleLeadModal(true);
                           }
                         }}
