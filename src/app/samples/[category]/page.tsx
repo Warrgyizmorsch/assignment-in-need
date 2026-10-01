@@ -22,5 +22,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function SampleCategoryPage({ params }: Props) {
-  return <SampleCategoryClient params={params} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+    "@context": "https://schema.org/",
+    "@type": "product",
+    "name": "Assignment writing help UK",
+    "image": "https://www.assignmentinneed.co.uk/assets/media/layout/og-image.jpg",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.96",
+        "ratingCount": "46799"
+    }
+}`
+        }}
+      />
+      <SampleCategoryClient params={params} />
+    </>
+  );
 }
