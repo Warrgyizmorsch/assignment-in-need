@@ -130,6 +130,13 @@ export default function ServicesListPage() {
         "@type": "AggregateRating",
         "ratingValue": "4.96",
         "ratingCount": "46799"
+    },
+    "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "GBP",
+        "lowPrice": "4.00",
+        "highPrice": "10.00",
+        "offerCount": "7"
     }
 }`
         }}
