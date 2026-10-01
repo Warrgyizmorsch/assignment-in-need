@@ -58,17 +58,17 @@ export default async function SamplesPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "product",
-            "name": "Assignment writing help UK",
-            "image": "https://www.assignmentinneed.co.uk/assets/media/layout/og-image.jpg",
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.96",
-              "ratingCount": "46799"
-            }
-          })
+          __html: `{
+    "@context": "https://schema.org/",
+    "@type": "product",
+    "name": "Assignment writing help UK",
+    "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.96",
+        "ratingCount": "46799"
+    }
+}`
         }}
       />
       <SamplesPageClient initialCategories={initialCategories} />

@@ -125,7 +125,7 @@ export default function ServicesListPage() {
     "@context": "https://schema.org/",
     "@type": "product",
     "name": "Assignment writing help UK",
-    "image": "https://www.assignmentinneed.co.uk/assets/media/layout/og-image.jpg",
+    "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
     "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.96",
