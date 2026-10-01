@@ -22,7 +22,7 @@ export const revalidate = 0;
 
 async function fetchSampleCategories() {
   const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
-  
+
   try {
     const response = await fetch(`${baseUrl}/api/sample-categories`, { cache: "no-store" });
     if (response.ok) {
@@ -52,6 +52,26 @@ async function fetchSampleCategories() {
 
 export default async function SamplesPage() {
   const initialCategories = await fetchSampleCategories();
-  
-  return <SamplesPageClient initialCategories={initialCategories} />;
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "product",
+            "name": "Assignment writing help UK",
+            "image": "https://www.assignmentinneed.co.uk/assets/media/layout/og-image.jpg",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.96",
+              "ratingCount": "46799"
+            }
+          })
+        }}
+      />
+      <SamplesPageClient initialCategories={initialCategories} />
+    </>
+  );
 }
