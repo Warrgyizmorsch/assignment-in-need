@@ -90,22 +90,27 @@ export default async function SubjectPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: `{
-    "@context": "https://schema.org/",
-    "@type": "product",
-    "name": "Assignment writing help UK",
-    "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
-    "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.96",
-        "ratingCount": "46799"
-    },
-    "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "GBP",
-        "lowPrice": "4.00",
-        "highPrice": "10.00",
-        "offerCount": "7"
-    }
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "H1",
+  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
+  "brand": {
+    "@type": "Brand",
+    "name": "Assignment In Need"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.96",
+    "ratingCount": "46799"
+  },
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "GBP",
+    "lowPrice": "4.00",
+    "highPrice": "10.00",
+    "offerCount": "7"
+  }
 }`
         }}
       />
