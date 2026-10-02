@@ -92,7 +92,7 @@ export default async function SubjectPage({ params }: Props) {
           __html: `{
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": "H1",
+  "name": ${JSON.stringify(initialData?.page?.hero_heading || initialData?.page?.title || slug.replace(/-/g, " ").replace(/\\b\\w/g, c => c.toUpperCase()) + " Assignment Help")},
   "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {

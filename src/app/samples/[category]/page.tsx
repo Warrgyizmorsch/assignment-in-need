@@ -21,7 +21,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default function SampleCategoryPage({ params }: Props) {
+export default async function SampleCategoryPage({ params }: Props) {
+  const resolvedParams = await params;
+  const category = resolvedParams.category;
+  const formattedName = category
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
   return (
     <>
       <script
@@ -30,7 +36,7 @@ export default function SampleCategoryPage({ params }: Props) {
           __html: `{
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": "H1",
+  "name": ${JSON.stringify(formattedName + " Assignment Samples & Papers")},
   "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {

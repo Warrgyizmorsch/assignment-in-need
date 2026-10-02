@@ -44,7 +44,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default function SampleDetailPage({ params }: Props) {
+export default async function SampleDetailPage({ params }: Props) {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  let h1 = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  
+  try {
+    const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
+    if (baseUrl) {
+      const res = await fetch(`${baseUrl}/api/samples/${encodeURIComponent(slug)}`, { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.data?.title) {
+          h1 = json.data.title;
+        }
+      }
+    }
+  } catch(e) {}
+
   return (
     <>
       <script
@@ -53,7 +70,7 @@ export default function SampleDetailPage({ params }: Props) {
           __html: `{
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": "H1",
+  "name": ${JSON.stringify(h1)},
   "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {

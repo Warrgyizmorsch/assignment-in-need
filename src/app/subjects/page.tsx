@@ -132,7 +132,7 @@ export default function SubjectsListPage() {
           __html: `{
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": "H1",
+  "name": "Explore Our Academic Subjects",
   "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
