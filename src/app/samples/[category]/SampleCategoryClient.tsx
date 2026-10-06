@@ -15,6 +15,7 @@ import {
   StaggerItem,
 } from "@/components/ui/AnimateIn";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
+import { SamplePromoModal } from "@/components/ui/SamplePromoModal";
 
 const DOCUMENT_TYPE_OPTIONS = [
   { label: "All Types", value: "All" },
@@ -211,6 +212,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <main className="w-full font-sans text-gray-800 bg-white">
+      <SamplePromoModal />
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-sm text-gray-500 text-left">
         <Link href="/" className="hover:text-purple-700">

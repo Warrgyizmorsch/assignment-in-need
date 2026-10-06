@@ -20,6 +20,9 @@ import {
   StaggerItem,
 } from "@/components/ui/AnimateIn";
 import { SidebarQuoteForm } from "@/components/ui/SidebarQuoteForm";
+import { SamplePromoModal } from "@/components/ui/SamplePromoModal";
+import { Loader2 } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 interface SampleDetailPageProps {
   params: Promise<{
@@ -39,6 +42,59 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState<string>(category);
   const [allCategories, setAllCategories] = useState<any[]>([]);
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("sample_unlocked") === "true";
+    }
+    return false;
+  });
+  
+  const [unlockName, setUnlockName] = useState("");
+  const [unlockPhone, setUnlockPhone] = useState("");
+  const [unlockEmail, setUnlockEmail] = useState("");
+  const [isUnlocking, setIsUnlocking] = useState(false);
+
+  const handleUnlockSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUnlocking(true);
+    try {
+      const response = await fetch("/api/web-submit-quote", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: unlockName,
+          email: unlockEmail,
+          phone: unlockPhone,
+          countryCode: "+44",
+          countryIso: "GB",
+          service: "Assignment",
+          subject: categoryName || "Sample Reference",
+          deadline: "5",
+          wordCount: "250",
+          description: `Unlock Sample Request: ${sample?.title || "Unknown Sample"}`,
+          source_page: window.location.href,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        localStorage.setItem("sample_unlocked", "true");
+        setIsUnlocked(true);
+        toast.success("Sample unlocked successfully!");
+      } else {
+        toast.error(data.message || "Failed to submit. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error. Please try again.");
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
 
 
   useEffect(() => {
@@ -278,6 +334,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
 
   return (
     <main className="w-full font-sans text-gray-800 bg-white">
+      <SamplePromoModal />
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-sm text-gray-500 text-left">
         <Link href="/" className="hover:text-purple-700">
@@ -347,11 +404,42 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
             </div>
 
             {/* Dynamic Rich HTML Content */}
-            <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm">
+            <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm relative">
               <div
-                className="prose-content text-gray-700 leading-relaxed max-w-none"
+                className={`prose-content text-gray-700 leading-relaxed max-w-none ${!isUnlocked ? 'locked-content' : ''}`}
                 dangerouslySetInnerHTML={{ __html: sample.content }}
               />
+
+              {!isUnlocked && (
+                <div className="absolute inset-0 top-[100px] z-10 rounded-b-3xl" style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.4) 15%, rgba(255,255,255,0.7) 100%)' }}>
+                  <div className="sticky top-[150px] flex justify-center p-6 mt-4">
+                    <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] max-w-md w-full border border-purple-100 text-center">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">Unlock Full Sample</h3>
+                      <p className="text-sm text-gray-500 mb-6">Enter your details to view the complete sample for free.</p>
+                      <form 
+                        className="flex flex-col gap-4 text-left" 
+                        onSubmit={handleUnlockSubmit}
+                      >
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Name</label>
+                          <input type="text" required value={unlockName} onChange={e => setUnlockName(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:outline-none text-sm" placeholder="Your Name" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Phone Number</label>
+                          <input type="tel" required value={unlockPhone} onChange={e => setUnlockPhone(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:outline-none text-sm" placeholder="Your Number" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Email</label>
+                          <input type="email" required value={unlockEmail} onChange={e => setUnlockEmail(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:outline-none text-sm" placeholder="Your Email" />
+                        </div>
+                        <button type="submit" disabled={isUnlocking} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors mt-2 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                          {isUnlocking ? <><Loader2 className="w-4 h-4 animate-spin" /> Unlocking...</> : "Unlock Now"}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Outline Footer Box */}
@@ -492,6 +580,7 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
         .prose-content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
         .prose-content th, .prose-content td { border: 1px solid #e5e7eb; padding: 0.75rem; text-align: left; }
         .prose-content th { background-color: #f9fafb; font-weight: 600; }
+        .locked-content > *:not(:first-child) { filter: blur(3px); opacity: 0.6; pointer-events: none; user-select: none; }
       `,
         }}
       />

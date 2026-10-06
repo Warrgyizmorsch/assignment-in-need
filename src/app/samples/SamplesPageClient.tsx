@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/AnimateIn";
 import { buildPageSchema } from "@/lib/data";
 import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
+import { SamplePromoModal } from "@/components/ui/SamplePromoModal";
 import {
   ChevronLeft,
   ChevronRight,
@@ -355,6 +356,7 @@ export default function SamplesPage({ initialCategories = [] }: { initialCategor
           ),
         }}
       />
+      <SamplePromoModal />
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-sm text-gray-500 text-left">
         Home <span className="mx-2">&gt;</span>{" "}
