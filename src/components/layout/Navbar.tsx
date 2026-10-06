@@ -202,23 +202,23 @@ const RESOURCES: NavLinkItem[] = [
 const FALLBACK_SERVICES: NavLinkItem[] = [
   {
     name: "Assignment Writing Help UK",
-    path: "/assignment-writing-uk",
+    path: "/service/assignment",
     children: [
       ...ASSIGNMENT_SERVICE_SUBJECTS,
     ],
   },
   {
     name: "Dissertation Writing Services UK",
-    path: "/dissertation-writing-help-services",
+    path: "/service/dissertation",
     children: [
-      { name: "Dissertation Help", path: "/dissertation-writing-help-services" },
-      { name: "Proofreading", path: "/proofreading-and-editing-writing-help" },
-      { name: "Editing & Formatting", path: "/dissertation-editing-and-proofreading-help-uk" },
+      { name: "Dissertation Help", path: "/service/dissertation" },
+      { name: "Proofreading", path: "/service/proofreading-services" },
+      { name: "Editing & Formatting", path: "/service/editing-and-formatting" },
     ],
   },
   {
     name: "Pay Someone To Do My Assignment",
-    path: "/assignment-writing-uk",
+    path: "/service/pay-someone-to-do-my-assignment",
   },
 ];
 

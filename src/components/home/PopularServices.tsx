@@ -122,7 +122,7 @@ const FALLBACK_SERVICES: HomeService[] = [
     id: "proofreading",
     title: "Proofreading",
     description: "Perfect grammar, zero errors",
-    href: "/service/proofreading",
+    href: "/service/proofreading-services",
     price: "From £8",
     orders: "11,200+ Orders",
     image: SERVICE_STYLES[6].image,
