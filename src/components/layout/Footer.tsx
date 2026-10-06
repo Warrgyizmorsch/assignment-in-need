@@ -221,7 +221,7 @@ export const Footer = () => {
             <ul className="list-none p-0 m-0 flex flex-col gap-3.5">
               <li>
                 <Link
-                  href="/essay-writing-help-services"
+                  href="/service/essay-writing-help-services"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Essay Writing
@@ -229,7 +229,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/dissertation-writing-help-services"
+                  href="/service/dissertation-writing-help-services"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Dissertation Help
@@ -237,7 +237,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/assignment-writing-help-services"
+                  href="/service/assignment-writing-help-services"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Assignment Help
@@ -245,7 +245,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/case-study-dissertation-help-uk"
+                  href="/service/case-study-dissertation-help-uk"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Case Study Help
@@ -253,7 +253,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/report-writing"
+                  href="/service/report-writing"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Report Writing
@@ -261,7 +261,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/proofreading-and-editing-writing-help"
+                  href="/service/proofreading-and-editing-writing-help"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Proofreading
@@ -269,13 +269,13 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/dissertation-editing-and-proofreading-help-uk"
+                  href="/service/dissertation-editing-and-proofreading-help-uk"
                   className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
                 >
                   Editing & Formatting
                 </Link>
               </li>
-              {/* <li className="font-semibold"><Link href="/assignment-writing-help-services" className="text-[#3b82f6] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">View All Services</Link></li> */}
+              {/* <li className="font-semibold"><Link href="/service/assignment-writing-help-services" className="text-[#3b82f6] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline">View All Services</Link></li> */}
             </ul>
           </div>
           <div className="flex flex-col">

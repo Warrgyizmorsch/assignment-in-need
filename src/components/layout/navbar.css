@@ -98,7 +98,7 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.1s ease;
   z-index: 100;
   list-style: none;
   margin: 0;
@@ -187,7 +187,7 @@
   opacity: 0;
   visibility: hidden;
   transform: translateX(10px);
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
   list-style: none;
   margin: 0;
   max-height: 60vh;
