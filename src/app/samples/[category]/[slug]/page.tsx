@@ -48,6 +48,7 @@ export default async function SampleDetailPage({ params }: Props) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
   let h1 = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  let sampleData = null;
   
   try {
     const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
@@ -55,8 +56,11 @@ export default async function SampleDetailPage({ params }: Props) {
       const res = await fetch(`${baseUrl}/api/samples/${encodeURIComponent(slug)}`, { cache: 'no-store' });
       if (res.ok) {
         const json = await res.json();
-        if (json?.data?.title) {
-          h1 = json.data.title;
+        if (json?.data) {
+          sampleData = json.data;
+          if (sampleData.title) {
+            h1 = sampleData.title;
+          }
         }
       }
     }
@@ -92,7 +96,7 @@ export default async function SampleDetailPage({ params }: Props) {
 }`
         }}
       />
-      <SampleDetailPageClient params={params} />
+      <SampleDetailPageClient params={params} initialSample={sampleData} />
     </>
   );
 }

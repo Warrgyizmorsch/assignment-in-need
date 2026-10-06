@@ -29,16 +29,17 @@ interface SampleDetailPageProps {
     category: string;
     slug: string;
   }>;
+  initialSample?: any;
 }
 
-export default function SampleDetailPage({ params }: SampleDetailPageProps) {
+export default function SampleDetailPage({ params, initialSample }: SampleDetailPageProps) {
   const resolvedParams = use(params);
   const category = resolvedParams.category;
   const slug = resolvedParams.slug;
 
-  const [sample, setSample] = useState<any>(null);
+  const [sample, setSample] = useState<any>(initialSample || null);
   const [relatedSamples, setRelatedSamples] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialSample);
   const [error, setError] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState<string>(category);
   const [allCategories, setAllCategories] = useState<any[]>([]);
@@ -99,44 +100,57 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
 
   useEffect(() => {
     const fetchSampleDetail = async () => {
-      setLoading(true);
+      // If we already have the sample from SSR, we can skip fetching it again,
+      // or we can fetch only related samples
+      if (!sample) {
+        setLoading(true);
+      }
       setError(null);
       try {
-        // Fetch specific sample detail with retry logic
-        let response;
-        let retries = 3;
-        let lastErrorMsg = "Sample paper not found.";
+        let sampleData = sample;
+        
+        if (!sampleData) {
+          // Fetch specific sample detail with retry logic
+          let response;
+          let retries = 3;
+          let lastErrorMsg = "Sample paper not found.";
 
-        while (retries > 0) {
-          try {
-            response = await fetch(`/api/samples/${encodeURIComponent(slug)}`);
-            if (response.ok) {
-              break;
-            } else if (response.status === 404) {
-              lastErrorMsg = "Sample paper not found.";
-              break; // Don't retry 404s
-            } else {
-              const errJson = await response.json().catch(() => null);
-              lastErrorMsg = errJson?.message || `Server error (${response.status})`;
+          while (retries > 0) {
+            try {
+              response = await fetch(`/api/samples/${encodeURIComponent(slug)}`);
+              if (response.ok) {
+                break;
+              } else if (response.status === 404) {
+                lastErrorMsg = "Sample paper not found.";
+                break; // Don't retry 404s
+              } else {
+                const errJson = await response.json().catch(() => null);
+                lastErrorMsg = errJson?.message || `Server error (${response.status})`;
+                retries--;
+                if (retries > 0) await new Promise(res => setTimeout(res, 1000));
+              }
+            } catch (e: any) {
+              lastErrorMsg = e.message || "Network error occurred.";
               retries--;
               if (retries > 0) await new Promise(res => setTimeout(res, 1000));
             }
-          } catch (e: any) {
-            lastErrorMsg = e.message || "Network error occurred.";
-            retries--;
-            if (retries > 0) await new Promise(res => setTimeout(res, 1000));
+          }
+
+          if (!response || !response.ok) {
+            throw new Error(lastErrorMsg);
+          }
+          
+          const json = await response.json();
+
+          if (json.success && json.data) {
+            sampleData = json.data;
+            setSample(sampleData);
+          } else {
+            throw new Error("Failed to load sample data.");
           }
         }
 
-        if (!response || !response.ok) {
-          throw new Error(lastErrorMsg);
-        }
-        
-        const json = await response.json();
-
-        if (json.success && json.data) {
-          setSample(json.data);
-
+        if (sampleData) {
           // Fetch related samples (limit=2)
           try {
             let resolvedCategoryId = category;
@@ -225,8 +239,6 @@ export default function SampleDetailPage({ params }: SampleDetailPageProps) {
           } catch (e) {
             console.error("Error loading related samples:", e);
           }
-        } else {
-          throw new Error("Failed to load sample data.");
         }
       } catch (err: any) {
         setError(
