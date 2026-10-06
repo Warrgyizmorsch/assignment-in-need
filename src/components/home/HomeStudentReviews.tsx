@@ -33,9 +33,9 @@ export default function HomeStudentReviews() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const categories = ["All", "Assignment", "Dissertation", "Essay", "Coursework"];
-  
+
   useEffect(() => {
     const fetchReviews = async () => {
       try {
@@ -72,8 +72,8 @@ export default function HomeStudentReviews() {
     fetchReviews();
   }, []);
 
-  const filteredReviews = activeCategory === "All" 
-    ? reviews 
+  const filteredReviews = activeCategory === "All"
+    ? reviews
     : reviews.filter(r => (r.category || "").toLowerCase() === activeCategory.toLowerCase());
 
   const autoSlideInterval = 3000;
@@ -83,9 +83,9 @@ export default function HomeStudentReviews() {
       const container = scrollRef.current;
       const firstChild = container.children[0] as HTMLElement;
       if (!firstChild) return;
-      
+
       const step = firstChild.offsetWidth + 24; // card width + gap-6
-      
+
       if (direction === "left") {
         container.scrollBy({ left: -step, behavior: "smooth" });
       } else {
@@ -160,7 +160,7 @@ export default function HomeStudentReviews() {
                 <div>
                   <div className="text-[3.5rem] lg:text-[4rem] font-extrabold text-[#0f172a] leading-none mb-2">4.8</div>
                   <div className="flex text-amber-400 text-lg lg:text-xl mb-1">★★★★★</div>
-                  <div className="text-[0.8rem] text-gray-500 font-semibold">Sample numbers</div>
+                  {/* <div className="text-[0.8rem] text-gray-500 font-semibold">Sample numbers</div> */}
                 </div>
                 <div className="flex-1 flex flex-col gap-2.5 border-l-2 border-gray-100 pl-6">
                   {[
@@ -173,8 +173,8 @@ export default function HomeStudentReviews() {
                     <div key={row.stars} className="flex items-center gap-4 text-[0.9rem] font-bold text-gray-600">
                       <span className="w-2.5 text-center">{row.stars}</span>
                       <div className="h-2 flex-1 bg-gray-100 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-amber-400 rounded-full" 
+                        <div
+                          className="h-full bg-amber-400 rounded-full"
                           style={{ width: row.pct + "%" }}
                         />
                       </div>
@@ -198,7 +198,7 @@ export default function HomeStudentReviews() {
         </div>
 
         {/* Reviews Slider */}
-        <div 
+        <div
           className="relative group -mx-4 md:-mx-8"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -221,53 +221,53 @@ export default function HomeStudentReviews() {
               </>
             )}
 
-            <div 
+            <div
               ref={scrollRef}
               className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 pt-4 px-6 md:px-14 no-scrollbar scroll-smooth"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-            {filteredReviews.map((review) => (
-              <div 
-                key={review.id}
-                className="shrink-0 w-[340px] min-w-[340px] max-w-[340px] md:w-[380px] md:min-w-[380px] md:max-w-[380px] min-h-[300px] snap-center bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(0,0,0,0.08)] transition-shadow flex flex-col h-full"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex text-amber-400 text-lg">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} className={i < review.rating ? "opacity-100" : "opacity-30"}>★</span>
-                    ))}
-                  </div>
-                  <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg text-[0.8rem] font-bold">
-                    Result: {review.result}
-                  </div>
-                </div>
-                
-                <p className="text-[1.05rem] text-gray-800 leading-relaxed mb-6 flex-1 font-medium line-clamp-5">
-                  "{review.text}"
-                </p>
-
-                <div className="text-[0.8rem] text-gray-500 mb-6 font-medium line-clamp-1">
-                  {review.meta}
-                </div>
-
-                <div className="flex items-center justify-between pt-5 border-t border-gray-100">
-                  <div className="flex items-center gap-3 w-[65%]">
-                    <div className="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-sm">
-                      {review.avatar}
+              {filteredReviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="shrink-0 w-[340px] min-w-[340px] max-w-[340px] md:w-[380px] md:min-w-[380px] md:max-w-[380px] min-h-[300px] snap-center bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgb(0,0,0,0.08)] transition-shadow flex flex-col h-full"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex text-amber-400 text-lg">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <span key={i} className={i < review.rating ? "opacity-100" : "opacity-30"}>★</span>
+                      ))}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[0.95rem] font-bold text-gray-900 truncate">{review.name}</div>
-                      <div className="text-[0.8rem] text-gray-500 truncate">{review.university}</div>
+                    <div className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg text-[0.8rem] font-bold">
+                      Result: {review.result}
                     </div>
                   </div>
-                  <div className="shrink-0 flex items-center gap-1.5 text-emerald-600 text-[0.8rem] font-bold bg-emerald-50/50 px-2.5 py-1.5 rounded-md">
-                    <Check className="w-3.5 h-3.5" />
-                    Order {review.order}
+
+                  <p className="text-[1.05rem] text-gray-800 leading-relaxed mb-6 flex-1 font-medium line-clamp-5">
+                    "{review.text}"
+                  </p>
+
+                  <div className="text-[0.8rem] text-gray-500 mb-6 font-medium line-clamp-1">
+                    {review.meta}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-5 border-t border-gray-100">
+                    <div className="flex items-center gap-3 w-[65%]">
+                      <div className="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-sm">
+                        {review.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[0.95rem] font-bold text-gray-900 truncate">{review.name}</div>
+                        <div className="text-[0.8rem] text-gray-500 truncate">{review.university}</div>
+                      </div>
+                    </div>
+                    <div className="shrink-0 flex items-center gap-1.5 text-emerald-600 text-[0.8rem] font-bold bg-emerald-50/50 px-2.5 py-1.5 rounded-md">
+                      <Check className="w-3.5 h-3.5" />
+                      Order {review.order}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           </>
         </div>
       </div>
