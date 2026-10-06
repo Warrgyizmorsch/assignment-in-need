@@ -103,6 +103,11 @@ export function PromoModal() {
       return;
     }
 
+    // Do not trigger global promo modal on samples pages, as they have their own modal
+    if (pathname?.startsWith("/samples")) {
+      return;
+    }
+
     let triggered = false;
     let timer: NodeJS.Timeout | null = null;
 
@@ -308,6 +313,7 @@ export function PromoModal() {
   };
 
   if (!isOpen) return null;
+  if (pathname?.startsWith("/samples")) return null;
 
   const renderSlices = () => {
     return SEGMENTS.map((seg, i) => {
