@@ -258,9 +258,7 @@ function ReviewDetailModal({
 
 export default function ReviewsAndFaq() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [reviews, setReviews] = useState<Review[]>(FALLBACK_REVIEWS);
   const [faqsList, setFaqsList] = useState<FaqItem[]>([]);
-  const [selectedReviewId, setSelectedReviewId] = useState<string | number | null>(null);
 
   const fallbackFaqs: FaqItem[] = [
     {
@@ -288,6 +286,11 @@ export default function ReviewsAndFaq() {
       answer:
         "Yes, we offer unlimited free revisions within a specified timeframe to ensure you are 100% satisfied with the final work delivered.",
     },
+    {
+      question: "Are your services confidential?",
+      answer:
+        "Yes, we take privacy very seriously. All personal information and order details are kept strictly confidential and are never shared with third parties or your university.",
+    },
   ];
 
   const toggleFaq = (index: number) => {
@@ -295,24 +298,6 @@ export default function ReviewsAndFaq() {
   };
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch("/api/reviews");
-        if (!response.ok) {
-          console.error("Failed to load homepage reviews");
-          return;
-        }
-
-        const json = await response.json();
-        const raw = json?.data?.data ?? json?.data ?? json?.reviews ?? [];
-        if (Array.isArray(raw) && raw.length > 0) {
-          setReviews(raw.filter(isApiRecord).slice(0, 4).map(mapReview));
-        }
-      } catch (err) {
-        console.error("Error fetching homepage reviews:", err);
-      }
-    };
-
     const fetchFaqs = async () => {
       try {
         const response = await fetch("/api/faqs");
@@ -332,97 +317,45 @@ export default function ReviewsAndFaq() {
       }
     };
 
-    fetchReviews();
     fetchFaqs();
   }, []);
 
-  const faqsToRender = faqsList.length > 0 ? faqsList : fallbackFaqs;
+  let faqsToRender = faqsList.length > 0 ? faqsList : fallbackFaqs;
+  if (faqsToRender.length === 5) {
+    faqsToRender = [...faqsToRender, fallbackFaqs[5]];
+  }
 
   return (
     <section className="pt-8 pb-4 md:pt-10 md:pb-6 px-8 max-md:py-6 max-md:px-4 bg-[#fafaff] font-sans flex justify-center border-t border-gray-100">
-      <div className="max-w-[1200px] w-full grid grid-cols-[1.3fr_0.9fr] max-lg:grid-cols-1 gap-12">
-        {/* Reviews Column */}
-        <div className="flex flex-col">
-          <AnimateIn variant="fadeUp">
-            <h2 className="text-[1.6rem] font-extrabold text-gray-900 mb-6 tracking-tight">
-              What Students Say <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent overflow-hidden text-ellipsis">About Us</span>
-            </h2>
-          </AnimateIn>
-
-          <StaggerContainer className="grid grid-cols-2 max-md:grid-cols-1 gap-4">
-            {reviews.map((r) => (
-              <StaggerItem key={r.id}>
-                <div
-                  onClick={() => setSelectedReviewId(r.id)}
-                  className="bg-white rounded-2xl p-[1.25rem_1rem] shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col gap-2.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_rgba(0,0,0,0.06)] cursor-pointer h-full"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={r.image}
-                      alt={r.name}
-                      width={40}
-                      height={40}
-                      className="w-10 h-10 rounded-full bg-gray-100 object-cover border-2 border-gray-200"
-                      onError={(event) => {
-                        event.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=f3e8ff&color=6b21a8&size=80`;
-                      }}
-                    />
-                    <div className="flex flex-col">
-                      <strong className="text-[0.85rem] text-gray-900 leading-tight">
-                        {r.name}
-                      </strong>
-                      <span className="text-[0.75rem] text-gray-500">
-                        {r.meta}
-                      </span>
-                    </div>
-                  </div>
-                  <Stars rating={r.rating} />
-                  <p className="text-[0.82rem] text-gray-600 leading-relaxed m-0">
-                    {r.text}
-                  </p>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-
-          <div className="text-right mt-6">
-            <a
-              href="/review"
-              className="text-[#6d28d9] hover:text-[#4c1d95] text-[0.85rem] font-bold no-underline hover:underline transition-colors duration-300 max-md:block max-md:w-full max-md:text-center max-md:py-3 max-md:mt-2.5 max-md:bg-white max-md:border max-md:border-gray-200 max-md:rounded-lg max-md:no-underline"
-            >
-              View More Reviews →
-            </a>
-          </div>
-        </div>
-
+      <div className="max-w-[1200px] w-full flex flex-col mx-auto">
         {/* FAQ Column */}
         <div className="flex flex-col">
-          <AnimateIn variant="fadeUp">
-            <h2 className="text-[1.6rem] font-extrabold text-gray-900 mb-6 tracking-tight">
+          <AnimateIn variant="fadeUp" className="text-center">
+            <h2 className="text-[2rem] font-extrabold text-gray-900 mb-8 tracking-tight">
               Frequently 
               <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent overflow-hidden text-ellipsis"> Asked Questions </span>
             </h2>
           </AnimateIn>
 
-          <StaggerContainer className="flex flex-col gap-0 border-t border-gray-100 max-md:gap-3 max-md:border-t-0">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
             {faqsToRender.map((faq, idx) => {
               const isActive = activeFaq === idx;
               return (
                 <StaggerItem key={idx}>
                   <div
-                    className={`border-b border-gray-100 max-md:bg-white max-md:rounded-xl max-md:border-none max-md:shadow-[0_2px_10px_rgba(0,0,0,0.02)] max-md:px-4`}
+                    className={`bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 px-5 md:px-6 transition-all duration-300 ${isActive ? 'border-indigo-100 ring-2 ring-indigo-50/50' : 'hover:border-indigo-100'}`}
                   >
                     <button
-                      className={`w-full text-left bg-transparent border-none py-5 max-md:py-4 flex justify-between items-center cursor-pointer text-[0.95rem] font-semibold transition-colors duration-200 font-[inherit] ${isActive ? "text-indigo-600" : "text-gray-800 hover:text-indigo-600"}`}
+                      className={`w-full text-left bg-transparent border-none py-5 flex justify-between items-center cursor-pointer text-[1.05rem] font-semibold transition-colors duration-200 font-[inherit] ${isActive ? "text-indigo-600" : "text-gray-800 hover:text-indigo-600"}`}
                       onClick={() => toggleFaq(idx)}
                     >
-                      <span>{faq.question}</span>
+                      <span className="pr-4">{faq.question}</span>
                       <svg
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
-                        className={`w-[18px] h-[18px] text-[#6d28d9] shrink-0 ml-4 transition-transform duration-300 ${isActive ? "rotate-180" : ""}`}
+                        className={`w-[18px] h-[18px] text-[#6d28d9] shrink-0 transition-transform duration-300 ${isActive ? "rotate-180" : ""}`}
                       >
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
@@ -436,7 +369,7 @@ export default function ReviewsAndFaq() {
                       transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
                       className="overflow-hidden"
                     >
-                      <p className="pb-5 m-0 text-[0.9rem] text-gray-600 leading-relaxed">
+                      <p className="pb-5 m-0 text-[0.95rem] text-gray-600 leading-relaxed">
                         {faq.answer}
                       </p>
                     </motion.div>
@@ -445,24 +378,8 @@ export default function ReviewsAndFaq() {
               );
             })}
           </StaggerContainer>
-
-          {/* <div className="text-left mt-6">
-            <a
-              href="#"
-              className="text-[#6d28d9] hover:text-[#4c1d95] text-[0.85rem] font-bold no-underline hover:underline transition-colors duration-300 max-md:block max-md:w-full max-md:text-center max-md:py-3 max-md:mt-2.5 max-md:bg-white max-md:border max-md:border-gray-200 max-md:rounded-lg max-md:no-underline"
-            >
-              View All FAQs →
-            </a>
-          </div> */}
         </div>
       </div>
-
-      {selectedReviewId !== null && (
-        <ReviewDetailModal
-          id={selectedReviewId}
-          onClose={() => setSelectedReviewId(null)}
-        />
-      )}
     </section>
   );
 }

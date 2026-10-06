@@ -43,6 +43,7 @@ import ResultsAndTools from "@/components/home/ResultsAndTools";
 import ReviewsAndFaq from "@/components/home/ReviewsAndFaq";
 import CtaBanner from "@/components/home/CtaBanner";
 import { WritersAndTrust } from "@/components/home/WritersAndTrust";
+import HomeStudentReviews from "@/components/home/HomeStudentReviews";
 
 export default function Home() {
   const [faqsList, setFaqsList] = React.useState<any[]>(FAQS);
@@ -129,6 +130,7 @@ export default function Home() {
 
       <SeoContentSection />
       <ResultsAndTools />
+      <HomeStudentReviews />
       <WritersAndTrust />
       <ReviewsAndFaq />
       <CtaBanner />

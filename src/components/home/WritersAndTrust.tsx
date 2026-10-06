@@ -50,7 +50,7 @@ export const WritersAndTrust: React.FC = () => {
     <div className="font-sans bg-white flex flex-col animate-fade-in">
       {/* 1. Our Academic Experts */}
       <section
-        className="md:pt-4 md:pb-10 md:px-8 pt-3 pb-6 px-6 bg-white max-w-[1400px] w-full mx-auto"
+        className="md:pb-10 md:px-8 pb-6 px-6 bg-white max-w-[1400px] w-full mx-auto"
         id="experts"
       >
         <AnimateIn variant="fadeUp" className="mb-10 text-center">
