@@ -479,7 +479,7 @@ export default function ReviewsAndFaq() {
                 <div>
                   <div className="ts-profileHead">
                     <div className="ts-avatarRing">
-                      <Link href={`/writers/${expert.slug}`}>
+                      <Link href={`/writers/${expert.slug || expert.id || ''}`}>
                         <img
                           className="ts-avatar"
                           src={expert.image ? getImageUrl(expert.image) : "https://www.assignmentinneed.co.uk/assets/media/avatars/blank.png"}
@@ -550,7 +550,7 @@ export default function ReviewsAndFaq() {
                     <Link href="/order" className="btn-shutter-orange-open flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
                       Hire Writer
                     </Link>
-                    <Link href={`/writers/${expert.slug}`} className="btn-shutter-blue-close flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
+                    <Link href={`/writers/${expert.slug || expert.id || ''}`} className="btn-shutter-blue-close flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
                       About Writer
                     </Link>
                   </div>

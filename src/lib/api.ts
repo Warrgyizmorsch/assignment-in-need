@@ -107,7 +107,7 @@ export const mapExpertToWriter = (expert: any): Writer => {
   }
 
   return {
-    id: expert.slug || String(expert.id),
+    id: expert.slug || (name.toLowerCase().replace(/[^a-z0-9]+/g, '-')) || String(expert.id),
     name: name,
     role: expert.subject ? `${expert.subject} Expert` : "Academic Expert",
     avatar: avatarUrl,

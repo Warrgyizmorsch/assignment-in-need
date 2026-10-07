@@ -130,7 +130,8 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {experts.map((expert, idx) => {
-          const targetHref = `/writers/${expert.id || expert.slug || ""}`;
+          const cleanSlug = expert.slug || (expert.id && isNaN(Number(expert.id)) ? expert.id : expert.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+          const targetHref = `/writers/${cleanSlug}`;
           return (
             <div
               key={expert.id || idx}
@@ -147,7 +148,7 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
                 avatar={expert.avatar}
                 experience={expert.experience}
                 qualifications={expert.qualifications}
-                slug={expert.slug || expert.id || ""}
+                slug={cleanSlug}
                 className="h-full"
               />
             </div>

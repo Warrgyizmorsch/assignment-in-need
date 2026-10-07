@@ -327,7 +327,7 @@ export async function fetchWriters(baseUrl: string): Promise<string[]> {
     if (res.ok) {
       const payload = await res.json();
       const list = Array.isArray(payload?.data) ? payload.data : [];
-      return list.map((writer: any) => `${baseUrl}/writers/${writer.slug}`);
+      return list.map((writer: any) => `${baseUrl}/writers/${writer.slug || slugify(writer.name || String(writer.id))}`);
     }
   } catch (e) {
     console.error("Sitemap: Failed to fetch writers", e);

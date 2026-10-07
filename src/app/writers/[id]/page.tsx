@@ -13,29 +13,44 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;
-  const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
+  const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
 
   try {
     if (baseUrl) {
-      const res = await fetch(`${baseUrl}/api/experts/${id}`);
-      if (res.ok) {
+      let expert = null;
+      const res = await fetch(`${baseUrl}/api/experts/${id}`).catch(() => null);
+      if (res && res.ok) {
         const json = await res.json();
-        const expert = json?.data;
-
-        if (expert) {
-          const name = expert.name || expert.expert_name;
-          const role = expert.role || "Expert Academic Writer";
-          const title = expert.meta_tag || expert.meta_title || `${name} - ${role} | Assignment In Need`;
-          const description = expert.meta_description ||
-            (expert.about && expert.about[0] ? expert.about[0].slice(0, 160) : "") ||
-            `${name} is a ${expert.qualifications || ""} ${role} with ${expert.experience || "years of"} experience. Hire top academic writers at Assignment In Need.`;
-
-          return constructMetadata({
-            title,
-            description,
-            canonicalUrl: `/writers/${id}`,
-          });
+        expert = json?.data;
+      }
+      
+      if (!expert) {
+        const listRes = await fetch(`${baseUrl}/api/experts`).catch(() => null);
+        if (listRes && listRes.ok) {
+           const listJson = await listRes.json();
+           const experts = Array.isArray(listJson?.data) ? listJson.data : [];
+           const targetClean = id.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+           expert = experts.find((item: any) => 
+             String(item.id) === String(id) || 
+             (item.slug && item.slug.toLowerCase() === targetClean) ||
+             (item.name && item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === targetClean)
+           );
         }
+      }
+
+      if (expert) {
+        const name = expert.name || expert.expert_name;
+        const role = expert.role || "Expert Academic Writer";
+        const title = expert.meta_title || expert.meta_tag || `${name} - ${role} | Assignment In Need`;
+        const description = expert.meta_description ||
+          (expert.about && expert.about[0] ? expert.about[0].slice(0, 160) : "") ||
+          `${name} is a ${expert.qualifications || ""} ${role} with ${expert.experience || "years of"} experience. Hire top academic writers at Assignment In Need.`;
+
+        return constructMetadata({
+          title,
+          description,
+          canonicalUrl: `/writers/${expert.slug || expert.id || id}`,
+        });
       }
     }
   } catch (error) {
