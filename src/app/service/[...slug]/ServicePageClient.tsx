@@ -120,7 +120,7 @@ export default function ServiceLanding({
   const [expertsFromPage, setExpertsFromPage] = useState(initialExpertsFromPage); // NEW: track source of experts
   const [reviews, setReviews] = useState<any[]>(initialReviews);
   const [allServicePages, setAllServicePages] = useState<any[]>(initialAllServicePages);
-  const [loading, setLoading] = useState(!initialPageData && initialAllServicePages.length === 0);
+  const [loading, setLoading] = useState(!initialPageData);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [seoExpanded, setSeoExpanded] = useState(false);
   const router = useRouter();
@@ -178,7 +178,7 @@ export default function ServiceLanding({
 
   useEffect(() => {
     const fetchServicePage = async () => {
-      if (!fullSlug || initialPageData || initialAllServicePages.length > 0) return;
+      if (!fullSlug || initialPageData) return;
       try {
         setLoading(true);
 
@@ -500,7 +500,7 @@ export default function ServiceLanding({
             {childServicePages.map((service) => (
               <Link
                 key={service.slug}
-                href={`/${service.slug}`}
+                href={`/${(service.slug || "").replace(/^service\/subject\//, "service/").replace(/^subject\//, "service/")}`}
                 className="group block rounded-3xl border border-gray-200 p-6 hover:border-primary-500 hover:bg-primary-50 transition-all duration-200"
               >
                 <h2 className="text-xl font-semibold text-gray-900 group-hover:text-primary-700">

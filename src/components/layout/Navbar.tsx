@@ -133,7 +133,7 @@ const mapServicePagesToMenu = (
   return services
     .filter((service) => !isNonServicePage(service))
     .map((service) => {
-      const parentSlug = service.slug?.trim().replace(/^\/+/, "") || "";
+      const parentSlug = (service.slug?.trim().replace(/^\/+/, "") || "").replace(/^service\/subject\//, "service/").replace(/^subject\//, "service/");
       const parentPath = `/${parentSlug}`;
 
       const parentName = service.title?.trim() || service.hero_heading?.trim() || service.meta_title?.trim() || humanizeSlug(parentSlug || "service");
@@ -150,14 +150,8 @@ const mapServicePagesToMenu = (
           ? service.children
             .filter((child) => !isNonServicePage(child))
             .map((child) => {
-              const rawChildSlug = child.slug?.trim().replace(/^\/+/, "") || "";
+              const rawChildSlug = (child.slug?.trim().replace(/^\/+/, "") || "").replace(/^service\/subject\//, "service/").replace(/^subject\//, "service/");
               let childPath = `/${rawChildSlug}`;
-
-              if (isAssignmentParent || rawChildSlug.startsWith("service/assignment/")) {
-                const lastSeg = rawChildSlug.split("/").pop() || rawChildSlug;
-                childPath = canonicalSubjectPath(lastSeg);
-              }
-
               const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(rawChildSlug || "service");
               return {
                 name: childName,
