@@ -122,6 +122,14 @@ export default function WriterProfile() {
     }
   }, [id]);
 
+  // If the user lands on a numeric ID URL (e.g. /writers/4) but the writer has a proper slug,
+  // automatically update the URL to use the name slug without a full page reload.
+  useEffect(() => {
+    if (writer && /^\d+$/.test(id) && writer.id && writer.id !== id) {
+      router.replace(`/writers/${writer.id}`);
+    }
+  }, [writer, id, router]);
+
   if (loading) {
     return (
       <div className="bg-white min-h-[80vh]">

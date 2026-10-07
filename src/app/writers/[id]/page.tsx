@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import WriterProfileClient from "./WriterProfileClient";
 import { constructMetadata } from "@/lib/metadata";
 import { WRITERS } from "@/lib/data";
@@ -46,10 +47,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           (expert.about && expert.about[0] ? expert.about[0].slice(0, 160) : "") ||
           `${name} is a ${expert.qualifications || ""} ${role} with ${expert.experience || "years of"} experience. Hire top academic writers at Assignment In Need.`;
 
+        let finalSlug = expert.slug;
+        if (!finalSlug || /^\d+$/.test(finalSlug) || finalSlug === 'undefined' || finalSlug === 'null') {
+          finalSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        }
+
         return constructMetadata({
           title,
           description,
-          canonicalUrl: `/writers/${expert.slug || expert.id || id}`,
+          canonicalUrl: `/writers/${finalSlug || expert.id || id}`,
         });
       }
     }
@@ -90,6 +96,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default function WriterProfilePage() {
+import { notFound } from "next/navigation";
+
+export default async function WriterProfilePage({ params }: Props) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+
+  // Unconditionally block numeric IDs from ever running
+  if (/^\d+$/.test(id)) {
+    notFound();
+  }
+
   return <WriterProfileClient />;
 }

@@ -106,8 +106,13 @@ export const mapExpertToWriter = (expert: any): Writer => {
     avatarUrl = getImageUrl(expert.image);
   }
 
+  let finalSlug = expert.slug;
+  if (!finalSlug || /^\d+$/.test(finalSlug) || finalSlug === 'undefined' || finalSlug === 'null') {
+    finalSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  }
+
   return {
-    id: expert.slug || (name.toLowerCase().replace(/[^a-z0-9]+/g, '-')) || String(expert.id),
+    id: finalSlug || String(expert.id),
     name: name,
     role: expert.subject ? `${expert.subject} Expert` : "Academic Expert",
     avatar: avatarUrl,

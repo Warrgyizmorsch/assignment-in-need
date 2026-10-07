@@ -89,6 +89,18 @@ function mapReviewDetail(raw: any): ReviewDetail {
   };
 }
 
+function getExpertSlug(expert: any) {
+  if (!expert) return '';
+  let slug = expert.slug;
+  if (!slug || /^\d+$/.test(slug) || slug === 'undefined' || slug === 'null') {
+    slug = (expert.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  }
+  if (!slug || /^\d+$/.test(slug)) {
+    return 'expert-writer';
+  }
+  return slug;
+}
+
 function Stars({ rating }: { rating: number }) {
   const full = Math.min(5, Math.round(rating));
   return (
@@ -479,7 +491,7 @@ export default function ReviewsAndFaq() {
                 <div>
                   <div className="ts-profileHead">
                     <div className="ts-avatarRing">
-                      <Link href={`/writers/${expert.slug || expert.id || ''}`}>
+                      <Link href={`/writers/${getExpertSlug(expert)}`}>
                         <img
                           className="ts-avatar"
                           src={expert.image ? getImageUrl(expert.image) : "https://www.assignmentinneed.co.uk/assets/media/avatars/blank.png"}
@@ -550,7 +562,7 @@ export default function ReviewsAndFaq() {
                     <Link href="/order" className="btn-shutter-orange-open flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
                       Hire Writer
                     </Link>
-                    <Link href={`/writers/${expert.slug || expert.id || ''}`} className="btn-shutter-blue-close flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
+                    <Link href={`/writers/${getExpertSlug(expert)}`} className="btn-shutter-blue-close flex items-center justify-center text-center py-2.5 px-5 font-semibold rounded-lg text-sm cursor-pointer">
                       About Writer
                     </Link>
                   </div>

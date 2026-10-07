@@ -208,7 +208,7 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
         {/* Bio text */}
         <p className="text-[12.5px] text-slate-500 leading-snug text-center mb-3 px-1">
           {bioText}
-          <Link href={"/writers/" + (slug || "none")} className="text-[#ff5722] hover:text-red-700 font-medium ml-1">
+          <Link href={"/writers/" + (slug && !/^\d+$/.test(slug) ? slug : name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))} className="text-[#ff5722] hover:text-red-700 font-medium ml-1">
             Read More
           </Link>
         </p>
