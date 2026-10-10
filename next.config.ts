@@ -66,6 +66,16 @@ const nextConfig: NextConfig = {
         destination: "/subjects/:path*",
         permanent: true,
       },
+      {
+        source: "/service/do-my-assignment",
+        destination: "/service/pay-someone-to-do-my-assignment",
+        permanent: true,
+      },
+      {
+        source: "/do-my-assignment",
+        destination: "/service/pay-someone-to-do-my-assignment",
+        permanent: true,
+      },
     ];
   },
   async headers() {

@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         const title = post.meta_title || post.tittle || "Blog - Assignment In Need";
         const description = post.meta_discribtion || post.meta_description || "Read expert academic articles and student guides.";
         const image = post.image ? getImageUrl(post.image) : undefined;
-        
+
         return constructMetadata({
           title,
           description,
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         });
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return constructMetadata({
     title: "Blog - Assignment In Need",
@@ -112,12 +112,12 @@ export default async function BlogDetailPage({ params }: Props) {
   if (post.faqs) {
     if (Array.isArray(post.faqs)) blogFaqs = post.faqs;
     else if (typeof post.faqs === "string") {
-      try { blogFaqs = JSON.parse(post.faqs); } catch (e) {}
+      try { blogFaqs = JSON.parse(post.faqs); } catch (e) { }
     }
   } else if (post.faq) {
     if (Array.isArray(post.faq)) blogFaqs = post.faq;
     else if (typeof post.faq === "string") {
-      try { blogFaqs = JSON.parse(post.faq); } catch (e) {}
+      try { blogFaqs = JSON.parse(post.faq); } catch (e) { }
     }
   }
 
@@ -236,14 +236,14 @@ export default async function BlogDetailPage({ params }: Props) {
           else if (typeof post.faqs === "string") {
             try {
               blogFaqs = JSON.parse(post.faqs);
-            } catch (e) {}
+            } catch (e) { }
           }
         } else if (post.faq) {
           if (Array.isArray(post.faq)) blogFaqs = post.faq;
           else if (typeof post.faq === "string") {
             try {
               blogFaqs = JSON.parse(post.faq);
-            } catch (e) {}
+            } catch (e) { }
           }
         }
 

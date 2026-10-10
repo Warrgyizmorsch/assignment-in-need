@@ -21,7 +21,7 @@ const STATIC_SERVICES = [
   { name: "Case Study Help", slug: "service/case-study" },
   { name: "Programming Help", slug: "service/programming" },
   { name: "Online Exam Help", slug: "service/online-exam" },
-  { name: "Do My Assignment", slug: "service/do-my-assignment" },
+  { name: "Pay Someone To Do My Assignment", slug: "service/pay-someone-to-do-my-assignment" },
 ];
 
 const getServiceIconName = (slug: string) => {

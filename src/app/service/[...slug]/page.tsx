@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import ServicePageClient from "./ServicePageClient";
 import { constructMetadata } from "@/lib/metadata";
 import { mapExpertToWriter } from "@/lib/api";
@@ -102,6 +103,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const fullSlug = resolvedParams.slug.join("/");
 
+  if (fullSlug === "do-my-assignment") {
+    redirect("/service/pay-someone-to-do-my-assignment");
+  }
+
   try {
     const { pageResult } = await fetchServiceData(fullSlug);
     if (pageResult) {
@@ -135,6 +140,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ServicePage({ params }: Props) {
   const resolvedParams = await params;
   const fullSlug = resolvedParams.slug.join("/");
+
+  if (fullSlug === "do-my-assignment") {
+    redirect("/service/pay-someone-to-do-my-assignment");
+  }
   
   const { pageResult, allServicePages } = await fetchServiceData(fullSlug);
   

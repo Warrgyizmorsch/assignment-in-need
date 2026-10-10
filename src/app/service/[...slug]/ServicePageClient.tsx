@@ -193,6 +193,11 @@ export default function ServiceLanding({
           return;
         }
 
+        if (fullSlug === "do-my-assignment" || fullSlug === "service/do-my-assignment") {
+          router.replace("/service/pay-someone-to-do-my-assignment");
+          return;
+        }
+
         let apiSlug = fullSlug;
         if (
           fullSlug === "assignment-writing-uk" ||

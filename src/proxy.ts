@@ -119,7 +119,7 @@ async function getAllApiSlugs(): Promise<string[]> {
     "subjects/maths",
     "subjects/chemistry",
     "subjects/history",
-    "service/do-my-assignment",
+    "service/pay-someone-to-do-my-assignment",
     "subjects/marketing",
     "subjects/business",
   ];
