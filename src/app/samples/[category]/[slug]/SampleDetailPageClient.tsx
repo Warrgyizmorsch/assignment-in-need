@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useMemo } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -20,7 +20,6 @@ import {
   StaggerItem,
 } from "@/components/ui/AnimateIn";
 import { SidebarQuoteForm } from "@/components/ui/SidebarQuoteForm";
-import { SamplePromoModal } from "@/components/ui/SamplePromoModal";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -43,17 +42,75 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
   const [error, setError] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState<string>(category);
   const [allCategories, setAllCategories] = useState<any[]>([]);
-  const [isUnlocked, setIsUnlocked] = useState(() => {
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("sample_unlocked") === "true";
+      const unlocked =
+        sessionStorage.getItem(`sample_unlocked_${slug}`) === "true" ||
+        localStorage.getItem(`sample_unlocked_${slug}`) === "true";
+      if (unlocked) {
+        setIsUnlocked(true);
+      }
     }
-    return false;
-  });
+  }, [slug]);
   
   const [unlockName, setUnlockName] = useState("");
   const [unlockPhone, setUnlockPhone] = useState("");
   const [unlockEmail, setUnlockEmail] = useState("");
   const [isUnlocking, setIsUnlocking] = useState(false);
+
+  // Count headings (h1 + h2 + h3) in sequence: exactly 3 headings are visible,
+  // and blur begins right after the 3rd heading (at the 4th heading)
+  const { previewHtml, lockedHtml } = useMemo(() => {
+    if (!sample?.content) return { previewHtml: "", lockedHtml: "" };
+    if (isUnlocked) return { previewHtml: sample.content, lockedHtml: "" };
+
+    const html = sample.content;
+
+    // Match any h1, h2, or h3 heading in order
+    const headingRegex = /<h[1-3][^>]*>[\s\S]*?<\/h[1-3]>/gi;
+    const matches: { index: number; end: number }[] = [];
+    let m;
+    while ((m = headingRegex.exec(html)) !== null) {
+      matches.push({ index: m.index, end: m.index + m[0].length });
+    }
+
+    let splitIndex = -1;
+
+    if (matches.length >= 4) {
+      // First 3 headings (h1/h2/h3) visible; blur starts at the 4th heading
+      splitIndex = matches[3].index;
+    } else if (matches.length === 3) {
+      // Exactly 3 headings: include 3rd heading and its following text block
+      const thirdEnd = matches[2].end;
+      const pMatches = [...html.slice(thirdEnd).matchAll(/<\/p>|<\/ol>|<\/ul>/gi)];
+      if (pMatches.length >= 2 && pMatches[1].index !== undefined) {
+        splitIndex = thirdEnd + pMatches[1].index + 4;
+      } else if (pMatches.length >= 1 && pMatches[0].index !== undefined) {
+        splitIndex = thirdEnd + pMatches[0].index + 4;
+      } else {
+        splitIndex = thirdEnd;
+      }
+    } else {
+      // Fewer than 3 headings: split after the 3rd paragraph or 40% of content
+      const pMatches = [...html.matchAll(/<\/p>/gi)];
+      if (pMatches.length >= 3 && pMatches[2].index !== undefined) {
+        splitIndex = pMatches[2].index + 4;
+      } else {
+        splitIndex = Math.floor(html.length * 0.4);
+      }
+    }
+
+    if (splitIndex <= 0 || splitIndex >= html.length) {
+      splitIndex = Math.floor(html.length * 0.4);
+    }
+
+    return {
+      previewHtml: html.slice(0, splitIndex),
+      lockedHtml: html.slice(splitIndex),
+    };
+  }, [sample?.content, isUnlocked]);
 
   const handleUnlockSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +140,8 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
       const data = await response.json();
       
       if (response.ok && data.success) {
-        localStorage.setItem("sample_unlocked", "true");
+        localStorage.setItem(`sample_unlocked_${slug}`, "true");
+        sessionStorage.setItem(`sample_unlocked_${slug}`, "true");
         setIsUnlocked(true);
         toast.success("Sample unlocked successfully!");
       } else {
@@ -282,9 +340,9 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Main Content Area Skeleton */}
-            <div className="w-full lg:w-2/3 flex flex-col gap-6 text-left">
+            <div className="lg:col-span-8 flex flex-col gap-6 text-left">
               <div>
                 <div className="h-6 bg-slate-200 rounded w-32 mb-4"></div>
                 <div className="h-10 bg-slate-200 rounded w-full mb-3"></div>
@@ -315,7 +373,7 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
             </div>
 
             {/* Sidebar Skeleton */}
-            <div className="w-full lg:w-1/3 flex flex-col gap-6 sticky top-24">
+            <div className="lg:col-span-4 flex flex-col gap-6 sticky top-24">
               <div className="h-48 bg-slate-200 rounded-2xl w-full"></div>
               <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm space-y-4">
                 <div className="h-6 bg-slate-200 rounded w-2/3 mb-4"></div>
@@ -346,7 +404,6 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
 
   return (
     <main className="w-full font-sans text-gray-800 bg-white">
-      <SamplePromoModal />
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-sm text-gray-500 text-left">
         <Link href="/" className="hover:text-purple-700">
@@ -367,9 +424,9 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Main Content Area */}
-          <div>
+          <div className="lg:col-span-8 flex flex-col gap-6 text-left">
             <div>
               <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
                 {sample.type_name || "Assignment Sample"}
@@ -416,20 +473,29 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
             </div>
 
             {/* Dynamic Rich HTML Content */}
-            <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm relative">
+            <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden">
+              {/* Unblurred Content (Intro + First 3 Headings & Text) */}
               <div
-                className={`prose-content text-gray-700 leading-relaxed max-w-none ${!isUnlocked ? 'locked-content' : ''}`}
-                dangerouslySetInnerHTML={{ __html: sample.content }}
+                className="prose-content text-gray-700 leading-relaxed max-w-none"
+                dangerouslySetInnerHTML={{ __html: previewHtml }}
               />
 
-              {!isUnlocked && (
-                <div className="absolute inset-0 top-[100px] z-10 rounded-b-3xl" style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.4) 15%, rgba(255,255,255,0.7) 100%)' }}>
-                  <div className="sticky top-[150px] flex justify-center p-6 mt-4">
-                    <div className="bg-white p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] max-w-md w-full border border-purple-100 text-center">
+              {/* Locked/Blurred section after 3 headings */}
+              {!isUnlocked && lockedHtml && (
+                <div className="relative mt-6 pt-2 min-h-[480px]">
+                  {/* Blurred background preview of the rest */}
+                  <div
+                    className="prose-content text-gray-700 leading-relaxed max-w-none select-none pointer-events-none filter blur-[4px] opacity-45 max-h-[550px] overflow-hidden"
+                    dangerouslySetInnerHTML={{ __html: lockedHtml }}
+                  />
+
+                  {/* Gradient fade overlay + Unlock Form */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-transparent via-white/85 to-white p-4">
+                    <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] max-w-md w-full border border-purple-100 text-center">
                       <h3 className="text-xl font-bold text-gray-900 mb-2">Unlock Full Sample</h3>
-                      <p className="text-sm text-gray-500 mb-6">Enter your details to view the complete sample for free.</p>
+                      <p className="text-sm text-gray-500 mb-5">Enter your details to view the complete sample for free.</p>
                       <form 
-                        className="flex flex-col gap-4 text-left" 
+                        className="flex flex-col gap-3.5 text-left" 
                         onSubmit={handleUnlockSubmit}
                       >
                         <div>
@@ -444,7 +510,7 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
                           <label className="block text-xs font-semibold text-gray-700 mb-1">Email</label>
                           <input type="email" required value={unlockEmail} onChange={e => setUnlockEmail(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-600 focus:outline-none text-sm" placeholder="Your Email" />
                         </div>
-                        <button type="submit" disabled={isUnlocking} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors mt-2 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                        <button type="submit" disabled={isUnlocking} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors mt-1 shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm">
                           {isUnlocking ? <><Loader2 className="w-4 h-4 animate-spin" /> Unlocking...</> : "Unlock Now"}
                         </button>
                       </form>
@@ -472,11 +538,7 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
           </div>
 
           {/* Right Sidebar Form & Widgets */}
-          <AnimateIn
-            variant="fadeUp"
-            delay={0.15}
-            className="w-full lg:w-1/3 flex flex-col gap-6 sticky top-6"
-          >
+          <div className="lg:col-span-4 flex flex-col gap-6 sticky top-6">
             {/* Quick Order Form */}
             <SidebarQuoteForm
               sourceName={`Sample Detail Page: ${sample?.title || "General"}`}
@@ -516,7 +578,7 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
                   })}
               </div>
             </div>
-          </AnimateIn>
+          </div>
         </div>
 
         {/* Dynamic Related Samples Section */}
@@ -592,7 +654,6 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
         .prose-content table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
         .prose-content th, .prose-content td { border: 1px solid #e5e7eb; padding: 0.75rem; text-align: left; }
         .prose-content th { background-color: #f9fafb; font-weight: 600; }
-        .locked-content > *:not(:first-child) { filter: blur(3px); opacity: 0.6; pointer-events: none; user-select: none; }
       `,
         }}
       />

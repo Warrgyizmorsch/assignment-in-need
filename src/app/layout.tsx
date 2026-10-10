@@ -8,7 +8,8 @@ import { TawkToChat } from "@/components/ui/TawkToChat";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { ReferWidget } from "@/components/ui/ReferWidget";
 import { QuoteModal } from "@/components/ui/QuoteModal";
-import { PromoModal } from "@/components/ui/PromoModal";
+// import { PromoModal } from "@/components/ui/PromoModal"; // Temporarily disabled by user request
+import { SamplePromoModal } from "@/components/ui/SamplePromoModal";
 import "./globals.css";
 import "@/components/layout/navbar.css";
 
@@ -176,7 +177,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <ReferWidget />
         <TawkToChat />
         <QuoteModal />
-        <PromoModal />
+        {/* <PromoModal /> */}
+        <SamplePromoModal />
         <Toaster
           position="top-center"
           reverseOrder={false}

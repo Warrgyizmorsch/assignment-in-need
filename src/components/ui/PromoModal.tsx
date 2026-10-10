@@ -40,6 +40,7 @@ const SEGMENTS = [
 ];
 
 export function PromoModal() {
+  return null; // Disabled by user request
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 

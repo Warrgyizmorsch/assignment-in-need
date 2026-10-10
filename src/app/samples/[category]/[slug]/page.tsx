@@ -9,7 +9,10 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const { category, slug } = resolvedParams;
-  const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
+  const baseUrl =
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    "https://ain.warrgyizmorsch.com";
 
   try {
     if (baseUrl) {
@@ -51,7 +54,10 @@ export default async function SampleDetailPage({ params }: Props) {
   let sampleData = null;
   
   try {
-    const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "";
+    const baseUrl =
+      process.env.BACKEND_INTERNAL_URL ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "https://ain.warrgyizmorsch.com";
     if (baseUrl) {
       const res = await fetch(`${baseUrl}/api/samples/${encodeURIComponent(slug)}`, { cache: 'no-store' });
       if (res.ok) {

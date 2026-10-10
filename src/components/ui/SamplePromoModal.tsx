@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { X, Gift, Loader2, ChevronDown, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
@@ -27,7 +28,9 @@ const COUNTRY_CODES: CustomDropdownOption[] = getCountries()
   });
 
 export function SamplePromoModal() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const isClosedOnThisPageRef = useRef(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState("+44");
@@ -36,6 +39,11 @@ export function SamplePromoModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Reset closed state whenever path changes
+  useEffect(() => {
+    isClosedOnThisPageRef.current = false;
+  }, [pathname]);
 
   // Click outside dropdown
   useEffect(() => {
@@ -57,16 +65,52 @@ export function SamplePromoModal() {
   };
 
   useEffect(() => {
-    // Show modal on load if not already filled
-    const timer = setTimeout(() => {
-      const isFilled = localStorage.getItem("sample_promo_filled");
-      if (!isFilled) {
-        setIsOpen(true);
-      }
-    }, 2000); // 2 seconds delay
+    if (typeof window === "undefined") return;
 
-    return () => clearTimeout(timer);
-  }, []);
+    let hasTriggered = false;
+
+    const showModal = () => {
+      if (hasTriggered || isClosedOnThisPageRef.current) return;
+      hasTriggered = true;
+      cleanup();
+      setIsOpen(true);
+    };
+
+    // Trigger instantly when cursor moves anywhere
+    const handleMouseMove = () => {
+      showModal();
+    };
+
+    // Exit intent: cursor moves towards top
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 50) {
+        showModal();
+      }
+    };
+
+    // Touch devices fallback (touch move / scroll)
+    const handleTouchOrScroll = () => {
+      showModal();
+    };
+
+    // Fallback timer: 3 seconds
+    const fallbackTimer = setTimeout(showModal, 3000);
+
+    const cleanup = () => {
+      clearTimeout(fallbackTimer);
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("touchmove", handleTouchOrScroll);
+      window.removeEventListener("scroll", handleTouchOrScroll);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    document.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("touchmove", handleTouchOrScroll, { passive: true });
+    window.addEventListener("scroll", handleTouchOrScroll, { passive: true });
+
+    return cleanup;
+  }, [pathname]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +141,7 @@ export function SamplePromoModal() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        localStorage.setItem("sample_promo_filled", "true");
+        isClosedOnThisPageRef.current = true;
         setIsOpen(false);
         toast.success("Congratulations! We will contact you shortly with your 500 free words!");
       } else {
@@ -112,6 +156,7 @@ export function SamplePromoModal() {
   };
 
   const handleClose = () => {
+    isClosedOnThisPageRef.current = true;
     setIsOpen(false);
   };
 
@@ -135,7 +180,12 @@ export function SamplePromoModal() {
       `,
         }}
       />
-      <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+      <div 
+        className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) handleClose();
+        }}
+      >
       <div className="relative w-full max-w-[700px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col sm:flex-row animate-slideUp border border-purple-100">
         <button
           onClick={handleClose}
