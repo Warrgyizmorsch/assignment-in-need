@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/AnimateIn";
 import { buildPageSchema } from "@/lib/data";
 import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 import {
   ChevronLeft,
   ChevronRight,
@@ -379,21 +380,24 @@ export default function SamplesPage({ initialCategories = [] }: { initialCategor
         </div>
 
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-purple-700 text-sm font-semibold mb-6">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-            100% Free Samples
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-100 text-purple-700 text-sm font-semibold">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              100% Free Samples
+            </div>
+            <RatingBadge className="!mb-0" />
           </div>
 
           <h1 className="text-4xl lg:text-5xl text-gray-900 leading-tight mb-4">

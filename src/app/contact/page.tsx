@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
 import { toast } from "react-hot-toast";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -218,8 +219,11 @@ export default function ContactPage() {
             {/* Left Column: Intro + Contact Methods */}
             <div className="lg:col-span-6">
               {/* Badge */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100 text-[#3f159a] text-[10px] font-extrabold uppercase tracking-widest w-fit mb-1">
-                💬 Get In Touch
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-100 text-[#3f159a] text-[10px] font-extrabold uppercase tracking-widest w-fit">
+                  💬 Get In Touch
+                </div>
+                <RatingBadge className="!mb-0" />
               </div>
 
               {/* Title */}

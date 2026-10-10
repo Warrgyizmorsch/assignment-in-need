@@ -71,7 +71,7 @@ export default async function SamplesPage() {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "ratingCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",

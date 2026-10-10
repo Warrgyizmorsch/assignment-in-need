@@ -52,7 +52,7 @@ export default async function SampleDetailPage({ params }: Props) {
   const slug = resolvedParams.slug;
   let h1 = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   let sampleData = null;
-  
+
   try {
     const baseUrl =
       process.env.BACKEND_INTERNAL_URL ||
@@ -70,7 +70,7 @@ export default async function SampleDetailPage({ params }: Props) {
         }
       }
     }
-  } catch(e) {}
+  } catch (e) { }
 
   return (
     <>
@@ -90,7 +90,7 @@ export default async function SampleDetailPage({ params }: Props) {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "ratingCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",

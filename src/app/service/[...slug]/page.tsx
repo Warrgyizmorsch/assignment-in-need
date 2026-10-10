@@ -13,7 +13,7 @@ type Props = {
 
 async function fetchServiceData(fullSlug: string) {
   const baseUrl = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
-  
+
   let pageResult: any = null;
 
   let apiSlug = fullSlug;
@@ -31,14 +31,14 @@ async function fetchServiceData(fullSlug: string) {
     `${baseUrl}/api/service-pages/${apiSlug}`
   ];
 
-  const fetchPromises = urlsToTry.map(url => 
+  const fetchPromises = urlsToTry.map(url =>
     fetch(url, { cache: "no-store", signal: AbortSignal.timeout(5000) })
       .then(res => res.ok ? res.json() : null)
       .catch(() => null)
   );
 
   const results = await Promise.all(fetchPromises);
-  
+
   for (const temp of results) {
     if (temp && temp.success && temp.data && temp.data.page) {
       pageResult = temp;
@@ -90,7 +90,7 @@ async function fetchServiceData(fullSlug: string) {
           allServicePages = flatPages;
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   return {
@@ -144,9 +144,9 @@ export default async function ServicePage({ params }: Props) {
   if (fullSlug === "do-my-assignment") {
     redirect("/service/pay-someone-to-do-my-assignment");
   }
-  
+
   const { pageResult, allServicePages } = await fetchServiceData(fullSlug);
-  
+
   let initialPageData = null;
   let initialExperts: any[] = [];
   let initialExpertsFromPage = false;
@@ -191,7 +191,7 @@ export default async function ServicePage({ params }: Props) {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "ratingCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",
@@ -203,7 +203,7 @@ export default async function ServicePage({ params }: Props) {
 }`
         }}
       />
-      <ServicePageClient 
+      <ServicePageClient
         initialSlug={fullSlug}
         initialPageData={initialPageData}
         initialExperts={initialExperts}

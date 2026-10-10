@@ -18,6 +18,7 @@ import {
 import { getBaseUrl, getImageUrl } from '@/lib/api';
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
 import { buildPageSchema } from "@/lib/data";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 
 interface Review {
   id: number;
@@ -332,7 +333,10 @@ export default function ReviewsAndFaq() {
       <section className="znw-hero-section">
         <div className="znw-hero-top">
           <div>
-            <span className="znw-badge">⭐ Student Testimonials</span>
+            <div className="flex flex-wrap items-center gap-3 mb-3">
+              <span className="znw-badge !mb-0">⭐ Student Testimonials</span>
+              <RatingBadge className="!mb-0" />
+            </div>
             <h1 className="znw-hero-title">
               What Students Say About <br />
               <span className="znw-text-purple">Assignment in need</span>

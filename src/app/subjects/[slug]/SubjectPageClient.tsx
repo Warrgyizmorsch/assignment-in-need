@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast";
 import { X } from "lucide-react";
 import { mapExpertToWriter } from "@/lib/api";
 import { buildPageSchema } from "@/lib/data";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -953,14 +954,7 @@ export default function SubjectLanding({
               className="lg:col-span-7 flex flex-col justify-start items-start text-left z-20 pb-4 lg:pb-0 order-1 relative pt-2"
             >
               {/* Star Badge */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex items-center bg-[#1a6c38] text-white text-[9px] px-1.5 py-0.5 rounded font-black tracking-tight select-none">
-                  ★★★★★
-                </div>
-                <span className="text-[11px] font-bold text-[#0f1b3d]">
-                  Rated 4.9/5 by 25,000+ UK Students
-                </span>
-              </div>
+              <RatingBadge className="mb-4" />
 
               {/* Title */}
               <h1 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#0f1b3d] tracking-tight mb-3 font-heading">
@@ -1626,7 +1620,7 @@ export default function SubjectLanding({
                   <div className="flex-1 flex flex-col justify-center gap-4 mb-5 mt-2">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-purple-50 text-xl">⭐</div>
-                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">4.9/5 Average Rating</div><div className="text-[11px] text-gray-500 font-medium">Trusted by 10,000+ students</div></div>
+                      <div className="flex flex-col gap-0.5"><div className="text-[13px] font-bold text-[#0f1b3d]">4.9/5 Average Rating</div><div className="text-[11px] text-gray-500 font-medium">Trusted by 25,000+ UK Students</div></div>
                     </div>
                     
                     <div className="flex items-center gap-4">

@@ -10,6 +10,7 @@ import { toast } from "react-hot-toast";
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
 import { buildPageSchema } from "@/lib/data";
 import { TestimonialCarousel } from "@/components/ui/TestimonialCarousel";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -517,9 +518,12 @@ export default function PricingPage() {
 
         {/* Hero Left Content */}
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wide mb-6">
-            <FileText className="w-4 h-4 text-purple-700" />
-            Get Instant Quote
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wide">
+              <FileText className="w-4 h-4 text-purple-700" />
+              Get Instant Quote
+            </div>
+            <RatingBadge className="!mb-0" />
           </div>
 
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">

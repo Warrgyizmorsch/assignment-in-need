@@ -7,6 +7,7 @@ import Image from "next/image";
 import { mapExpertToWriter } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { buildPageSchema } from "@/lib/data";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 
 
 import {
@@ -361,14 +362,7 @@ export default function CityDetailPage({
             {/* Left Content Column */}
             <div className="lg:col-span-7 relative z-20 order-1">
               {/* Star Badge */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex items-center bg-[#1a6c38] text-white text-[9px] px-1.5 py-0.5 rounded font-black tracking-tight select-none">
-                  ★★★★★
-                </div>
-                <span className="text-[11px] font-bold text-[#0f1b3d]">
-                  Rated 4.9/5 by 25,000+ {countryName === "United Kingdom" ? "UK" : countryName} Students
-                </span>
-              </div>
+              <RatingBadge className="mb-4" />
 
               {/* Title */}
               <h1 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#0f1b3d] tracking-tight mb-3 font-heading">

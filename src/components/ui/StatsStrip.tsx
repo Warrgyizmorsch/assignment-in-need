@@ -16,8 +16,8 @@ interface StatsStripProps {
 
 const stats = [
   { icon: Trophy, value: "182,532+", label: "Orders Delivered" },
-  { icon: Users, value: "30,000+", label: "Happy Clients" },
-  { icon: Star, value: "4.8/5", label: "Average Rating" },
+  { icon: Users, value: "25,000+", label: "Happy UK Students" },
+  { icon: Star, value: "4.9/5", label: "Average Rating" },
   { icon: GraduationCap, value: "4,500+", label: "PhD Experts" },
 ];
 

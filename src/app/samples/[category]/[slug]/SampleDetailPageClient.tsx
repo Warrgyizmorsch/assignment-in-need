@@ -20,6 +20,7 @@ import {
   StaggerItem,
 } from "@/components/ui/AnimateIn";
 import { SidebarQuoteForm } from "@/components/ui/SidebarQuoteForm";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -428,10 +429,13 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
           {/* Main Content Area */}
           <div className="lg:col-span-8 flex flex-col gap-6 text-left">
             <div>
-              <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
-                {sample.type_name || "Assignment Sample"}
-              </span>
-              <h1 className="text-2xl md:text-3.5xl font-extrabold text-gray-900 mt-3 leading-snug">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
+                  {sample.type_name || "Assignment Sample"}
+                </span>
+                <RatingBadge className="!mb-0" />
+              </div>
+              <h1 className="text-2xl md:text-3.5xl font-extrabold text-gray-900 mt-2 leading-snug">
                 {sample.title}
               </h1>
             </div>

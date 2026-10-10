@@ -15,6 +15,7 @@ import {
   StaggerItem,
 } from "@/components/ui/AnimateIn";
 import { CustomDropdown } from "@/components/ui/CustomDropdown";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 
 const DOCUMENT_TYPE_OPTIONS = [
   { label: "All Types", value: "All" },
@@ -230,10 +231,13 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           <div className="w-full lg:w-2/3 flex flex-col gap-6">
             {/* Header section */}
             <div className="text-left">
-              <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
-                Category Samples
-              </span>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-3 leading-snug">
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
+                  Category Samples
+                </span>
+                <RatingBadge className="!mb-0" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 leading-snug">
                 Free <span className="text-purple-700">{readableCategory}</span>{" "}
                 Assignment Samples
               </h1>

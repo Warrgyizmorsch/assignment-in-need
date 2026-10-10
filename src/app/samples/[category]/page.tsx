@@ -46,7 +46,7 @@ export default async function SampleCategoryPage({ params }: Props) {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "ratingCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",

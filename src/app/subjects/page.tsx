@@ -9,6 +9,7 @@ import { SectionContainer } from "@/components/ui/SectionContainer";
 import { SubjectCard } from "@/components/ui/SubjectCard";
 import { Button } from "@/components/ui/Button";
 import { AnimateIn, StaggerContainer, StaggerItem } from "@/components/ui/AnimateIn";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 
 const STATIC_SUBJECTS = [
   { name: "Maths", slug: "math" },
@@ -142,7 +143,7 @@ export default function SubjectsListPage() {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "ratingCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",
@@ -164,9 +165,12 @@ export default function SubjectsListPage() {
         <SectionContainer background="white" className="pt-4 pb-12">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 text-left">
             <AnimateIn variant="fadeUp" className="lg:w-1/2">
-              <span className="bg-primary-50 text-primary-700 text-xs px-3.5 py-1.5 rounded-full font-bold uppercase tracking-wider inline-block mb-4">
-                Academic Expertise
-              </span>
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <span className="bg-primary-50 text-primary-700 text-xs px-3.5 py-1.5 rounded-full font-bold uppercase tracking-wider inline-block">
+                  Academic Expertise
+                </span>
+                <RatingBadge className="!mb-0" />
+              </div>
               <Heading level={1} highlight="Academic Subjects" highlightVariant="purple">
                 Explore Our Academic Subjects
               </Heading>

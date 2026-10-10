@@ -23,6 +23,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { RatingBadge } from "@/components/ui/RatingBadge";
 import {
   AnimateIn,
   StaggerContainer,
@@ -209,8 +210,11 @@ export default function AboutPage() {
             {/* Left Column Content */}
             <div className="lg:col-span-7">
               {/* Badge */}
-              <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#f3f0ff] text-[#3f159a] text-[10px] font-extrabold uppercase tracking-widest w-fit mb-1 shadow-sm">
-                ABOUT ASSIGNMENT IN NEED
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#f3f0ff] text-[#3f159a] text-[10px] font-extrabold uppercase tracking-widest w-fit shadow-sm">
+                  ABOUT ASSIGNMENT IN NEED
+                </div>
+                <RatingBadge className="!mb-0" />
               </div>
 
               {/* H1 */}

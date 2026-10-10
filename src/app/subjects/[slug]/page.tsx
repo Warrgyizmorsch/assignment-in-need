@@ -67,7 +67,7 @@ export default async function SubjectPage({ params }: Props) {
 
     // Try fetching by slug variants in parallel
     const categoryParamsToTry = Array.from(new Set([slug, cleanSlug]));
-    const fetchPromises = categoryParamsToTry.map(catParam => 
+    const fetchPromises = categoryParamsToTry.map(catParam =>
       fetch(`${BACKEND_URL}/api/samples?category=${encodeURIComponent(catParam)}&page=1&limit=100`, {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(5000),
@@ -77,12 +77,12 @@ export default async function SubjectPage({ params }: Props) {
     const results = await Promise.all(fetchPromises);
     for (const json of results) {
       const list = json?.data?.data || [];
-      if (list.length > 0) { 
-        initialSamples = list; 
-        break; 
+      if (list.length > 0) {
+        initialSamples = list;
+        break;
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return (
     <>
@@ -102,7 +102,7 @@ export default async function SubjectPage({ params }: Props) {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "ratingCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",
