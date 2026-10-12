@@ -583,7 +583,7 @@ export const organizationSchema = {
   ],
   aggregateRating: {
     "@type": "AggregateRating",
-    ratingValue: "4.9",
+    ratingValue: "4.96",
     reviewCount: "25507",
   },
 };

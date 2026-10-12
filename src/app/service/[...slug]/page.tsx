@@ -193,7 +193,7 @@ export default async function ServicePage({ params }: Props) {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "25507"
+    "reviewCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",
