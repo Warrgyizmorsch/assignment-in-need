@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SampleDetailPage({ params }: Props) {
   const resolvedParams = await params;
-  const slug = resolvedParams.slug;
+  const { category, slug } = resolvedParams;
   let h1 = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   let sampleData = null;
 
@@ -71,6 +71,8 @@ export default async function SampleDetailPage({ params }: Props) {
       }
     }
   } catch (e) { }
+
+  const categoryName = sampleData?.category_name || category.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
 
   return (
     <>
@@ -99,6 +101,41 @@ export default async function SampleDetailPage({ params }: Props) {
     "highPrice": "10.00",
     "offerCount": "7"
   }
+}`
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.assignmentinneed.co.uk/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Samples",
+      "item": "https://www.assignmentinneed.co.uk/samples"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": ${JSON.stringify(categoryName)},
+      "item": "https://www.assignmentinneed.co.uk/samples/${category}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": ${JSON.stringify(h1)},
+      "item": "https://www.assignmentinneed.co.uk/samples/${category}/${slug}"
+    }
+  ]
 }`
         }}
       />

@@ -155,6 +155,29 @@ export default function SubjectsListPage() {
 }`
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.assignmentinneed.co.uk/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Subjects",
+      "item": "https://www.assignmentinneed.co.uk/subjects"
+    }
+  ]
+}`
+        }}
+      />
       <main className="w-full bg-surface-white">
         {/* Breadcrumb container */}
         <div className="max-w-[1200px] mx-auto px-4 md:px-8">

@@ -173,6 +173,8 @@ export default async function ServicePage({ params }: Props) {
     }
   }
 
+  const serviceName = initialPageData?.hero_heading || initialPageData?.title || fullSlug.split("/").pop()?.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "Service";
+
   return (
     <>
       <script
@@ -200,6 +202,35 @@ export default async function ServicePage({ params }: Props) {
     "highPrice": "10.00",
     "offerCount": "7"
   }
+}`
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.assignmentinneed.co.uk/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Services",
+      "item": "https://www.assignmentinneed.co.uk/service"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": ${JSON.stringify(serviceName)},
+      "item": "https://www.assignmentinneed.co.uk/service/${fullSlug}"
+    }
+  ]
 }`
         }}
       />

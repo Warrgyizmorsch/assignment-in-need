@@ -84,6 +84,8 @@ export default async function SubjectPage({ params }: Props) {
     }
   } catch (e) { }
 
+  const subjectName = initialData?.page?.hero_heading || initialData?.page?.title || slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) + " Assignment Help";
+
   return (
     <>
       <script
@@ -111,6 +113,35 @@ export default async function SubjectPage({ params }: Props) {
     "highPrice": "10.00",
     "offerCount": "7"
   }
+}`
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.assignmentinneed.co.uk/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Subjects",
+      "item": "https://www.assignmentinneed.co.uk/subjects"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": ${JSON.stringify(subjectName)},
+      "item": "https://www.assignmentinneed.co.uk/subjects/${slug}"
+    }
+  ]
 }`
         }}
       />

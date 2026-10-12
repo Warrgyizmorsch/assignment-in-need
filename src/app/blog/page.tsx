@@ -44,10 +44,35 @@ async function fetchInitialBlogs() {
 export default async function BlogPage() {
   const { blogs, currentPage, lastPage } = await fetchInitialBlogs();
   return (
-    <BlogListClient 
-      initialBlogs={blogs} 
-      initialCurrentPage={currentPage} 
-      initialLastPage={lastPage} 
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.assignmentinneed.co.uk/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://www.assignmentinneed.co.uk/blog"
+    }
+  ]
+}`
+        }}
+      />
+      <BlogListClient 
+        initialBlogs={blogs} 
+        initialCurrentPage={currentPage} 
+        initialLastPage={lastPage} 
+      />
+    </>
   );
 }

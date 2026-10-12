@@ -121,8 +121,39 @@ export default async function BlogDetailPage({ params }: Props) {
     }
   }
 
+  const blogTitle = post.meta_title || post.tittle || slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+
   return (
     <div className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.assignmentinneed.co.uk/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://www.assignmentinneed.co.uk/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": ${JSON.stringify(blogTitle)},
+      "item": "https://www.assignmentinneed.co.uk/blog/${slug}"
+    }
+  ]
+}`
+        }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -51,12 +51,50 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
 export default async function CityRoutePage({ params }: CityRoutePageProps) {
   const resolvedParams = await params;
   const initialData = await getFreshCityPage(resolvedParams.slug);
+
+  const pageData = initialData?.page;
+  const cityDataSlug = resolvedParams.slug.replace(/^assignment-help-/, "").replace(/-assignment-help$/, "");
+  let cityName = cityDataSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  if (pageData?.city) cityName = pageData.city;
+  const cityPageName = pageData?.hero_heading || pageData?.title || (pageData?.city ? `${pageData.city} Assignment Help` : `${cityName} Assignment Help`);
+
   return (
-    <CityDetailPage
-      key={resolvedParams.slug}
-      slug={resolvedParams.slug}
-      initialPageData={initialData?.page || null}
-      initialExperts={initialData?.experts || []}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.assignmentinneed.co.uk/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Cities",
+      "item": "https://www.assignmentinneed.co.uk/cities"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": ${JSON.stringify(cityPageName)},
+      "item": "https://www.assignmentinneed.co.uk/cities/${resolvedParams.slug}"
+    }
+  ]
+}`
+        }}
+      />
+      <CityDetailPage
+        key={resolvedParams.slug}
+        slug={resolvedParams.slug}
+        initialPageData={initialData?.page || null}
+        initialExperts={initialData?.experts || []}
+      />
+    </>
   );
 }
