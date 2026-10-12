@@ -584,7 +584,7 @@ export const organizationSchema = {
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.9",
-    reviewCount: "25000",
+    reviewCount: "25507",
   },
 };
 
@@ -619,34 +619,34 @@ export const homeWebPageSchema = {
 export function buildPageSchema(faqs?: any[], isHomePage: boolean = false) {
   const validFaqs = Array.isArray(faqs)
     ? faqs
-        .map((item) => {
-          if (!item) return null;
-          const q = typeof item === "object" ? item.question || item.title || item.q || "" : "";
-          const a = typeof item === "object" ? item.answer || item.content || item.a || "" : typeof item === "string" ? item : "";
-          const cleanQ = String(q).replace(/<[^>]*>/g, "").trim();
-          const cleanA = String(a).replace(/<[^>]*>/g, "").trim();
-          if (cleanQ && cleanA) {
-            return {
-              "@type": "Question",
-              name: cleanQ,
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: cleanA,
-              },
-            };
-          }
-          return null;
-        })
-        .filter(Boolean)
+      .map((item) => {
+        if (!item) return null;
+        const q = typeof item === "object" ? item.question || item.title || item.q || "" : "";
+        const a = typeof item === "object" ? item.answer || item.content || item.a || "" : typeof item === "string" ? item : "";
+        const cleanQ = String(q).replace(/<[^>]*>/g, "").trim();
+        const cleanA = String(a).replace(/<[^>]*>/g, "").trim();
+        if (cleanQ && cleanA) {
+          return {
+            "@type": "Question",
+            name: cleanQ,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: cleanA,
+            },
+          };
+        }
+        return null;
+      })
+      .filter(Boolean)
     : [];
 
   const faqPageSchema =
     validFaqs.length > 0
       ? {
-          "@type": "FAQPage",
-          inLanguage: "en-GB",
-          mainEntity: validFaqs,
-        }
+        "@type": "FAQPage",
+        inLanguage: "en-GB",
+        mainEntity: validFaqs,
+      }
       : null;
 
   const graph = [
