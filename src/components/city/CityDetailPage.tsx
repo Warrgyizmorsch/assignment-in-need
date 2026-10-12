@@ -365,17 +365,14 @@ export default function CityDetailPage({
               <RatingBadge className="mb-4" />
 
               {/* Title */}
-              <h1 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#0f1b3d] tracking-tight mb-3 font-heading">
-                {pageData?.hero_heading ? (
-                  pageData.hero_heading
-                ) : (
-                  <>
-                    Expert {cityName} Assignment Help
-                    <br />
-                    <span className="text-[#ea580c] block mt-1.5">You Can Rely On</span>
-                  </>
-                )}
+              <h1 className={`text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#0f1b3d] tracking-tight font-heading ${pageData?.hero_heading ? "mb-3" : ""}`}>
+                {pageData?.hero_heading || `Expert ${cityName} Assignment Help`}
               </h1>
+              {!pageData?.hero_heading && (
+                <span className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#ea580c] tracking-tight block mt-1.5 mb-3 font-heading">
+                  You Can Rely On
+                </span>
+              )}
 
               {/* Description */}
               <div className="text-gray-600 w-full max-w-[500px] text-sm md:text-[15px] font-semibold leading-relaxed mb-6">

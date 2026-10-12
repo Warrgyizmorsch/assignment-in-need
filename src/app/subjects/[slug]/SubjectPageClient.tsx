@@ -957,13 +957,12 @@ export default function SubjectLanding({
               <RatingBadge className="mb-4" />
 
               {/* Title */}
-              <h1 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#0f1b3d] tracking-tight mb-3 font-heading">
+              <h1 className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#0f1b3d] tracking-tight font-heading">
                 {pageTitle}
-                <br />
-                <span className="text-[#ea580c] block mt-1.5">
-                  {pageHighlight}
-                </span>
               </h1>
+              <span className="text-[26px] sm:text-[34px] md:text-[40px] lg:text-[42px] w-full max-w-[500px] font-[900] leading-[1.08] text-[#ea580c] tracking-tight block mt-1.5 mb-3 font-heading">
+                {pageHighlight}
+              </span>
 
               {/* Description */}
               {pageData?.hero_content ? (

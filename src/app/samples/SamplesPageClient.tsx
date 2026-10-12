@@ -400,10 +400,12 @@ export default function SamplesPage({ initialCategories = [] }: { initialCategor
             <RatingBadge className="!mb-0" />
           </div>
 
-          <h1 className="text-4xl lg:text-5xl text-gray-900 leading-tight mb-4">
-            Free Assignment <br />
-            <span className="text-purple-700 font-extrabold">Samples</span>
+          <h1 className="text-4xl lg:text-5xl text-gray-900 leading-tight">
+            Free Assignment
           </h1>
+          <span className="text-4xl lg:text-5xl text-purple-700 font-extrabold leading-tight block mb-4">
+            Samples
+          </span>
 
           <p className="text-gray-600 text-lg mb-8 max-w-lg">
             Access high-quality assignment examples written by academic experts.

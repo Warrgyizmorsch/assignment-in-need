@@ -332,18 +332,17 @@ export default function WritersDirectory() {
               </div>
               <RatingBadge className="!mb-0" />
             </div>
-            <h1 className="znw-hero-title">
+            <h1 className="znw-hero-title !mb-0">
               <span className="znw-desktop-nowrap">
                 Meet Our Top{" "}
                 <br className="znw-br-mobile" />
                 Academic Writers
               </span>
-              <br />
-              <span>
-                <span className="znw-text-purple">Experts</span>{" "}
-                <span className="znw-text-gradient">You Can Rely On</span>
-              </span>
             </h1>
+            <div className="znw-hero-title !mt-1">
+              <span className="znw-text-purple">Experts</span>{" "}
+              <span className="znw-text-gradient">You Can Rely On</span>
+            </div>
             <p className="znw-hero-desc">
               Our team of highly qualified academic writers is dedicated to
               helping you

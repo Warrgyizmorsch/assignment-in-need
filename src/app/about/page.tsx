@@ -220,10 +220,10 @@ export default function AboutPage() {
               {/* H1 */}
               <h1 className="text-[34px] sm:text-[42px] lg:text-[45px] font-[900] leading-[1.1] text-[#0f1b3d] tracking-tight">
                 Empowering Students Through Expert
-                <span className="bg-gradient-to-r from-[#ea580c] to-[#3f159a] bg-clip-text text-transparent block mt-2">
-                  Academic Support & Guidance
-                </span>
               </h1>
+              <span className="text-[34px] sm:text-[42px] lg:text-[45px] font-[900] leading-[1.1] tracking-tight bg-gradient-to-r from-[#ea580c] to-[#3f159a] bg-clip-text text-transparent block mt-2">
+                Academic Support & Guidance
+              </span>
 
               {/* Subtext */}
               <p className="text-[13px] sm:text-[14px] text-gray-500 font-bold leading-relaxed max-w-[500px]">

@@ -229,10 +229,10 @@ export default function ContactPage() {
               {/* Title */}
               <h1 className="text-[34px] sm:text-[40px] font-[900] leading-[1.1] text-[#0f1b3d] tracking-tight">
                 We're Here to Help You
-                <span className="bg-gradient-to-r from-[#ea580c] to-[#3f159a] bg-clip-text text-transparent block mt-2">
-                  Anytime, Anywhere!
-                </span>
               </h1>
+              <span className="text-[34px] sm:text-[40px] font-[900] leading-[1.1] tracking-tight bg-gradient-to-r from-[#ea580c] to-[#3f159a] bg-clip-text text-transparent block mt-2">
+                Anytime, Anywhere!
+              </span>
 
               {/* Subtext */}
               <p className="text-[13px] text-gray-500 font-bold leading-relaxed max-w-[480px]">

@@ -200,13 +200,13 @@ export default function ReferAndEarnPage() {
               Referral Rewards Program
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1e1b4b] leading-[1.15] mb-6 relative">
-              Refer a Friend & <br />
-              <span className="text-[#3f159a] relative inline-block">
-                Earn Rewards!
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#3f159a] opacity-80" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0 10 Q 50 20 100 10 T 200 10" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
-              </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1e1b4b] leading-[1.15] relative">
+              Refer a Friend &
             </h1>
+            <span className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#3f159a] leading-[1.15] mb-6 relative inline-block">
+              Earn Rewards!
+              <svg className="absolute w-full h-3 -bottom-1 left-0 text-[#3f159a] opacity-80" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0 10 Q 50 20 100 10 T 200 10" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" /></svg>
+            </span>
 
             <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
               Know someone who needs assignment help? <br className="hidden sm:block" />

@@ -526,10 +526,12 @@ export default function PricingPage() {
             <RatingBadge className="!mb-0" />
           </div>
 
-          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
-            Get The Perfect Help <br />
-            <span className="text-purple-700">For Your Assignments</span>
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+            Get The Perfect Help
           </h1>
+          <span className="text-4xl lg:text-5xl font-bold text-purple-700 leading-tight block mb-4">
+            For Your Assignments
+          </span>
 
           <p className="text-gray-600 text-base mb-8 max-w-lg">
             Fill out the form with your requirements and our academic experts

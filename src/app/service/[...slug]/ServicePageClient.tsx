@@ -684,15 +684,17 @@ export default function ServiceLanding({
               <div className="w-full max-w-full lg:max-w-[560px] xl:max-w-[600px] flex flex-col items-start relative z-20">
                 <RatingBadge className="mb-3" />
                 <h1
-                  className="text-[34px] sm:text-[40px] lg:text-[42px] font-black text-[#0f1b3d] leading-[1.12] tracking-[-0.02em] mb-4"
+                  className="text-[34px] sm:text-[40px] lg:text-[42px] font-black text-[#0f1b3d] leading-[1.12] tracking-[-0.02em]"
                   style={{ fontFamily: "var(--font-roboto), sans-serif" }}
                 >
                   {title}
-                  <br />
-                  {" "}
-                  {/* <span className="text-[#3f159a]"></span> */}
-                  <span className="text-[#ea580c]">{highlight}</span>
                 </h1>
+                <span
+                  className="text-[34px] sm:text-[40px] lg:text-[42px] font-black text-[#ea580c] leading-[1.12] tracking-[-0.02em] block mb-4"
+                  style={{ fontFamily: "var(--font-roboto), sans-serif" }}
+                >
+                  {highlight}
+                </span>
 
                 {/* FIX: render hero_content as HTML, not escaped text */}
                 <div
