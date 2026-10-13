@@ -1,0 +1,679 @@
+/* ==========================================================================
+   Offers Page Scoped Styles (Prefix: ain-offers-)
+   Tight Spacing, Compact Section Margins & 100% Fully Responsive
+   ========================================================================== */
+
+.ain-offers-page {
+  font-family: var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1e1e2f;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* ---------------- HERO SECTION ---------------- */
+.ain-offers-hero-section {
+  position: relative;
+  background: linear-gradient(145deg, #120C2E 0%, #1B1440 45%, #0D0822 100%);
+  color: #ffffff;
+  padding: 1.75rem 1rem 2rem;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 640px) {
+  .ain-offers-hero-section {
+    padding: 2.25rem 1.5rem 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ain-offers-hero-section {
+    padding: 2.5rem 2rem 2.75rem;
+  }
+}
+
+/* Ambient Glow Blobs */
+.ain-offers-glow-purple {
+  position: absolute;
+  top: -15%;
+  left: -15%;
+  width: min(450px, 90vw);
+  height: min(450px, 90vw);
+  background: radial-gradient(circle, rgba(110, 56, 237, 0.28) 0%, rgba(110, 56, 237, 0) 70%);
+  pointer-events: none;
+  filter: blur(50px);
+  z-index: 1;
+}
+
+.ain-offers-glow-gold {
+  position: absolute;
+  top: 15%;
+  right: -10%;
+  width: min(400px, 80vw);
+  height: min(400px, 80vw);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, rgba(249, 115, 22, 0) 70%);
+  pointer-events: none;
+  filter: blur(50px);
+  z-index: 1;
+}
+
+.ain-offers-hero-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Hero Badge */
+.ain-offers-limited-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+  animation: ainOffersPulse 3s ease-in-out infinite;
+}
+
+@keyframes ainOffersPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+  }
+}
+
+/* Hero Typography */
+.ain-offers-hero-title {
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.ain-offers-highlight-discount {
+  color: #fbbf24;
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  font-weight: 900;
+}
+
+.ain-offers-hero-desc {
+  font-size: clamp(0.9rem, 2.5vw, 1.025rem);
+  line-height: 1.55;
+  color: #cbd5e1;
+  max-width: 520px;
+  margin-bottom: 1.25rem;
+}
+
+/* Hero Trust Badges */
+.ain-offers-trust-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ain-offers-trust-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ain-offers-trust-pill svg {
+  color: #34d399;
+}
+
+/* ---------------- PROMO CARD (RIGHT SIDE) ---------------- */
+.ain-offers-promo-box-wrapper {
+  background: #ffffff;
+  border-radius: 1.15rem;
+  padding: 1.35rem 1.25rem;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  color: #0f172a;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-promo-box-wrapper {
+    padding: 1.6rem 1.75rem;
+  }
+}
+
+.ain-offers-promo-box-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(251, 191, 36, 0.3);
+}
+
+.ain-offers-promo-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ain-offers-code-ticket {
+  background: #fffbeb;
+  border: 2px dashed #f59e0b;
+  border-radius: 0.75rem;
+  padding: 0.85rem 0.75rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ain-offers-code-ticket:hover {
+  background: #fef3c7;
+  border-color: #d97706;
+}
+
+.ain-offers-code-text {
+  font-size: clamp(1.5rem, 4.5vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ain-offers-code-copy-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: #b45309;
+  font-weight: 700;
+  margin-top: 0.25rem;
+}
+
+.ain-offers-promo-info {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin-bottom: 1rem;
+}
+
+.ain-offers-promo-info strong {
+  color: #0f172a;
+}
+
+/* ---------------- SECTION 2: PICK YOUR OFFER ---------------- */
+.ain-offers-pick-section {
+  padding: 1.5rem 1rem 1.75rem;
+  background-color: #faf9fd;
+  border-bottom: 1px solid #f1f0f7;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-pick-section {
+    padding: 1.75rem 1.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ain-offers-pick-section {
+    padding: 2rem 2rem 2.25rem;
+  }
+}
+
+.ain-offers-section-header {
+  text-align: left;
+  max-width: 1200px;
+  margin: 0 auto 1rem;
+  width: 100%;
+}
+
+.ain-offers-section-title {
+  font-size: clamp(1.5rem, 4vw, 2.15rem);
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.ain-offers-section-subtitle {
+  font-size: clamp(0.85rem, 2vw, 0.975rem);
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 2-Card Grid (Exact 2 Offers) */
+.ain-offers-cards-grid-two {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .ain-offers-cards-grid-two {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Card 1: 40% OFF Website Offer */
+.ain-offers-card-website {
+  background: #ffffff;
+  border-radius: 1.15rem;
+  border: 1.5px solid #e2e8f0;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-card-website {
+    padding: 1.75rem 1.5rem;
+  }
+}
+
+.ain-offers-card-website:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(74, 23, 163, 0.08);
+  border-color: #6e38ed;
+}
+
+/* Card 2: Extra 10% WhatsApp Offer */
+.ain-offers-card-whatsapp {
+  background: linear-gradient(150deg, #120C2E 0%, #1B1440 60%, #143525 100%);
+  border-radius: 1.15rem;
+  border: 1.5px solid #22c55e;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 24px rgba(18, 12, 46, 0.3);
+  transition: all 0.25s ease;
+  position: relative;
+  color: #ffffff;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-card-whatsapp {
+    padding: 1.75rem 1.5rem;
+  }
+}
+
+.ain-offers-card-whatsapp:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(34, 197, 94, 0.2);
+  border-color: #4ade80;
+}
+
+.ain-offers-card-audience {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.ain-offers-card-percentage {
+  font-size: clamp(2.25rem, 5vw, 2.85rem);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.ain-offers-card-details {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.ain-offers-perks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ain-offers-perk-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+}
+
+/* ---------------- SECTION 3: CLAIM IN 3 STEPS ---------------- */
+.ain-offers-steps-section {
+  padding: 1.5rem 1rem 1.75rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f0f7;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-steps-section {
+    padding: 1.75rem 1.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ain-offers-steps-section {
+    padding: 2rem 2rem 2.25rem;
+  }
+}
+
+.ain-offers-steps-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .ain-offers-steps-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+  }
+}
+
+.ain-offers-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ain-offers-step-badge {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #f59e0b;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.65rem;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.22);
+}
+
+.ain-offers-step-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+}
+
+.ain-offers-step-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* ---------------- SECTION 4: ELEVATED SUBJECTS SHOWCASE ---------------- */
+.ain-offers-subjects-section {
+  padding: 1.5rem 1rem 1.25rem;
+  background-color: #faf9fd;
+  border-bottom: 1px solid #f1f0f7;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-subjects-section {
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ain-offers-subjects-section {
+    padding: 2rem 2rem 1.75rem;
+  }
+}
+
+/* Horizontally Responsive Filter Tabs */
+.ain-offers-subject-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: 0.4rem;
+  max-width: 1200px;
+  margin: 0 auto 1rem;
+  padding-bottom: 0.25rem;
+  scrollbar-width: none;
+}
+
+.ain-offers-subject-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .ain-offers-subject-tabs {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
+.ain-offers-tab-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.775rem;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ain-offers-tab-btn:hover {
+  border-color: #6e38ed;
+  color: #4a17a3;
+  background: #f4f0ff;
+}
+
+.ain-offers-tab-btn.active {
+  background: #4a17a3;
+  color: #ffffff;
+  border-color: #4a17a3;
+  box-shadow: 0 4px 8px rgba(74, 23, 163, 0.18);
+}
+
+/* Enhanced Subject Cards Grid */
+.ain-offers-subject-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-subject-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ain-offers-subject-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.ain-offers-subject-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  min-width: 0;
+}
+
+.ain-offers-subject-card:hover {
+  border-color: #6e38ed;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(74, 23, 163, 0.06);
+}
+
+.ain-offers-subject-icon-box {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ain-offers-subject-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.ain-offers-subject-name {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.1rem;
+  transition: color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ain-offers-subject-card:hover .ain-offers-subject-name {
+  color: #4a17a3;
+}
+
+.ain-offers-subject-tag {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ain-offers-subject-discount-pill {
+  font-size: 0.675rem;
+  font-weight: 800;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ---------------- SECTION 5: CTA BANNER ---------------- */
+.ain-offers-cta-banner-wrapper {
+  max-width: 1200px;
+  margin: 0 auto 0.5rem;
+  width: 100%;
+}
+
+.ain-offers-cta-banner {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 60%, #f59e0b 100%);
+  border-radius: 1rem;
+  padding: 1.35rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.18);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ain-offers-cta-banner {
+    padding: 1.6rem 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .ain-offers-cta-banner {
+    flex-direction: row;
+    align-items: center;
+    padding: 1.85rem 2.25rem;
+  }
+}
+
+.ain-offers-cta-banner-title {
+  font-size: clamp(1.35rem, 3.5vw, 1.95rem);
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.2rem;
+}
+
+.ain-offers-cta-banner-sub {
+  font-size: clamp(0.825rem, 2vw, 0.95rem);
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.ain-offers-terms-note {
+  max-width: 1200px;
+  margin: 0.5rem auto 0;
+  padding: 0;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  width: 100%;
+}

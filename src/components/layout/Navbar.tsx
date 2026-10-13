@@ -188,6 +188,7 @@ const SUBJECTS: NavLinkItem[] = [
 });
 
 const RESOURCES: NavLinkItem[] = [
+  { name: "Offers", path: "/offer" },
   { name: "Blog", path: "/blog" },
   { name: "Pricing", path: "/pricing" },
   { name: "Reviews", path: "/review" },
@@ -781,9 +782,10 @@ export const Navbar = () => {
                 }}
               >
                 {[0, 1, 2].map((i) => (
-                  <div
+                  <Link
                     key={i}
-                    className="flex items-center gap-3 pr-10"
+                    href="/offer"
+                    className="flex items-center gap-3 pr-10 hover:opacity-90 transition-opacity no-underline cursor-pointer"
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -800,7 +802,7 @@ export const Navbar = () => {
                         Discounts – Up to 40% OFF!
                       </span>
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
