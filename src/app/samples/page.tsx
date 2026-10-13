@@ -75,10 +75,11 @@ export default async function SamplesPage() {
   },
   "offers": {
     "@type": "AggregateOffer",
+    "url": "https://www.assignmentinneed.co.uk/offer",
     "priceCurrency": "GBP",
     "lowPrice": "4.00",
     "highPrice": "10.00",
-    "offerCount": "7"
+    "offerCount": "2"
   }
 }`
         }}

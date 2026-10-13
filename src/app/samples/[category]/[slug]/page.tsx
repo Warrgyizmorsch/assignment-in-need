@@ -96,10 +96,11 @@ export default async function SampleDetailPage({ params }: Props) {
   },
   "offers": {
     "@type": "AggregateOffer",
+    "url": "https://www.assignmentinneed.co.uk/offer",
     "priceCurrency": "GBP",
     "lowPrice": "4.00",
     "highPrice": "10.00",
-    "offerCount": "7"
+    "offerCount": "2"
   }
 }`
         }}
