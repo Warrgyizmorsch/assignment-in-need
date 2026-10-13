@@ -134,7 +134,7 @@ export default function SubjectsListPage() {
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": "Explore Our Academic Subjects",
-  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "description": "Find expert assignment help across 150+ subjects, including business, law, nursing, accounting, finance, marketing, IT and more.",
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
     "@type": "Brand",

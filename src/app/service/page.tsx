@@ -126,7 +126,7 @@ export default function ServicesListPage() {
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": "Explore Our Academic Services",
-  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "description": "Explore assignment services including essays, reports, coursework, case studies, dissertations, proofreading and academic support from subject experts.",
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
     "@type": "Brand",

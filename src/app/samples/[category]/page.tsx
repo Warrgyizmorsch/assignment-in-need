@@ -27,6 +27,7 @@ export default async function SampleCategoryPage({ params }: Props) {
   const formattedName = category
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+  const description = `Explore free ${formattedName} assignment samples, essays, case studies, and university research papers.`;
 
   return (
     <>
@@ -37,7 +38,7 @@ export default async function SampleCategoryPage({ params }: Props) {
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": ${JSON.stringify(formattedName + " Assignment Samples & Papers")},
-  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "description": ${JSON.stringify(description)},
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
     "@type": "Brand",

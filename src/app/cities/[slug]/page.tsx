@@ -56,10 +56,43 @@ export default async function CityRoutePage({ params }: CityRoutePageProps) {
   const cityDataSlug = resolvedParams.slug.replace(/^assignment-help-/, "").replace(/-assignment-help$/, "");
   let cityName = cityDataSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   if (pageData?.city) cityName = pageData.city;
-  const cityPageName = pageData?.hero_heading || pageData?.title || (pageData?.city ? `${pageData.city} Assignment Help` : `${cityName} Assignment Help`);
+  const countryName = pageData?.country || "United Kingdom";
+
+  const cityHeading = pageData?.hero_heading || pageData?.title || (pageData?.city ? `${pageData.city} Assignment Help` : `Expert ${cityName} Assignment Help`);
+  const cityDescription = pageData?.meta_description ||
+    (pageData?.hero_content ? pageData.hero_content.replace(/<[^>]*>/g, "").slice(0, 160) : "") ||
+    `Need assignment help in ${cityName}? Get top-rated academic writing support from expert writers in ${cityName}, ${countryName}. 100% plagiarism free & on-time.`;
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": ${JSON.stringify(cityHeading)},
+  "description": ${JSON.stringify(cityDescription)},
+  "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
+  "brand": {
+    "@type": "Brand",
+    "name": "Assignment In Need"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.96",
+    "ratingCount": "46799"
+  },
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "GBP",
+    "lowPrice": "4.00",
+    "highPrice": "10.00",
+    "offerCount": "7"
+  }
+}`
+        }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -82,7 +115,7 @@ export default async function CityRoutePage({ params }: CityRoutePageProps) {
     {
       "@type": "ListItem",
       "position": 3,
-      "name": ${JSON.stringify(cityPageName)},
+      "name": ${JSON.stringify(cityHeading)},
       "item": "https://www.assignmentinneed.co.uk/cities/${resolvedParams.slug}"
     }
   ]

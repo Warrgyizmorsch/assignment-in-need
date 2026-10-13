@@ -174,6 +174,9 @@ export default async function ServicePage({ params }: Props) {
   }
 
   const serviceName = initialPageData?.hero_heading || initialPageData?.title || fullSlug.split("/").pop()?.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "Service";
+  const serviceDescription = initialPageData?.meta_description ||
+    (initialPageData?.hero_content ? initialPageData.hero_content.replace(/<[^>]*>/g, "").slice(0, 160) : "") ||
+    "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.";
 
   return (
     <>
@@ -183,8 +186,8 @@ export default async function ServicePage({ params }: Props) {
           __html: `{
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": ${JSON.stringify(initialPageData?.hero_heading || initialPageData?.title || fullSlug.split("/").pop()?.replace(/-/g, " ").replace(/\\b\\w/g, c => c.toUpperCase()) || "Service")},
-  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "name": ${JSON.stringify(serviceName)},
+  "description": ${JSON.stringify(serviceDescription)},
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
     "@type": "Brand",

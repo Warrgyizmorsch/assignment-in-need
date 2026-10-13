@@ -62,7 +62,7 @@ export default async function SamplesPage() {
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": "Free Assignment Samples & Academic Essays",
-  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "description": "Browse our free collection of high-quality university assignment samples, essays, case studies, and dissertations.",
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
     "@type": "Brand",

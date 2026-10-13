@@ -73,6 +73,10 @@ export default async function SampleDetailPage({ params }: Props) {
   } catch (e) { }
 
   const categoryName = sampleData?.category_name || category.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+  const description =
+    sampleData?.meta_description ||
+    (sampleData?.description ? sampleData.description.replace(/<[^>]*>/g, "").slice(0, 160) : "") ||
+    `Read free university sample paper for ${sampleData?.title || h1 || "academic writing"}. Standard UK university example.`;
 
   return (
     <>
@@ -83,7 +87,7 @@ export default async function SampleDetailPage({ params }: Props) {
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": ${JSON.stringify(h1)},
-  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "description": ${JSON.stringify(description)},
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
     "@type": "Brand",

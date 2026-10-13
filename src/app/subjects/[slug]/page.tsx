@@ -85,6 +85,10 @@ export default async function SubjectPage({ params }: Props) {
   } catch (e) { }
 
   const subjectName = initialData?.page?.hero_heading || initialData?.page?.title || slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) + " Assignment Help";
+  const subjectDescription =
+    initialData?.page?.meta_description ||
+    (initialData?.page?.hero_content ? initialData.page.hero_content.replace(/<[^>]*>/g, "").slice(0, 160) : "") ||
+    `Get expert ${subjectName} from qualified UK academic writers. 100% original, plagiarism-free, on-time delivery.`;
 
   return (
     <>
@@ -94,8 +98,8 @@ export default async function SubjectPage({ params }: Props) {
           __html: `{
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": ${JSON.stringify(initialData?.page?.hero_heading || initialData?.page?.title || slug.replace(/-/g, " ").replace(/\\b\\w/g, c => c.toUpperCase()) + " Assignment Help")},
-  "description": "Professional assignment writing help and academic assistance for students in the UK. Expert support for essays, coursework, and dissertations.",
+  "name": ${JSON.stringify(subjectName)},
+  "description": ${JSON.stringify(subjectDescription)},
   "image": "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   "brand": {
     "@type": "Brand",
