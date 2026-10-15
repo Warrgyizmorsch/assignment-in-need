@@ -250,17 +250,49 @@ export async function fetchSubjectPages(baseUrl: string): Promise<string[]> {
 
 export async function fetchSamples(baseUrl: string): Promise<string[]> {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/samples?limit=2000`, {
+    const firstRes = await fetch(`${BACKEND_URL}/api/samples?limit=50&page=1`, {
       next: { revalidate: 3600 },
     });
-    if (res.ok) {
-      const payload = await res.json();
-      const list = Array.isArray(payload?.data?.data)
+    if (firstRes.ok) {
+      const payload = await firstRes.json();
+      const firstPageList = Array.isArray(payload?.data?.data)
         ? payload.data.data
         : Array.isArray(payload?.data)
         ? payload.data
         : [];
-      return list
+
+      const allSamples: any[] = [...firstPageList];
+      const lastPage = Number(payload?.data?.last_page) || 1;
+
+      if (lastPage > 1) {
+        const pagePromises: Promise<any[]>[] = [];
+        for (let page = 2; page <= lastPage; page++) {
+          pagePromises.push(
+            fetch(`${BACKEND_URL}/api/samples?limit=50&page=${page}`, {
+              next: { revalidate: 3600 },
+            })
+              .then((r) => (r.ok ? r.json() : null))
+              .then((pagePayload) => {
+                return Array.isArray(pagePayload?.data?.data)
+                  ? pagePayload.data.data
+                  : Array.isArray(pagePayload?.data)
+                  ? pagePayload.data
+                  : [];
+              })
+              .catch((err) => {
+                console.error(`Sitemap: Failed to fetch samples page ${page}`, err);
+                return [];
+              })
+          );
+        }
+
+        const remainingPages = await Promise.all(pagePromises);
+        for (const items of remainingPages) {
+          allSamples.push(...items);
+        }
+      }
+
+      return allSamples
         .filter((sample: any) => sample && (sample.slug || sample.id))
         .map((sample: any) => {
           const catName =
