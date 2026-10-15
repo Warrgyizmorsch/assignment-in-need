@@ -1,0 +1,57 @@
+/* Auth Slider Original Styling - Stable App Router CSS */
+
+.auth-panel-container {
+  position: relative;
+  display: flex;
+  min-height: 640px;
+  width: 100%;
+  max-width: 1000px;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 8px 32px rgba(25, 28, 30, 0.06);
+}
+
+.auth-form-container {
+  width: 50%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff;
+  padding: 2.5rem 3rem;
+  transition: all 0.4s ease-in-out;
+  z-index: 2;
+}
+
+.auth-content-panel {
+  width: 50%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  background: linear-gradient(135deg, #6935db 0%, #530ec6 100%);
+  color: #ffffff;
+  text-align: center;
+  z-index: 1;
+}
+
+@media (max-width: 860px) {
+  .auth-panel-container {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    max-width: 520px;
+  }
+
+  .auth-form-container {
+    width: 100%;
+    padding: 2rem 1.5rem;
+  }
+
+  .auth-content-panel {
+    display: none !important;
+  }
+}

@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import {
   ChevronDown,
   ChevronRight,
+  LogIn,
   LogOut,
   Menu,
   Phone,
@@ -1072,7 +1073,7 @@ export const Navbar = () => {
               <button
                 type="button"
                 onClick={() => setIsAccountOpen((prev) => !prev)}
-                className="znh-account-button desktop-account font-bold text-base"
+                className="znh-account-button desktop-account font-bold text-base cursor-pointer"
                 aria-label="Account"
               >
                 {isLoggedIn && userProfile?.photo ? (
@@ -1085,14 +1086,14 @@ export const Navbar = () => {
               </button>
 
               {isAccountOpen && (
-                <div className="absolute right-0 mt-3 min-w-[20rem] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+                <div className="absolute right-0 mt-3 min-w-[20rem] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.12)] z-50">
                   <div className="bg-[#f8f4ff] px-4 py-4">
                     {isLoggedIn ? (
                       <div className="flex items-center gap-3">
                         <div className="flex h-12 w-12 overflow-hidden items-center justify-center rounded-full bg-[#ede9fe] text-[#4a17a3] font-bold text-lg shrink-0">
-                          {isLoggedIn && userProfile?.photo ? (
+                          {userProfile?.photo ? (
                             <img src={userProfile.photo} alt={userProfile.name} className="h-full w-full object-cover" />
-                          ) : isLoggedIn && userProfile?.name ? (
+                          ) : userProfile?.name ? (
                             userProfile.name.charAt(0).toUpperCase()
                           ) : (
                             <User className="h-5 w-5" />
@@ -1113,12 +1114,11 @@ export const Navbar = () => {
                           Welcome back
                         </div>
                         <p className="text-sm text-gray-500">
-                          Login to access your orders, profile, and faster
-                          checkout.
+                          Login to access your orders, profile, and faster checkout.
                         </p>
                         <Link
                           href="/login"
-                          className="btn-shutter-blue-open inline-flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white"
+                          className="btn-shutter-blue-open inline-flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white cursor-pointer"
                           onClick={() => setIsAccountOpen(false)}
                         >
                           Login
@@ -1135,12 +1135,12 @@ export const Navbar = () => {
                         className="btn-shutter-blue-close flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-center"
                       >
                         <User className="h-4 w-4" />
-                        My Profile
+                        My Profile & Orders
                       </Link>
                       <button
                         type="button"
                         onClick={handleLogout}
-                        className="btn-shutter-orange-close flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold"
+                        className="btn-shutter-orange-close flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer"
                       >
                         <LogOut className="h-4 w-4" />
                         Logout

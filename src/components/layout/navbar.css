@@ -609,7 +609,8 @@
   }
 
   .znh-account-button.desktop-account {
-    display: none !important;
+    width: 36px;
+    height: 36px;
   }
 }
 

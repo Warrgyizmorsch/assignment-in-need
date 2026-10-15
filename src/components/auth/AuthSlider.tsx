@@ -3,29 +3,13 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { CustomDropdown } from "../ui/CustomDropdown";
-import { AnimateIn } from "../ui/AnimateIn";
 import { ForgotPasswordForm } from "./ForgotPasswordForm";
+import "./auth-slider.css";
 
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
-
-const COUNTRY_CODES = getCountries()
-  .map((country) => {
-    const code = getCountryCallingCode(country);
-    const name = (en as any)[country] || country;
-    return {
-      label: `+${code} (${country === "GB" ? "UK" : name})`,
-      value: `+${code}`,
-      country,
-    };
-  })
-  .sort((a, b) => {
-    if (a.country === "GB") return -1;
-    if (b.country === "GB") return 1;
-    return a.label.localeCompare(b.label);
-  });
 
 import {
   ArrowRight,
@@ -39,6 +23,34 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
+
+const COUNTRY_CODES = (() => {
+  try {
+    return getCountries()
+      .map((country) => {
+        const code = getCountryCallingCode(country);
+        const name = (en as any)?.[country] || country;
+        return {
+          label: `+${code} (${country === "GB" ? "UK" : name})`,
+          value: `+${code}`,
+          country,
+        };
+      })
+      .sort((a, b) => {
+        if (a.country === "GB") return -1;
+        if (b.country === "GB") return 1;
+        return a.label.localeCompare(b.label);
+      });
+  } catch {
+    return [
+      { label: "+44 (UK)", value: "+44", country: "GB" },
+      { label: "+1 (US/CA)", value: "+1", country: "US" },
+      { label: "+61 (Australia)", value: "+61", country: "AU" },
+      { label: "+91 (India)", value: "+91", country: "IN" },
+      { label: "+971 (UAE)", value: "+971", country: "AE" },
+    ];
+  }
+})();
 
 type AuthMode = "login" | "register" | "forgot";
 
@@ -67,7 +79,7 @@ const passwordInputClass =
 
 const labelClass = "text-sm font-semibold text-[#191c1e]";
 
-function readMessage(data: unknown, fallback: string) {
+function readMessage(data: unknown, fallback: string): string {
   if (data && typeof data === "object") {
     const record = data as Record<string, unknown>;
     if (typeof record.message === "string") return record.message;
@@ -78,7 +90,7 @@ function readMessage(data: unknown, fallback: string) {
 
 export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const pathname = usePathname();
-  
+
   const getModeFromPathname = (path: string, fallback: AuthMode): AuthMode => {
     if (path === "/signup") return "register";
     if (path === "/forgot-password") return "forgot";
@@ -86,12 +98,15 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
     return fallback;
   };
 
-  const [mode, setMode] = useState<AuthMode>(() => getModeFromPathname(pathname, initialMode));
+  const [mode, setMode] = useState<AuthMode>(() =>
+    getModeFromPathname(pathname, initialMode)
+  );
 
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: "",
     password: "",
   });
+
   const [registerForm, setRegisterForm] = useState<RegisterForm>({
     name: "",
     phone_no: "",
@@ -99,6 +114,7 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
     password: "",
     confirm_password: "",
   });
+
   const [registerCountryCode, setRegisterCountryCode] = useState("+44");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
@@ -106,8 +122,15 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
 
   const [loading, setLoading] = useState<AuthMode | null>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirect") || "/";
+  const [redirectPath, setRedirectPath] = useState("/profile");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect");
+      if (redirect) setRedirectPath(redirect);
+    }
+  }, []);
 
   useEffect(() => {
     setMode(getModeFromPathname(pathname, initialMode));
@@ -133,10 +156,13 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginForm),
       });
+
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(readMessage(data, "Unable to login. Please check your details."));
+        throw new Error(
+          readMessage(data, "Unable to login. Please check your details.")
+        );
       }
 
       const payload = data && typeof data === "object" ? (data as Record<string, any>) : {};
@@ -144,6 +170,13 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
 
       if (typeof token === "string") {
         localStorage.setItem("ain_auth_token", token);
+      }
+
+      const userData = payload.data || payload.user || payload;
+      if (userData?.name) localStorage.setItem("ain_user_name", userData.name);
+      if (userData?.email) localStorage.setItem("ain_user_email", userData.email || loginForm.email);
+      if (userData && typeof userData === "object") {
+        localStorage.setItem("ain_user_data", JSON.stringify(userData));
       }
 
       if (typeof token === "string") {
@@ -161,18 +194,9 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
             localStorage.setItem("ain_user_name", pd.name || "");
             localStorage.setItem("ain_user_email", pd.email || "");
             localStorage.setItem("ain_user_data", JSON.stringify(pd));
-          } else {
-            const userData = payload.data || payload;
-            if (userData?.name) localStorage.setItem("ain_user_name", userData.name);
-            if (userData?.email) localStorage.setItem("ain_user_email", userData.email);
-            if (userData && typeof userData === "object") {
-              localStorage.setItem("ain_user_data", JSON.stringify(userData));
-            }
           }
         } catch {
-          const userData = payload.data || payload;
-          if (userData?.name) localStorage.setItem("ain_user_name", userData.name);
-          if (userData?.email) localStorage.setItem("ain_user_email", userData.email);
+          // ignore
         }
       }
 
@@ -181,11 +205,11 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       }
 
       toast.success(readMessage(data, "Login successful."));
-      setTimeout(() => {
-        router.push(redirectPath);
-      }, 1200);
+      router.push(redirectPath);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to login. Please try again.");
+      toast.error(
+        error instanceof Error ? error.message : "Unable to login. Please try again."
+      );
     } finally {
       setLoading(null);
     }
@@ -204,17 +228,21 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
     try {
       const payload = {
         ...registerForm,
-        phone_no: `${registerCountryCode} ${registerForm.phone_no}`
+        phone_no: `${registerCountryCode} ${registerForm.phone_no.trim()}`,
       };
+
       const response = await fetch("/api/app/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(readMessage(data, "Unable to create account. Please try again."));
+        throw new Error(
+          readMessage(data, "Unable to create account. Please try again.")
+        );
       }
 
       toast.success(readMessage(data, "Account created successfully. Please login."));
@@ -227,7 +255,9 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       });
       switchMode("login", "/login");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to create account. Please try again.");
+      toast.error(
+        error instanceof Error ? error.message : "Unable to create account. Please try again."
+      );
     } finally {
       setLoading(null);
     }
@@ -238,14 +268,10 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_12%,rgba(255,112,18,0.11),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(105,53,219,0.14),transparent_32%),linear-gradient(135deg,#ffffff_0%,#f8f9fc_55%,#f3edff_100%)]" />
 
       <main className="relative z-10 mx-auto flex w-full max-w-[1000px] justify-center">
-        <div>
-          <div
-            className={`auth-panel-container shadow-[0_8px_32px_rgba(25,28,30,0.06)] ${
-              isRegister ? "right-panel-active" : isForgot ? "forgot-panel-active" : ""
-            }`}
-          >
-            {/* LOGIN CONTAINER */}
-            <div className="auth-form-container auth-login-container flex flex-col justify-center bg-white p-6 sm:p-8 lg:p-12">
+        <div className="auth-panel-container">
+          {/* LOGIN CONTAINER */}
+          {mode === "login" && (
+            <div className="auth-form-container">
               <div className="mb-8 flex flex-col items-center text-center">
                 <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-[#ffdbcb]/40">
                   <Award className="h-8 w-8 text-[#a04100]" />
@@ -273,7 +299,9 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                       required
                       type="email"
                       value={loginForm.email}
-                      onChange={(event) => setLoginForm((prev) => ({ ...prev, email: event.target.value }))}
+                      onChange={(event) =>
+                        setLoginForm((prev) => ({ ...prev, email: event.target.value }))
+                      }
                     />
                   </div>
                 </div>
@@ -301,11 +329,13 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                       required
                       type={showLoginPassword ? "text" : "password"}
                       value={loginForm.password}
-                      onChange={(event) => setLoginForm((prev) => ({ ...prev, password: event.target.value }))}
+                      onChange={(event) =>
+                        setLoginForm((prev) => ({ ...prev, password: event.target.value }))
+                      }
                     />
                     <button
                       aria-label={showLoginPassword ? "Hide password" : "Show password"}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#594136] transition-colors duration-200 hover:text-[#191c1e]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#594136] transition-colors duration-200 hover:text-[#191c1e] cursor-pointer"
                       onClick={() => setShowLoginPassword((prev) => !prev)}
                       type="button"
                     >
@@ -337,9 +367,11 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                 </p>
               </div>
             </div>
+          )}
 
-            {/* REGISTER CONTAINER */}
-            <div className="auth-form-container auth-signup-container flex flex-col justify-center bg-white p-6 sm:p-8 lg:p-12">
+          {/* REGISTER CONTAINER */}
+          {mode === "register" && (
+            <div className="auth-form-container">
               <div className="mb-6 flex flex-col items-center text-center">
                 <h2 className="mb-2 text-[28px] font-extrabold leading-tight text-[#a04100]">
                   Create Account
@@ -364,7 +396,9 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                       required
                       type="text"
                       value={registerForm.name}
-                      onChange={(event) => setRegisterForm((prev) => ({ ...prev, name: event.target.value }))}
+                      onChange={(event) =>
+                        setRegisterForm((prev) => ({ ...prev, name: event.target.value }))
+                      }
                     />
                   </div>
                 </div>
@@ -374,8 +408,8 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                     Phone Number
                   </label>
                   <div className="flex gap-2">
-                    <div className="relative w-[100px] shrink-0 border border-[#e1c0b1] bg-white rounded-lg pl-9 pr-2 flex items-center h-[50px]">
-                      <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#594136]" />
+                    <div className="relative w-[110px] shrink-0 border border-[#e1c0b1] bg-white rounded-lg pl-8 pr-1 flex items-center h-[48px]">
+                      <Phone className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#594136]" />
                       <CustomDropdown
                         options={COUNTRY_CODES}
                         value={registerCountryCode}
@@ -392,7 +426,9 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                         required
                         type="tel"
                         value={registerForm.phone_no}
-                        onChange={(event) => setRegisterForm((prev) => ({ ...prev, phone_no: event.target.value }))}
+                        onChange={(event) =>
+                          setRegisterForm((prev) => ({ ...prev, phone_no: event.target.value }))
+                        }
                       />
                     </div>
                   </div>
@@ -412,7 +448,9 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                       required
                       type="email"
                       value={registerForm.email}
-                      onChange={(event) => setRegisterForm((prev) => ({ ...prev, email: event.target.value }))}
+                      onChange={(event) =>
+                        setRegisterForm((prev) => ({ ...prev, email: event.target.value }))
+                      }
                     />
                   </div>
                 </div>
@@ -432,11 +470,13 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                         required
                         type={showRegisterPassword ? "text" : "password"}
                         value={registerForm.password}
-                        onChange={(event) => setRegisterForm((prev) => ({ ...prev, password: event.target.value }))}
+                        onChange={(event) =>
+                          setRegisterForm((prev) => ({ ...prev, password: event.target.value }))
+                        }
                       />
                       <button
                         aria-label={showRegisterPassword ? "Hide password" : "Show password"}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#594136] transition-colors duration-200 hover:text-[#191c1e]"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#594136] transition-colors duration-200 hover:text-[#191c1e] cursor-pointer"
                         onClick={() => setShowRegisterPassword((prev) => !prev)}
                         type="button"
                       >
@@ -459,11 +499,13 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                         required
                         type={showConfirmPassword ? "text" : "password"}
                         value={registerForm.confirm_password}
-                        onChange={(event) => setRegisterForm((prev) => ({ ...prev, confirm_password: event.target.value }))}
+                        onChange={(event) =>
+                          setRegisterForm((prev) => ({ ...prev, confirm_password: event.target.value }))
+                        }
                       />
                       <button
                         aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#594136] transition-colors duration-200 hover:text-[#191c1e]"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#594136] transition-colors duration-200 hover:text-[#191c1e] cursor-pointer"
                         onClick={() => setShowConfirmPassword((prev) => !prev)}
                         type="button"
                       >
@@ -496,174 +538,52 @@ export function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                 </p>
               </div>
             </div>
+          )}
 
-            {/* FORGOT PASSWORD CONTAINER (SEPARATE COMPONENT) */}
-            <ForgotPasswordForm onSwitchMode={switchMode} />
+          {/* FORGOT PASSWORD CONTAINER */}
+          {mode === "forgot" && (
+            <div className="auth-form-container">
+              <ForgotPasswordForm onSwitchMode={switchMode} />
+            </div>
+          )}
 
-            {/* SIDE PANEL (SWIPES LEFT WHEN REGISTER OR FORGOT ACTIVE) */}
-            <div className="auth-content-panel hidden flex-col items-center justify-start overflow-hidden bg-[linear-gradient(135deg,#6935db_0%,#530ec6_100%)] text-center text-white md:flex">
-              <div className="relative h-[300px] w-full overflow-hidden rounded-sm bg-[#7c3aed]/30 lg:h-[330px]">
-                <Image
-                  src="/auth/academic-excellence.png"
-                  alt="Student using academic assignment help with laptop, books, and success icons"
-                  fill
-                  sizes="500px"
-                  className="object-cover object-center"
-                  priority
-                />
-              </div>
-              <div className="flex flex-1 flex-col items-center justify-center px-8 pb-8 pt-6">
-                <h2 className="mb-3 text-[30px] font-extrabold leading-tight text-white">
-                  Academic Excellence
-                </h2>
-                <p className="mb-6 max-w-xs text-[17px] leading-relaxed text-[#cfbcff]">
-                  Your trusted partner for academic success.
-                </p>
-                <ul className="space-y-3 text-left">
-                  <li className="flex items-center gap-3">
-                    <ShieldCheck className="h-5 w-5 text-[#ffb693]" />
-                    <span className="text-[15px] text-white">Expert writers across disciplines</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <Headphones className="h-5 w-5 text-[#ffb693]" />
-                    <span className="text-[15px] text-white">24/7 dedicated support</span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <ShieldCheck className="h-5 w-5 text-[#ffb693]" />
-                    <span className="text-[15px] text-white">100% original, plagiarism-free work</span>
-                  </li>
-                </ul>
-              </div>
+          {/* SIDE PANEL */}
+          <div className="auth-content-panel">
+            <div className="relative h-[300px] w-full overflow-hidden bg-[#7c3aed]/30 lg:h-[330px]">
+              <Image
+                src="/auth/academic-excellence.png"
+                alt="Student using academic assignment help with laptop, books, and success icons"
+                fill
+                sizes="500px"
+                className="object-cover object-center"
+                priority
+              />
+            </div>
+            <div className="flex flex-1 flex-col items-center justify-center px-8 pb-8 pt-6">
+              <h2 className="mb-3 text-[30px] font-extrabold leading-tight text-white">
+                Academic Excellence
+              </h2>
+              <p className="mb-6 max-w-xs text-[17px] leading-relaxed text-[#cfbcff]">
+                Your trusted partner for academic success.
+              </p>
+              <ul className="space-y-3 text-left">
+                <li className="flex items-center gap-3">
+                  <ShieldCheck className="h-5 w-5 text-[#ffb693]" />
+                  <span className="text-[15px] text-white">Expert writers across disciplines</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <Headphones className="h-5 w-5 text-[#ffb693]" />
+                  <span className="text-[15px] text-white">24/7 dedicated support</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <ShieldCheck className="h-5 w-5 text-[#ffb693]" />
+                  <span className="text-[15px] text-white">100% original, plagiarism-free work</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </main>
-
-      <style jsx>{`
-        .auth-panel-container {
-          position: relative;
-          display: flex;
-          min-height: 640px;
-          width: 100%;
-          max-width: 1000px;
-          overflow: hidden;
-          border-radius: 1rem;
-          background: #ffffff;
-        }
-
-        .auth-form-container {
-          position: absolute;
-          top: 0;
-          height: 100%;
-          width: 50%;
-          transition: all 0.6s ease-in-out;
-          z-index: 1;
-        }
-
-        :global(.auth-forgot-container) {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 50%;
-          transition: all 0.6s ease-in-out;
-          z-index: 1;
-          opacity: 0;
-          pointer-events: none;
-        }
-
-        .auth-login-container {
-          left: 0;
-          opacity: 1;
-          z-index: 2;
-        }
-
-        .auth-signup-container {
-          left: 0;
-          opacity: 0;
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        .auth-content-panel {
-          position: absolute;
-          top: 0;
-          left: 50%;
-          z-index: 10;
-          height: 100%;
-          width: 50%;
-          transition: transform 0.6s ease-in-out;
-        }
-
-        .auth-panel-container.right-panel-active .auth-login-container,
-        .auth-panel-container.forgot-panel-active .auth-login-container {
-          transform: translateX(100%);
-          opacity: 0;
-          pointer-events: none;
-        }
-
-        .auth-panel-container.right-panel-active .auth-signup-container {
-          transform: translateX(100%);
-          opacity: 1;
-          pointer-events: auto;
-          z-index: 5;
-        }
-
-        .auth-panel-container.forgot-panel-active :global(.auth-forgot-container) {
-          transform: translateX(100%);
-          opacity: 1;
-          pointer-events: auto;
-          z-index: 5;
-        }
-
-        .auth-panel-container.right-panel-active .auth-content-panel,
-        .auth-panel-container.forgot-panel-active .auth-content-panel {
-          transform: translateX(-100%);
-        }
-
-        @media (max-width: 767px) {
-          .auth-panel-container {
-            display: block;
-            min-height: auto;
-            overflow: visible;
-            border-radius: 0.875rem;
-          }
-
-          .auth-form-container,
-          :global(.auth-forgot-container) {
-            position: relative;
-            width: 100%;
-            height: auto;
-            transition: opacity 0.25s ease;
-          }
-
-          .auth-login-container,
-          .auth-signup-container,
-          :global(.auth-forgot-container),
-          .auth-panel-container.right-panel-active .auth-login-container,
-          .auth-panel-container.right-panel-active .auth-signup-container,
-          .auth-panel-container.forgot-panel-active :global(.auth-forgot-container) {
-            transform: none;
-          }
-
-          .auth-login-container {
-            display: ${mode === "login" ? "flex" : "none"};
-            opacity: ${mode === "login" ? "1" : "0"};
-          }
-
-          .auth-signup-container {
-            display: ${mode === "register" ? "flex" : "none"};
-            opacity: ${mode === "register" ? "1" : "0"};
-            pointer-events: auto;
-          }
-
-          :global(.auth-forgot-container) {
-            display: ${mode === "forgot" ? "flex" : "none"};
-            opacity: ${mode === "forgot" ? "1" : "0"};
-            pointer-events: auto;
-          }
-        }
-      `}</style>
     </section>
   );
 }
