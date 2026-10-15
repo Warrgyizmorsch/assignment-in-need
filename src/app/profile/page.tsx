@@ -536,13 +536,11 @@ export default function ProfilePage() {
   const summary = orderData?.summary;
 
   const activeCount = allOrders.filter(o => {
-    if (o.order_db_id.toString().startsWith("lead_")) return false;
     const s = (o.status || "").toLowerCase().trim();
     return s !== "completed" && s !== "done" && s !== "delivered" && s !== "cancelled";
   }).length;
 
   const completedCount = allOrders.filter(o => {
-    if (o.order_db_id.toString().startsWith("lead_")) return false;
     const s = (o.status || "").toLowerCase().trim();
     return s === "completed" || s === "done" || s === "delivered";
   }).length;
@@ -556,10 +554,13 @@ export default function ProfilePage() {
     return s === "cancelled";
   }).length;
 
-  // Latest active confirmed order for the dashboard overview panel
+  // Latest active confirmed or processing order for the dashboard overview panel
   const latestActiveOrder = allOrders.find(
-    (o) => !o.status || (o.status !== "Cancelled" && o.status !== "Completed")
-  );
+    (o) => {
+      const s = (o.status || "").toLowerCase().trim();
+      return s !== "completed" && s !== "done" && s !== "delivered" && s !== "cancelled";
+    }
+  ) || allOrders[0];
 
   const filteredConfirmed = allOrders.filter((order) => {
     const isLead = order.order_db_id.toString().startsWith("lead_");
@@ -567,8 +568,8 @@ export default function ProfilePage() {
     
     // Apply Tab Filter
     let tabMatches = true;
-    if (orderSubTab === "active") tabMatches = !isLead && (s !== "completed" && s !== "done" && s !== "delivered" && s !== "cancelled");
-    else if (orderSubTab === "completed") tabMatches = !isLead && (s === "completed" || s === "done" || s === "delivered");
+    if (orderSubTab === "active") tabMatches = (s !== "completed" && s !== "done" && s !== "delivered" && s !== "cancelled");
+    else if (orderSubTab === "completed") tabMatches = (s === "completed" || s === "done" || s === "delivered");
     else if (orderSubTab === "drafts") tabMatches = isLead;
     else if (orderSubTab === "cancelled") tabMatches = s === "cancelled";
 
@@ -949,7 +950,7 @@ export default function ProfilePage() {
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                         >
-                          Drafts ({draftsCount})
+                          Processing / Quotes ({draftsCount})
                         </button>
                         <button
                           onClick={() => setOrderSubTab("cancelled")}
