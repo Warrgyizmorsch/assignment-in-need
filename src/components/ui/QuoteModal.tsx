@@ -696,7 +696,21 @@ export function openQuoteModal() {
                         )}
                       </button>
 
-                      <p className="text-[10px] text-gray-500 text-center font-medium mt-2 flex items-center justify-center gap-1">
+                      {/* Pricing Notice */}
+                      <div className="flex items-center justify-center gap-2 pt-2.5 pb-0.5 text-xs sm:text-[0.84rem] select-none">
+                        <span className="text-gray-700 font-medium">
+                          <strong className="text-gray-950 font-bold mr-1">Prices</strong>
+                          Start From
+                        </span>
+                        <span className="bg-blue-600 text-white font-bold px-2 py-0.5 rounded-[3px] text-[0.76rem] sm:text-[0.8rem] leading-none shadow-2xs tracking-tight">
+                          GBP 4.00
+                        </span>
+                        <span className="line-through decoration-red-500 decoration-[1.5px] text-gray-400 font-normal text-[0.76rem] sm:text-[0.8rem] leading-none">
+                          GBP 9.00
+                        </span>
+                      </div>
+
+                      <p className="text-[10px] text-gray-500 text-center font-medium mt-1.5 flex items-center justify-center gap-1">
                         <ShieldCheck className="w-3 h-3 text-green-600 inline" />
                         We respect your privacy. Your details are 100% secure
                         with us.

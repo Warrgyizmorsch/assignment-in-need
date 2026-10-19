@@ -333,7 +333,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
 
   return (
     <div
-      className={`w-full max-w-[390px] bg-white rounded-2xl p-[1rem] md:p-[1.2rem_1.4rem] border border-slate-200 shadow-[0_20px_40px_rgba(0,0,0,0.08)] relative flex flex-col gap-3 font-sans ${className || ""}`}
+      className={`w-full max-w-[390px] bg-white rounded-2xl p-[1.15rem_1rem_1.25rem] md:p-[1.35rem_1.35rem_1.45rem] border border-slate-200 shadow-[0_20px_40px_rgba(0,0,0,0.08)] relative flex flex-col gap-3.5 font-sans ${className || ""}`}
       id="quote-form-card"
     >
       {/* Sparkle Header with Colored Sparkles */}
@@ -358,7 +358,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
       </div>
 
       {/* Form Fields */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
         {/* Name Row */}
         <div className="flex items-center justify-between gap-3">
           <label className="text-[0.78rem] font-medium text-slate-700 m-0 whitespace-nowrap w-[90px] text-left">
@@ -500,7 +500,7 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-2.5 btn-shutter-orange-open text-white text-[0.78rem] font-bold rounded-lg shadow-[0_4px_14px_rgba(249,115,22,0.25)] flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+          className="w-full py-2.5 btn-shutter-orange-open text-white text-[0.78rem] font-bold rounded-lg shadow-[0_4px_14px_rgba(249,115,22,0.25)] flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-1.5"
         >
           {isLoading ? (
             <svg
@@ -527,10 +527,24 @@ export const QuoteForm: React.FC<QuoteFormProps> = ({
             <>Get Price Now &rarr;</>
           )}
         </button>
+
+        {/* Pricing Notice */}
+        <div className="flex items-center justify-center gap-2 pt-1.5 pb-0.5 text-[0.8rem] sm:text-[0.84rem] select-none">
+          <span className="text-gray-700 font-medium">
+            <strong className="text-gray-950 font-bold mr-1">Prices</strong>
+            Start From
+          </span>
+          <span className="bg-blue-600 text-white font-bold px-2 py-0.5 rounded-[3px] text-[0.76rem] sm:text-[0.8rem] leading-none shadow-2xs tracking-tight">
+            GBP 4.00
+          </span>
+          <span className="line-through decoration-red-500 decoration-[1.5px] text-gray-400 font-normal text-[0.76rem] sm:text-[0.8rem] leading-none">
+            GBP 9.00
+          </span>
+        </div>
       </form>
 
       {/* Trust Row */}
-      <div className="flex justify-between items-center text-[0.65rem] text-gray-500 font-medium tracking-wide pt-0.5 px-0.5">
+      <div className="flex justify-between items-center text-[0.65rem] text-gray-500 font-medium tracking-wide pt-1 px-0.5 border-t border-slate-100">
         <span className="flex items-center gap-1 shrink-0">
           <svg
             className="w-3.5 h-3.5 text-[#22c55e] shrink-0"

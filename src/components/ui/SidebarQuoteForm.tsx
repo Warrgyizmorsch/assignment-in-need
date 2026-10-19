@@ -547,6 +547,20 @@ export function SidebarQuoteForm({ sourceName = "Blog Page" }: SidebarQuoteFormP
             )}
           </button>
 
+          {/* Pricing Notice */}
+          <div className="flex items-center justify-center gap-2 pt-0.5 pb-0.5 text-xs sm:text-[0.82rem] select-none">
+            <span className="text-gray-700 font-medium">
+              <strong className="text-gray-950 font-bold mr-1">Prices</strong>
+              Start From
+            </span>
+            <span className="bg-blue-600 text-white font-bold px-2 py-0.5 rounded-[3px] text-[0.76rem] sm:text-[0.8rem] leading-none shadow-2xs tracking-tight">
+              GBP 4.00
+            </span>
+            <span className="line-through decoration-red-500 decoration-[1.5px] text-gray-400 font-normal text-[0.76rem] sm:text-[0.8rem] leading-none">
+              GBP 9.00
+            </span>
+          </div>
+
           {/* Lowest Price Guaranteed Trust Callout */}
           <Link
             href="/order"
