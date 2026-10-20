@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { AnimateIn } from "@/components/ui/AnimateIn";
 import { Play, X, Star, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -127,7 +126,7 @@ export default function VideoTestimonials() {
   };
 
   // Reusable Video Card Component
-  const renderCard = (item: VideoTestimonial, isMobile = false) => {
+  const renderCard = (item: VideoTestimonial) => {
     const isPlaying = playingId === item.id;
 
     return (
@@ -151,6 +150,7 @@ export default function VideoTestimonials() {
               autoPlay
               playsInline
               controls
+              preload="auto"
               controlsList="nodownload"
               className="w-full h-full object-cover"
               onEnded={() => setPlayingId(null)}
@@ -173,6 +173,8 @@ export default function VideoTestimonials() {
               alt={`${item.name} video review`}
               loading="lazy"
               decoding="async"
+              width={360}
+              height={636}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
             />
 
@@ -238,45 +240,38 @@ export default function VideoTestimonials() {
       <div className="max-w-[1320px] w-full mx-auto">
         {/* Section Header */}
         <div className="text-center mb-7 md:mb-10">
-          <AnimateIn variant="fadeUp">
-            <span className="text-[#3b82f6] font-bold text-xs md:text-sm tracking-wider uppercase mb-2 block">
-              STUDENT EXPERIENCES
+          <span className="text-[#3b82f6] font-bold text-xs md:text-sm tracking-wider uppercase mb-2 block">
+            STUDENT EXPERIENCES
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-[2rem] leading-tight font-extrabold text-[#0f172a] mb-2.5 tracking-tight">
+            Real Students,{" "}
+            <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent">
+              Real Results
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-[2rem] leading-tight font-extrabold text-[#0f172a] mb-2.5 tracking-tight">
-              Real Students,{" "}
-              <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent">
-                Real Results
-              </span>
-            </h2>
-            <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
-              Hear directly from UK university students who trusted us with their assignments and achieved top grades.
-            </p>
-          </AnimateIn>
+          </h2>
+          <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
+            Hear directly from UK university students who trusted us with their assignments and achieved top grades.
+          </p>
         </div>
 
-        {/* 1. DESKTOP VIEW: Exactly 4 Cards in 1 Row (hidden on screens < lg) */}
-        <div className="hidden lg:grid lg:grid-cols-4 gap-4 xl:gap-5 max-w-6xl mx-auto">
-          {TESTIMONIALS.map((item, index) => (
-            <AnimateIn
-              key={item.id}
-              variant="fadeUp"
-              delay={index * 0.08}
-              className="h-full flex"
-            >
+        {/* 1. DESKTOP / TABLET VIEW: 4 Cards Grid (visible on sm screens and up) */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5 max-w-6xl mx-auto">
+          {TESTIMONIALS.map((item) => (
+            <div key={item.id} className="h-full flex">
               {renderCard(item)}
-            </AnimateIn>
+            </div>
           ))}
         </div>
 
-        {/* 2. MOBILE / TABLET VIEW: 1 by 1 Carousel with Bottom Navigation Arrows */}
-        <div className="block lg:hidden max-w-[320px] sm:max-w-[340px] mx-auto">
+        {/* 2. MOBILE VIEW: 1 by 1 Carousel with Bottom Navigation Arrows (visible only on mobile < sm) */}
+        <div className="block sm:hidden max-w-[320px] mx-auto">
           {/* Active Card with Touch Swipe */}
           <div
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             className="w-full flex justify-center"
           >
-            {renderCard(TESTIMONIALS[mobileIndex], true)}
+            {renderCard(TESTIMONIALS[mobileIndex])}
           </div>
 
           {/* Bottom Navigation Controls (Aage - Peeche Arrows + Indicators) */}
