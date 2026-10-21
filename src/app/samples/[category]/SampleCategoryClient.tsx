@@ -75,36 +75,42 @@ export default function CategoryPage({ params }: CategoryPageProps) {
               .replace(/-/g, " ")
               .trim();
 
-            const matched = json.data.find((cat: any) => {
+            // 1. Exact match (highest priority - exact full name, clean name, or slug)
+            let matched = json.data.find((cat: any) => {
               const catName = (cat.name || "").toLowerCase().trim();
               const cleanCatName = catName.replace(/-/g, " ").trim();
-
-              if (catName === decodedCategory || cleanCatName === cleanCategory)
-                return true;
-              if (
-                cleanCatName.includes(cleanCategory) ||
-                cleanCategory.includes(cleanCatName)
-              )
-                return true;
-              if (cleanCategory === "accounting" && cleanCatName === "account")
-                return true;
-              if (cleanCategory === "account" && cleanCatName === "accounting")
-                return true;
-              if (cleanCategory === "economics" && cleanCatName === "economic")
-                return true;
-              if (cleanCategory === "economic" && cleanCatName === "economics")
-                return true;
-              if (cleanCategory === "maths" && cleanCatName === "math")
-                return true;
-              if (cleanCategory === "math" && cleanCatName === "maths")
-                return true;
-              if (
-                cleanCategory.includes("human resource") &&
-                cleanCatName.includes("human resource")
-              )
-                return true;
-              return false;
+              const catSlug = (cat.slug || "").toLowerCase().trim();
+              return (
+                catName === decodedCategory ||
+                cleanCatName === cleanCategory ||
+                catSlug === decodedCategory ||
+                catName.replace(/[^a-z0-9]/g, "") === cleanCategory.replace(/[^a-z0-9]/g, "")
+              );
             });
+
+            // 2. Specific semantic aliases (accounting/account, economics/economic, maths/math, etc.)
+            if (!matched) {
+              matched = json.data.find((cat: any) => {
+                const catName = (cat.name || "").toLowerCase().trim();
+                const cleanCatName = catName.replace(/-/g, " ").trim();
+
+                if ((cleanCategory === "accounting" && cleanCatName === "account") || (cleanCategory === "account" && cleanCatName === "accounting")) return true;
+                if ((cleanCategory === "economics" && cleanCatName === "economic") || (cleanCategory === "economic" && cleanCatName === "economics")) return true;
+                if ((cleanCategory === "maths" && cleanCatName === "math") || (cleanCategory === "math" && cleanCatName === "maths")) return true;
+                if (cleanCategory.includes("human resource") && cleanCatName.includes("human resource")) return true;
+                if ((cleanCategory === "business management" || cleanCategory === "business") && (cleanCatName === "business" || cleanCatName === "business management")) return true;
+                return false;
+              });
+            }
+
+            // 3. Substring fallback only if no exact or alias match exists
+            if (!matched) {
+              matched = json.data.find((cat: any) => {
+                const catName = (cat.name || "").toLowerCase().trim();
+                const cleanCatName = catName.replace(/-/g, " ").trim();
+                return cleanCatName.includes(cleanCategory) || cleanCategory.includes(cleanCatName);
+              });
+            }
 
             if (matched) {
               setCategoryId(matched.id);
@@ -207,8 +213,9 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   };
 
   // Convert slug/category names to readable titles
-  const readableCategory =
-    categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+  const readableCategory = (categoryName || category)
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <main className="w-full font-sans text-gray-800 bg-white">

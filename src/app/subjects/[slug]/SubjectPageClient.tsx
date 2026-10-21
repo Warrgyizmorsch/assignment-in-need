@@ -236,15 +236,35 @@ export default function SubjectLanding({
               const cleanSubject = (subject.name || "").toLowerCase().trim();
               const slugClean = slug.replace(/-assignment-writing-help$/, "").replace(/-assignment-help$/, "").replace(/-assignment$/, "").replace(/-help$/, "").replace(/-/g, " ").trim().toLowerCase();
               
-              const matched = catJson.data.find((catItem: any) => {
+              // 1. Exact match (highest priority)
+              let matched = catJson.data.find((catItem: any) => {
                 const catName = (catItem.name || "").toLowerCase().trim();
                 const cleanCatName = catName.replace(/-/g, " ").trim();
-                
-                if (cleanCatName === cleanSubject || cleanCatName === slugClean) return true;
-                if (cleanCatName.includes(cleanSubject) || cleanSubject.includes(cleanCatName)) return true;
-                if (cleanCatName.includes(slugClean) || slugClean.includes(cleanCatName)) return true;
-                return false;
+                return cleanCatName === cleanSubject || cleanCatName === slugClean;
               });
+
+              // 2. Specific aliases
+              if (!matched) {
+                matched = catJson.data.find((catItem: any) => {
+                  const catName = (catItem.name || "").toLowerCase().trim();
+                  const cleanCatName = catName.replace(/-/g, " ").trim();
+                  if (cleanSubject.includes("human resource") && cleanCatName.includes("human resource")) return true;
+                  if ((cleanSubject === "business management" || cleanSubject === "business") && (cleanCatName === "business" || cleanCatName === "business management")) return true;
+                  return false;
+                });
+              }
+
+              // 3. Fallback substring only if no exact match
+              if (!matched) {
+                matched = catJson.data.find((catItem: any) => {
+                  const catName = (catItem.name || "").toLowerCase().trim();
+                  const cleanCatName = catName.replace(/-/g, " ").trim();
+                  if (cleanCatName.includes(cleanSubject) || cleanSubject.includes(cleanCatName)) return true;
+                  if (cleanCatName.includes(slugClean) || slugClean.includes(cleanCatName)) return true;
+                  return false;
+                });
+              }
+
               if (matched) {
                 categoryId = String(matched.id);
               }

@@ -229,51 +229,42 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
                   .replace(/-/g, " ")
                   .trim();
 
-                const matched = catJson.data.find((catItem: any) => {
+                // 1. Exact match (highest priority - exact full name, clean name, or slug)
+                let matched = catJson.data.find((catItem: any) => {
                   const catName = (catItem.name || "").toLowerCase().trim();
                   const cleanCatName = catName.replace(/-/g, " ").trim();
-
-                  if (
+                  const catSlug = (catItem.slug || "").toLowerCase().trim();
+                  return (
                     catName === decodedCategory ||
-                    cleanCatName === cleanCategory
-                  )
-                    return true;
-                  if (
-                    cleanCatName.includes(cleanCategory) ||
-                    cleanCategory.includes(cleanCatName)
-                  )
-                    return true;
-                  if (
-                    cleanCategory === "accounting" &&
-                    cleanCatName === "account"
-                  )
-                    return true;
-                  if (
-                    cleanCategory === "account" &&
-                    cleanCatName === "accounting"
-                  )
-                    return true;
-                  if (
-                    cleanCategory === "economics" &&
-                    cleanCatName === "economic"
-                  )
-                    return true;
-                  if (
-                    cleanCategory === "economic" &&
-                    cleanCatName === "economics"
-                  )
-                    return true;
-                  if (cleanCategory === "maths" && cleanCatName === "math")
-                    return true;
-                  if (cleanCategory === "math" && cleanCatName === "maths")
-                    return true;
-                  if (
-                    cleanCategory.includes("human resource") &&
-                    cleanCatName.includes("human resource")
-                  )
-                    return true;
-                  return false;
+                    cleanCatName === cleanCategory ||
+                    catSlug === decodedCategory ||
+                    catName.replace(/[^a-z0-9]/g, "") === cleanCategory.replace(/[^a-z0-9]/g, "")
+                  );
                 });
+
+                // 2. Specific semantic aliases (accounting/account, economics/economic, maths/math, etc.)
+                if (!matched) {
+                  matched = catJson.data.find((catItem: any) => {
+                    const catName = (catItem.name || "").toLowerCase().trim();
+                    const cleanCatName = catName.replace(/-/g, " ").trim();
+
+                    if ((cleanCategory === "accounting" && cleanCatName === "account") || (cleanCategory === "account" && cleanCatName === "accounting")) return true;
+                    if ((cleanCategory === "economics" && cleanCatName === "economic") || (cleanCategory === "economic" && cleanCatName === "economics")) return true;
+                    if ((cleanCategory === "maths" && cleanCatName === "math") || (cleanCategory === "math" && cleanCatName === "maths")) return true;
+                    if (cleanCategory.includes("human resource") && cleanCatName.includes("human resource")) return true;
+                    if ((cleanCategory === "business management" || cleanCategory === "business") && (cleanCatName === "business" || cleanCatName === "business management")) return true;
+                    return false;
+                  });
+                }
+
+                // 3. Substring fallback only if no exact or alias match exists
+                if (!matched) {
+                  matched = catJson.data.find((catItem: any) => {
+                    const catName = (catItem.name || "").toLowerCase().trim();
+                    const cleanCatName = catName.replace(/-/g, " ").trim();
+                    return cleanCatName.includes(cleanCategory) || cleanCategory.includes(cleanCatName);
+                  });
+                }
 
                 if (matched) {
                   resolvedCategoryId = String(matched.id);
@@ -397,8 +388,9 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
     notFound();
   }
 
-  const readableCategory =
-    categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+  const readableCategory = (categoryName || category)
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
   const words = ((sample.id * 7) % 1500) + 1000;
   const pages = Math.ceil(words / 250);
   const downloads = ((sample.id * 13) % 2000) + 1200;
