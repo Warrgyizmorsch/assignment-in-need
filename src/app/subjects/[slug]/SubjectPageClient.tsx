@@ -334,6 +334,7 @@ export default function SubjectLanding({
       rating: parseFloat(calculatedRating.toFixed(1)),
       orders: `${finishOrder > 0 ? finishOrder : 1200}+`,
       img: finalImg,
+      about: expert.description || expert.content || expert.about,
     };
   };
 
@@ -1141,6 +1142,7 @@ export default function SubjectLanding({
                 experience: expert.exp,
                 qualifications: expert.qual,
                 slug: expert.slug,
+                about: expert.about,
               }))}
             />
           </div>

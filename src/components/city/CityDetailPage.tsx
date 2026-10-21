@@ -99,6 +99,7 @@ export default function CityDetailPage({
         orders: parsed.ordersCompleted,
         img: parsed.avatar,
         expertise: parsed.expertise,
+        about: parsed.about,
       };
     }),
   );
@@ -519,6 +520,7 @@ export default function CityDetailPage({
                 experience: expert.exp,
                 qualifications: expert.qual,
                 slug: expert.slug,
+                about: expert.about,
               }))}
             />
           </div>

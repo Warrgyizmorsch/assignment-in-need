@@ -20,6 +20,9 @@ export interface ExpertItem {
   experience?: string;
   qualifications?: string;
   slug?: string;
+  about?: string[] | string;
+  description?: string;
+  bio?: string;
 }
 
 interface ExpertSliderProps {
@@ -154,6 +157,9 @@ export const ExpertSlider: React.FC<ExpertSliderProps> = ({
                 experience={expert.experience}
                 qualifications={expert.qualifications}
                 slug={cleanSlug}
+                about={expert.about}
+                description={expert.description}
+                bio={expert.bio}
                 className="h-full"
               />
             </div>

@@ -376,7 +376,7 @@ export default function ServiceLanding({
         pageData?.hero_heading || "Professional Assignment Help";
       if (!pageData) return;
       try {
-        const resExp = await fetch("/api/experts");
+        const resExp = await fetch("/api/experts", { cache: "no-store" });
         if (resExp.ok) {
           const result = await resExp.json();
           if (result.success && Array.isArray(result.data)) {
@@ -862,6 +862,7 @@ export default function ServiceLanding({
                 experience: experienceStr,
                 qualifications: writer.qualifications || writer.qual || "Master's Qualified",
                 slug: writer.slug,
+                about: writer.about,
               };
             })}
           />

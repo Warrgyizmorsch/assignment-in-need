@@ -111,6 +111,32 @@ export const mapExpertToWriter = (expert: any): Writer => {
     finalSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   }
 
+  let aboutParagraphs: string[] = [];
+  if (expert.description && typeof expert.description === "string" && expert.description.trim().length > 0) {
+    aboutParagraphs = expert.description
+      .split(/\n+/)
+      .map((p: string) => p.trim())
+      .filter((p: string) => p.length > 0);
+  } else if (expert.content && typeof expert.content === "string") {
+    const cleanText = expert.content
+      .replace(/<\/p>/gi, "\n\n")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]*>/g, "")
+      .trim();
+    aboutParagraphs = cleanText
+      .split(/\n+/)
+      .map((p: string) => p.trim())
+      .filter((p: string) => p.length > 0);
+  } else if (Array.isArray(expert.about)) {
+    aboutParagraphs = expert.about;
+  }
+
+  if (aboutParagraphs.length === 0) {
+    aboutParagraphs = [
+      `${name} is a dedicated academic expert with extensive experience helping students achieve academic excellence.`
+    ];
+  }
+
   return {
     id: finalSlug || String(expert.id),
     name: name,
@@ -127,7 +153,7 @@ export const mapExpertToWriter = (expert: any): Writer => {
     experience: calculatedExperience,
     skills: Array.isArray(skillsArray) ? skillsArray : [],
     helpsWith: Array.isArray(helpsWithArray) && helpsWithArray.length > 0 ? helpsWithArray : ["Assignment Help", "Essay Help"],
-    about: expert.content ? [expert.content.replace(/<[^>]*>/g, '')] : ["Experienced academic writer dedicated to quality work."],
+    about: aboutParagraphs,
     credentials: [
       { label: "Degree", value: calculatedQualifications },
       { label: "Experience", value: calculatedExperience },

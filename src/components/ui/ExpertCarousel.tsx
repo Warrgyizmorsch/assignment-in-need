@@ -13,6 +13,8 @@ export interface ExpertData {
   experience?: string;
   qualifications?: string;
   slug?: string;
+  about?: string[] | string;
+  description?: string;
 }
 
 interface ExpertCarouselProps {
@@ -34,6 +36,8 @@ export const ExpertCarousel: React.FC<ExpertCarouselProps> = ({
     experience: e.experience,
     qualifications: e.qualifications,
     slug: e.slug,
+    about: e.about,
+    description: e.description,
   }));
 
   return <ExpertSlider experts={mappedExperts} className={className} />;

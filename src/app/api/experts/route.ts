@@ -58,8 +58,15 @@ export async function GET(request: Request) {
             ? parsed.data
             : [];
         const optimizedData = experts.map((expert: any) => {
-          const { content, description, ...trimmed } = expert;
-          return trimmed;
+          const { content, ...trimmed } = expert;
+          return {
+            ...trimmed,
+            description:
+              expert.description ||
+              (expert.content
+                ? expert.content.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
+                : expert.meta_description || ""),
+          };
         });
         return NextResponse.json(
           {

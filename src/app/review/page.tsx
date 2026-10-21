@@ -284,7 +284,7 @@ export default function ReviewsAndFaq() {
     const fetchFirstExpert = async () => {
       try {
         const baseUrl = getBaseUrl();
-        const res = await fetch(`${baseUrl}/api/experts`);
+        const res = await fetch(`${baseUrl}/api/experts`, { cache: "no-store" });
         if (res.ok) {
           const json = await res.json();
           if (json.success && Array.isArray(json.data) && json.data.length > 0) {

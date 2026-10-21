@@ -17,7 +17,7 @@ export const WritersAndTrust: React.FC = () => {
       try {
         setLoading(true);
         const baseUrl = getBaseUrl();
-        const res = await fetch(`${baseUrl}/api/experts`);
+        const res = await fetch(`${baseUrl}/api/experts`, { cache: "no-store" });
         if (res.ok) {
           const result = await res.json();
           if (result.success && Array.isArray(result.data)) {
@@ -87,6 +87,7 @@ export const WritersAndTrust: React.FC = () => {
               experience: writer.experience,
               qualifications: writer.qualifications,
               slug: writer.id,
+              about: writer.about,
             }))}
             className="mb-10"
           />

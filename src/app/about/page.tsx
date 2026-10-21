@@ -120,7 +120,7 @@ export default function AboutPage() {
   useEffect(() => {
     const fetchExperts = async () => {
       try {
-        const res = await fetch("/api/experts");
+        const res = await fetch("/api/experts", { cache: "no-store" });
         if (res.ok) {
           const payload = await res.json();
           if (payload.success && Array.isArray(payload.data)) {
@@ -667,6 +667,7 @@ export default function AboutPage() {
               experience: expert.exp,
               qualifications: expert.qual,
               slug: expert.slug,
+              about: expert.about,
             }))}
           />
 

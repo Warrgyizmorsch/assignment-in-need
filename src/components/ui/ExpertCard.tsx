@@ -4,8 +4,9 @@ import { Star, ShieldCheck, Award, Briefcase, GraduationCap, ShoppingCart, Clock
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { WRITERS } from "@/lib/data";
 
-export interface ExpertCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ExpertCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "about"> {
   name: string;
   role: string;
   rating?: number;
@@ -16,6 +17,9 @@ export interface ExpertCardProps extends React.HTMLAttributes<HTMLDivElement> {
   expertise?: string[];
   variant?: "default" | "directory" | "subject";
   slug?: string;
+  about?: string[] | string;
+  description?: string;
+  bio?: string;
   onHire?: () => void;
 }
 
@@ -33,6 +37,9 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
   expertise,
   variant = "default",
   slug,
+  about,
+  description,
+  bio,
   onHire,
   ...props
 }) => {
@@ -107,7 +114,44 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
   }
 
   const expText = experience ? (experience.includes("Exp") || experience.includes("Years") ? experience : `${experience} Years of Experience`) : "8 Years of Experience";
-  const bioText = "Hello mates, I am " + name + ", and I can be your key to academic excellence. I've spent over " + (experience || "8 years") + " helping students achieve their goals...";
+
+  // Resolve unique writer description
+  let rawBio = "";
+  if (typeof bio === "string" && bio.trim()) {
+    rawBio = bio.trim();
+  } else if (typeof description === "string" && description.trim()) {
+    rawBio = description.trim();
+  } else if (Array.isArray(about) && about.length > 0 && typeof about[0] === "string" && about[0].trim()) {
+    rawBio = about[0].trim();
+  } else if (typeof about === "string" && about.trim()) {
+    rawBio = about.trim();
+  } else {
+    // Check fallback in WRITERS static list by slug or name
+    const cleanSlug = (slug || name).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const matchedStatic = WRITERS.find(
+      (w) =>
+        w.id.toLowerCase() === cleanSlug ||
+        w.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === cleanSlug
+    );
+    if (matchedStatic?.about?.[0]) {
+      rawBio = matchedStatic.about[0].trim();
+    }
+  }
+
+  // Format clean text preview (around 135 chars max, breaking at word boundary for 3-4 clean lines)
+  const cleanBio = rawBio.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  const MAX_BIO_LENGTH = 135;
+  let previewBio = cleanBio;
+  if (!cleanBio) {
+    previewBio = `Experienced ${qualifications || role || "academic expert"} dedicated to helping students achieve top grades across all assignments and coursework...`;
+  } else if (cleanBio.length > MAX_BIO_LENGTH) {
+    const sub = cleanBio.slice(0, MAX_BIO_LENGTH);
+    const lastSpace = sub.lastIndexOf(" ");
+    previewBio = (lastSpace > 70 ? sub.slice(0, lastSpace) : sub).trim();
+    previewBio = previewBio.replace(/[,;:.—-]+$/, "").trim() + "...";
+  } else if (!previewBio.endsWith("...")) {
+    previewBio = previewBio + "...";
+  }
 
   return (
     <div
@@ -206,9 +250,12 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
         </div>
 
         {/* Bio text */}
-        <p className="text-[12.5px] text-slate-500 leading-snug text-center mb-3 px-1">
-          {bioText}
-          <Link href={"/writers/" + (slug && !/^\d+$/.test(slug) ? slug : name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))} className="text-[#ff5722] hover:text-red-700 font-medium ml-1">
+        <p className="text-[12.5px] text-slate-500 leading-snug text-center mb-3 px-1 min-h-[54px] flex items-center justify-center flex-wrap">
+          <span>{previewBio}</span>
+          <Link
+            href={"/writers/" + (slug && !/^\d+$/.test(slug) ? slug : name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}
+            className="text-[#ff5722] hover:text-red-700 font-medium ml-1 whitespace-nowrap"
+          >
             Read More
           </Link>
         </p>

@@ -474,6 +474,7 @@ export default function WritersDirectory() {
                         qualifications={writer.qualifications}
                         expertise={writer.expertise}
                         slug={writer.id}
+                        about={writer.about}
                         className="h-full"
                       />
                     </StaggerItem>

@@ -89,7 +89,7 @@ export default function PricingPage() {
       const urlParams = new URLSearchParams(window.location.search);
       const expertId = urlParams.get("expert");
       if (expertId) {
-        fetch("/api/experts")
+        fetch("/api/experts", { cache: "no-store" })
           .then((res) => res.json())
           .then((data) => {
             if ((data.success || data.status === "success") && Array.isArray(data.data)) {
