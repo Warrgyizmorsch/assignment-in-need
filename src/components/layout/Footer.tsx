@@ -137,79 +137,6 @@ export const Footer = () => {
               </svg>
             </a>
           </div>
-
-
-
-          {/* Secure Payment and Security Badges */}
-          <div className="mt-8 flex flex-col gap-3.5">
-            <span className="text-[#9ca3af] text-[0.75rem] font-bold uppercase tracking-wider">
-              Secure Payment
-            </span>
-
-            {/* Payment card row */}
-            <div className="flex flex-wrap gap-3 items-center">
-              <img
-                src="/images/badge-visa.png"
-                alt="Visa"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-              <img
-                src="/images/badge-mastercard.png"
-                alt="Mastercard"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-              <img
-                src="/images/badge-maestro.png"
-                alt="Maestro"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-              <img
-                src="/images/badge-amex.png"
-                alt="American Express"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-              <img
-                src="/images/badge-discover.png"
-                alt="Discover"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-            </div>
-
-            {/* Security badges row */}
-            <div className="flex flex-wrap gap-3 items-center">
-              <img
-                src="/images/badge-dmca.png"
-                alt="DMCA Protected"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-              <img
-                src="/images/badge-mcafee.png"
-                alt="McAfee Secure"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-              <img
-                src="/images/badge-gdpr.png"
-                alt="GDPR Compliant"
-                width="60"
-                height="38"
-                className="h-[38px] w-auto object-contain"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Group 1: Services & Subjects */}
@@ -510,6 +437,85 @@ export const Footer = () => {
               </span>
             </li>
           </ul>
+        </div>
+      </div>
+
+      {/* Trust & Payment Bar */}
+      <div className="w-full border-t border-white/10 py-6 px-8">
+        <div className="max-w-[1400px] w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Payment Methods */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <span className="text-[#9ca3af] text-[0.75rem] font-bold uppercase tracking-wider whitespace-nowrap">
+              Secure Payment
+            </span>
+            <div className="flex flex-wrap gap-3 items-center justify-center">
+              <img
+                src="/images/badge-visa.png"
+                alt="Visa"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+              <img
+                src="/images/badge-mastercard.png"
+                alt="Mastercard"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+              <img
+                src="/images/badge-maestro.png"
+                alt="Maestro"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+              <img
+                src="/images/badge-amex.png"
+                alt="American Express"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+              <img
+                src="/images/badge-discover.png"
+                alt="Discover"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+            </div>
+          </div>
+
+          {/* Security & Trust Badges */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-right">
+            <span className="text-[#9ca3af] text-[0.75rem] font-bold uppercase tracking-wider whitespace-nowrap">
+              Security & Protection
+            </span>
+            <div className="flex flex-wrap gap-3 items-center justify-center">
+              <img
+                src="/images/badge-dmca.png"
+                alt="DMCA Protected"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+              <img
+                src="/images/badge-mcafee.png"
+                alt="McAfee Secure"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+              <img
+                src="/images/badge-gdpr.png"
+                alt="GDPR Compliant"
+                width="60"
+                height="38"
+                className="h-[34px] w-auto object-contain transition-transform duration-200 hover:scale-105"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
