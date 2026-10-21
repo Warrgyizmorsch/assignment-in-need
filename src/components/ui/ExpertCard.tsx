@@ -156,7 +156,7 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
   return (
     <div
       className={cn(
-        "bg-white rounded-xl border border-slate-100 flex flex-col shadow-[0_4px_20px_rgba(0,0,0,0.05)] duration-300 w-full relative overflow-hidden text-left hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]",
+        "bg-white rounded-2xl border border-gray-200 shadow-[0_4px_18px_rgba(15,23,42,0.08)] hover:shadow-[0_14px_32px_rgba(15,23,42,0.14)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col w-full relative overflow-hidden text-left",
         className
       )}
       {...props}
