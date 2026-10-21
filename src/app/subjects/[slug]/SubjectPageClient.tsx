@@ -205,10 +205,23 @@ export default function SubjectLanding({
   const [seoExpanded, setSeoExpanded] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [samplesList, setSamplesList] = useState<any[]>(initialSamples);
+  const [samplesPageIndex, setSamplesPageIndex] = useState(0);
+  const [isSamplesHovered, setIsSamplesHovered] = useState(false);
   const [showSampleLeadModal, setShowSampleLeadModal] = useState(false);
   const [pendingSampleLink, setPendingSampleLink] = useState("");
   const [leadForm, setLeadForm] = useState({ name: '', email: '', phone: '', countryCode: '+44' });
   const [isSamplesLoading, setIsSamplesLoading] = useState(initialSamples.length === 0);
+  const samplesPerPage = 5;
+  const totalSamplePages = Math.ceil(samplesList.length / samplesPerPage);
+
+  // Auto-rotate samples every 3.5s (matching service pages)
+  useEffect(() => {
+    if (totalSamplePages <= 1 || isSamplesHovered) return;
+    const interval = setInterval(() => {
+      setSamplesPageIndex((prev) => (prev + 1) % totalSamplePages);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [totalSamplePages, isSamplesHovered]);
 
   useEffect(() => {
     const fetchSamples = async () => {
@@ -251,7 +264,7 @@ export default function SubjectLanding({
         
         for (const catParam of categoryParamsToTry) {
           try {
-            const response = await fetch(`/api/samples?category=${encodeURIComponent(catParam)}&page=1`);
+            const response = await fetch(`/api/samples?category=${encodeURIComponent(catParam)}&page=1&limit=100`);
             if (response.ok) {
               const json = await response.json();
               if (json.success && json.data && json.data.data) {
@@ -265,6 +278,20 @@ export default function SubjectLanding({
           } catch (e) {
             continue;
           }
+        }
+
+        // Fallback: If no samples found for this category, fetch general samples and randomize (matching service pages)
+        if (finalSamples.length === 0) {
+          try {
+            const res = await fetch(`/api/samples?page=1&limit=100`);
+            if (res.ok) {
+              const j = await res.json();
+              const list = j.data?.data || [];
+              if (list.length > 0) {
+                finalSamples = [...list].sort(() => 0.5 - Math.random());
+              }
+            }
+          } catch (e) {}
         }
         
         setSamplesList(finalSamples);
@@ -1520,13 +1547,14 @@ export default function SubjectLanding({
             </div>
             
             <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-stretch justify-center">
-              {/* Left Column - Vertical Samples List */}
+              {/* Left Column - Samples List (5 at a time, auto-rotate, matching service pages) */}
               <div 
-                className={`w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-auto ${samplesList.length > 3 ? 'lg:h-[580px] overflow-y-auto scroll-smooth custom-scrollbar' : ''} relative z-10 flex flex-col`}
-                style={samplesList.length > 3 ? { scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' } : {}}
+                className="w-full lg:w-2/3 bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative z-10 flex flex-col justify-between"
+                onMouseEnter={() => setIsSamplesHovered(true)}
+                onMouseLeave={() => setIsSamplesHovered(false)}
               >
                 <div className="flex flex-col gap-6">
-                  {samplesList.slice(0, 5).map((sample: any, idx: number) => {
+                  {samplesList.slice(samplesPageIndex * samplesPerPage, (samplesPageIndex + 1) * samplesPerPage).map((sample: any, idx: number) => {
                     const words = ((sample.id * 7) % 1500) + 1000;
                     const downloads = ((sample.id * 13) % 2000) + 1200;
                     const initials = (sample.title || 'Sample').split(' ').map((w:string)=>w[0]).join('').substring(0, 2).toUpperCase() || 'SA';
@@ -1589,12 +1617,25 @@ export default function SubjectLanding({
                   })}
                 </div>
                 
-                {/* Browse All Button */}
+                {/* Pagination Dots & Browse All Button */}
                 <div className="mt-8 pt-6 border-t border-gray-100 text-center relative z-10">
-                   <Link href="/samples" className="inline-flex items-center justify-center gap-2 text-[#3B28CC] font-extrabold text-[15px] hover:text-[#0f1b3d] transition-colors group">
+                  <div className="flex flex-col items-center gap-4">
+                    {totalSamplePages > 1 && (
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        {Array.from({ length: Math.min(totalSamplePages, 6) }).map((_, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => setSamplesPageIndex(idx)}
+                            className={`w-2 h-2 rounded-full cursor-pointer transition-colors ${idx === samplesPageIndex ? 'bg-[#3B28CC]' : 'bg-gray-200'}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <Link href="/samples" className="inline-flex items-center justify-center gap-2 text-[#3B28CC] font-extrabold text-[15px] hover:text-[#0f1b3d] transition-colors group">
                       Browse all samples
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                   </Link>
+                    </Link>
+                  </div>
                 </div>
               </div>
 

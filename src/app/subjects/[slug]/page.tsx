@@ -82,6 +82,21 @@ export default async function SubjectPage({ params }: Props) {
         break;
       }
     }
+
+    // Fallback: If no category-specific samples found, fetch general samples and randomize (matching service pages)
+    if (initialSamples.length === 0) {
+      try {
+        const fallbackRes = await fetch(`${BACKEND_URL}/api/samples?page=1&limit=100`, {
+          headers: { Accept: "application/json" },
+          signal: AbortSignal.timeout(5000),
+        }).then(res => res.ok ? res.json() : null).catch(() => null);
+        const list = fallbackRes?.data?.data || [];
+        if (list.length > 0) {
+          // Shuffle / randomize fallback samples
+          initialSamples = [...list].sort(() => 0.5 - Math.random());
+        }
+      } catch (e) { }
+    }
   } catch (e) { }
 
   const subjectName = initialData?.page?.hero_heading || initialData?.page?.title || slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) + " Assignment Help";
