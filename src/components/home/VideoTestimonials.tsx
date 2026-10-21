@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Play, X, Star, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,11 +17,11 @@ interface VideoTestimonial {
   quote: string;
 }
 
-// 100% UK student names for the female reviewers, and preserving the male reviewer
+// Exact student names as spoken directly in the testimonial videos
 const TESTIMONIALS: VideoTestimonial[] = [
   {
     id: 1,
-    name: "Sophie Taylor",
+    name: "Denitsa",
     course: "Business & Management",
     university: "King's College London",
     grade: "Distinction (88%)",
@@ -29,23 +29,23 @@ const TESTIMONIALS: VideoTestimonial[] = [
     duration: "0:58",
     videoSrc: "/images/testimonial-video/testimonial-1.mp4",
     posterSrc: "/images/testimonial-video/testimonial-1.webp",
-    quote: "Delivered 2 days before my deadline. Scored distinction in my dissertation!",
+    quote: "Supported me for 2 years with reports and presentations when I had no time. Truly amazing!",
   },
   {
     id: 2,
-    name: "Jessica Evans",
-    course: "Nursing & Healthcare",
+    name: "Dani",
+    course: "Health & Social Care",
     university: "University of Manchester",
     grade: "First Class (91%)",
     rating: 5,
     duration: "1:03",
     videoSrc: "/images/testimonial-video/testimonial-2.mp4",
     posterSrc: "/images/testimonial-video/testimonial-2.webp",
-    quote: "Literature review and Harvard citations were 100% spot on. Lifesaver!",
+    quote: "Used Assignment in Need for 2 years. They guided me to pass all my assignments on time!",
   },
   {
     id: 3,
-    name: "Rebecca Wright",
+    name: "Petrana",
     course: "Psychology & Social Sciences",
     university: "University of Bristol",
     grade: "First Class (89%)",
@@ -53,19 +53,19 @@ const TESTIMONIALS: VideoTestimonial[] = [
     duration: "0:28",
     videoSrc: "/images/testimonial-video/testimonial-3.mp4",
     posterSrc: "/images/testimonial-video/testimonial-3.webp",
-    quote: "Plagiarism-free, well-structured, and addressed every single marking rubric.",
+    quote: "High quality service to pass all my assignments on time with very good results. Highly recommend!",
   },
   {
     id: 4,
-    name: "David K.",
+    name: "Joel George",
     course: "Computer Science & IT",
-    university: "University of Leeds",
+    university: "University of South Wales",
     grade: "Grade A (87%)",
     rating: 5,
     duration: "0:26",
     videoSrc: "/images/testimonial-video/testimonial-4.mp4",
     posterSrc: "/images/testimonial-video/testimonial-4.webp",
-    quote: "Complex coding algorithms and report explained clearly. Outstanding help!",
+    quote: "Studying in South Wales. Assignment in Need helped me a lot during critical deadlines!",
   },
 ];
 
@@ -75,8 +75,19 @@ export default function VideoTestimonials() {
   const touchStartX = useRef<number | null>(null);
   const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
 
+  // Cleanup all videos on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(videoRefs.current).forEach((video) => {
+        if (video) {
+          video.pause();
+        }
+      });
+    };
+  }, []);
+
   const handlePlay = (id: number) => {
-    // Pause other playing videos
+    // Pause any other playing video
     if (playingId !== null && playingId !== id && videoRefs.current[playingId]) {
       videoRefs.current[playingId]?.pause();
     }
@@ -94,16 +105,16 @@ export default function VideoTestimonials() {
   const handlePrevMobile = () => {
     if (playingId !== null && videoRefs.current[playingId]) {
       videoRefs.current[playingId]?.pause();
-      setPlayingId(null);
     }
+    setPlayingId(null);
     setMobileIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
   };
 
   const handleNextMobile = () => {
     if (playingId !== null && videoRefs.current[playingId]) {
       videoRefs.current[playingId]?.pause();
-      setPlayingId(null);
     }
+    setPlayingId(null);
     setMobileIndex((prev) => (prev + 1) % TESTIMONIALS.length);
   };
 
@@ -114,6 +125,11 @@ export default function VideoTestimonials() {
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
+    // Don't swipe if video is actively playing so user can use video controls without accidental slide
+    if (playingId !== null) {
+      touchStartX.current = null;
+      return;
+    }
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX;
 
@@ -157,6 +173,7 @@ export default function VideoTestimonials() {
             />
             {/* Close video button */}
             <button
+              type="button"
               onClick={(e) => handleClose(item.id, e)}
               className="absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center transition-all shadow-lg backdrop-blur-sm cursor-pointer"
               title="Close video"
@@ -254,74 +271,76 @@ export default function VideoTestimonials() {
           </p>
         </div>
 
-        {/* 1. DESKTOP / TABLET VIEW: 4 Cards Grid (visible on sm screens and up) */}
-        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5 max-w-6xl mx-auto">
-          {TESTIMONIALS.map((item) => (
-            <div key={item.id} className="h-full flex">
+        {/* CARDS CONTAINER: Unified Single Source for both Mobile & Desktop (Prevents duplicate video DOM & audio) */}
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5 max-w-[320px] sm:max-w-6xl mx-auto"
+        >
+          {TESTIMONIALS.map((item, idx) => (
+            <div
+              key={item.id}
+              className={cn(
+                "h-full justify-center",
+                mobileIndex === idx ? "flex" : "hidden sm:flex"
+              )}
+            >
               {renderCard(item)}
             </div>
           ))}
         </div>
 
-        {/* 2. MOBILE VIEW: 1 by 1 Carousel with Bottom Navigation Arrows (visible only on mobile < sm) */}
-        <div className="block sm:hidden max-w-[320px] mx-auto">
-          {/* Active Card with Touch Swipe */}
-          <div
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            className="w-full flex justify-center"
+        {/* Mobile Navigation Controls (Arrows + Indicators) - Only visible on mobile (< sm) */}
+        <div className="flex sm:hidden items-center justify-between gap-4 mt-5 px-3 max-w-[320px] mx-auto">
+          {/* Previous Arrow Button */}
+          <button
+            type="button"
+            onClick={handlePrevMobile}
+            aria-label="Previous video testimonial"
+            className="w-11 h-11 rounded-full bg-white border border-gray-200 text-gray-800 shadow-sm hover:bg-[#3b82f6] hover:text-white hover:border-[#3b82f6] active:scale-95 transition-all flex items-center justify-center cursor-pointer"
           >
-            {renderCard(TESTIMONIALS[mobileIndex])}
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          {/* Dots / Step Indicator */}
+          <div className="flex items-center gap-2">
+            {TESTIMONIALS.map((item, idx) => (
+              <button
+                type="button"
+                key={item.id}
+                onClick={() => {
+                  if (playingId !== null && videoRefs.current[playingId]) {
+                    videoRefs.current[playingId]?.pause();
+                  }
+                  setPlayingId(null);
+                  setMobileIndex(idx);
+                }}
+                aria-label={`Go to video ${idx + 1}`}
+                className={cn(
+                  "h-2.5 rounded-full transition-all duration-300 cursor-pointer",
+                  mobileIndex === idx
+                    ? "w-7 bg-gradient-to-r from-purple-700 to-orange-500"
+                    : "w-2.5 bg-gray-300 hover:bg-gray-400"
+                )}
+              />
+            ))}
+            <span className="text-xs font-semibold text-gray-500 ml-1.5">
+              {mobileIndex + 1}/{TESTIMONIALS.length}
+            </span>
           </div>
 
-          {/* Bottom Navigation Controls (Aage - Peeche Arrows + Indicators) */}
-          <div className="flex items-center justify-between gap-4 mt-5 px-3">
-            {/* Previous Arrow Button */}
-            <button
-              onClick={handlePrevMobile}
-              aria-label="Previous video testimonial"
-              className="w-11 h-11 rounded-full bg-white border border-gray-200 text-gray-800 shadow-sm hover:bg-[#3b82f6] hover:text-white hover:border-[#3b82f6] active:scale-95 transition-all flex items-center justify-center cursor-pointer"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-
-            {/* Dots / Step Indicator */}
-            <div className="flex items-center gap-2">
-              {TESTIMONIALS.map((item, idx) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    if (playingId !== null && videoRefs.current[playingId]) {
-                      videoRefs.current[playingId]?.pause();
-                      setPlayingId(null);
-                    }
-                    setMobileIndex(idx);
-                  }}
-                  aria-label={`Go to video ${idx + 1}`}
-                  className={cn(
-                    "h-2.5 rounded-full transition-all duration-300 cursor-pointer",
-                    mobileIndex === idx
-                      ? "w-7 bg-gradient-to-r from-purple-700 to-orange-500"
-                      : "w-2.5 bg-gray-300 hover:bg-gray-400"
-                  )}
-                />
-              ))}
-              <span className="text-xs font-semibold text-gray-500 ml-1.5">
-                {mobileIndex + 1}/{TESTIMONIALS.length}
-              </span>
-            </div>
-
-            {/* Next Arrow Button */}
-            <button
-              onClick={handleNextMobile}
-              aria-label="Next video testimonial"
-              className="w-11 h-11 rounded-full bg-white border border-gray-200 text-gray-800 shadow-sm hover:bg-[#3b82f6] hover:text-white hover:border-[#3b82f6] active:scale-95 transition-all flex items-center justify-center cursor-pointer"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
+          {/* Next Arrow Button */}
+          <button
+            type="button"
+            onClick={handleNextMobile}
+            aria-label="Next video testimonial"
+            className="w-11 h-11 rounded-full bg-white border border-gray-200 text-gray-800 shadow-sm hover:bg-[#3b82f6] hover:text-white hover:border-[#3b82f6] active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </section>
   );
 }
+
