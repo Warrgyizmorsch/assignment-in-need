@@ -125,6 +125,7 @@ export default function Home() {
 
       <PopularServices />
 
+      <VideoTestimonials />
       <ExploreSubjects />
       <PromoBannerHome />
       <AssignmentSamples />
@@ -132,7 +133,6 @@ export default function Home() {
       <SeoContentSection />
       <ResultsAndTools />
       <HomeStudentReviews />
-      <VideoTestimonials />
       <WritersAndTrust />
       <ReviewsAndFaq />
       <CtaBanner />
