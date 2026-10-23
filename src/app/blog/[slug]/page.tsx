@@ -11,6 +11,7 @@ import { canonicalSubjectPath } from "@/lib/utils";
 import type { Metadata } from "next";
 
 import { FaqAccordion } from "@/components/ui/FaqAccordion";
+import { BlogAuthorHeader, BlogAuthorBio } from "@/components/ui/BlogAuthor";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -18,11 +19,16 @@ interface Props {
 
 import { constructMetadata } from "@/lib/metadata";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const backendUrl = getBaseUrl() || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
-    const res = await fetch(`${backendUrl}/api/blogs/${slug}`);
+    const res = await fetch(`${backendUrl}/api/blogs/${slug}`, {
+      cache: "no-store",
+    });
     if (res.ok) {
       const result = await res.json();
       if (result.success && result.data) {
@@ -58,29 +64,43 @@ export default async function BlogDetailPage({ params }: Props) {
 
   let post = null;
   let subjects: any[] = [];
+  let allExperts: any[] = [];
+
   try {
-    const backendUrl = getBaseUrl() || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
-    const res = await fetch(`${backendUrl}/api/blogs/${slug}`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const result = await res.json();
+    const backendUrl =
+      getBaseUrl() ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "https://ain.warrgyizmorsch.com";
+
+    const [resBlog, resExperts, resSubjects] = await Promise.all([
+      fetch(`${backendUrl}/api/blogs/${slug}`, {
+        cache: "no-store",
+      }),
+      fetch(`${backendUrl}/api/experts`, {
+        next: { revalidate: 3600 },
+      }).catch(() => null),
+      fetch(`${backendUrl}/api/subject-pages`, {
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      }).catch(() => null),
+    ]);
+
+    if (resBlog.ok) {
+      const result = await resBlog.json();
       if (result.success) {
         post = result.data;
       }
     }
-  } catch (error) {
-    console.error("Error fetching blog detail:", error);
-  }
 
-  try {
-    const backendUrl = getBaseUrl() || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
-    const res = await fetch(`${backendUrl}/api/subject-pages`, {
-      headers: { Accept: "application/json" },
-      cache: "no-store",
-    });
-    if (res.ok) {
-      const payload = await res.json();
+    if (resExperts && resExperts.ok) {
+      const expertsJson = await resExperts.json();
+      if (Array.isArray(expertsJson?.data)) {
+        allExperts = expertsJson.data;
+      }
+    }
+
+    if (resSubjects && resSubjects.ok) {
+      const payload = await resSubjects.json();
       if (
         (payload.success || payload.status === "success") &&
         Array.isArray(payload.data)
@@ -89,7 +109,7 @@ export default async function BlogDetailPage({ params }: Props) {
       }
     }
   } catch (error) {
-    console.error("Error fetching subjects list:", error);
+    console.error("Error fetching blog detail:", error);
   }
 
   if (!post) {
@@ -120,6 +140,53 @@ export default async function BlogDetailPage({ params }: Props) {
       try { blogFaqs = JSON.parse(post.faq); } catch (e) { }
     }
   }
+
+  let author = post.author;
+  if (typeof author === "string") {
+    try {
+      author = JSON.parse(author);
+    } catch (e) {
+      author = null;
+    }
+  }
+  if (Array.isArray(author)) {
+    author = author[0] || null;
+  }
+
+  // Cross-reference with writers (experts) directory to get their actual verified profile picture and page
+  if (author && author.name && allExperts.length > 0) {
+    const cleanAuthorName = author.name.trim().toLowerCase();
+    const cleanSlug = cleanAuthorName.replace(/[^a-z0-9]+/g, "-");
+
+    const matchedExpert = allExperts.find((exp: any) => {
+      const expName = (exp.name || "").trim().toLowerCase();
+      const expSlug = (exp.slug || "").trim().toLowerCase();
+      return (
+        expName === cleanAuthorName ||
+        expSlug === cleanSlug ||
+        expName.includes(cleanAuthorName) ||
+        cleanAuthorName.includes(expName)
+      );
+    });
+
+    if (matchedExpert) {
+      author = {
+        ...author,
+        name: matchedExpert.name || author.name,
+        photo: matchedExpert.image || matchedExpert.images || author.photo,
+        description: author.description || matchedExpert.description,
+        slug: matchedExpert.slug || cleanSlug,
+        role: matchedExpert.role || "Academic Writer",
+        profileUrl: `/writers/${matchedExpert.slug || cleanSlug}`,
+      };
+    }
+  }
+
+  // Calculate estimated reading time
+  const plainText = (post.content || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const wordCount = plainText ? plainText.split(" ").length : 0;
+  const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
+  const readingTime = `${readingTimeMinutes} min read`;
 
   const blogTitle = post.meta_title || post.tittle || slug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
 
@@ -157,21 +224,81 @@ export default async function BlogDetailPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            {
+              "@context": "https://schema.org",
+              "@type": "Article",
+              headline: blogTitle,
+              description:
+                post.meta_discribtion ||
+                post.meta_description ||
+                "Read expert academic articles and student guides.",
+              image: getImageUrl(post.images),
+              author: {
+                "@type": "Person",
+                name: author?.name || "Admin",
+                url: author?.profileUrl
+                  ? `https://www.assignmentinneed.co.uk${author.profileUrl}`
+                  : `https://www.assignmentinneed.co.uk/author/${
+                      author?.slug ||
+                      (author?.name
+                        ? author.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+                        : "admin")
+                    }`,
+              },
+              publisher: {
+                "@type": "Organization",
+                name: "Assignment In Need",
+                logo: {
+                  "@type": "ImageObject",
+                  url: "https://www.assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
+                },
+              },
+              datePublished: post.created_at
+                ? new Date(post.created_at).toISOString()
+                : "2026-10-23T10:00:00+00:00",
+              dateModified: post.updated_at
+                ? new Date(post.updated_at).toISOString()
+                : post.created_at
+                ? new Date(post.created_at).toISOString()
+                : "2026-10-23T10:00:00+00:00",
+              articleBody:
+                post.meta_discribtion ||
+                post.meta_description ||
+                plainText ||
+                "",
+              mainEntityOfPage: {
+                "@type": "WebPage",
+                "@id": `https://www.assignmentinneed.co.uk/blog/${slug}`,
+              },
+            },
+            null,
+            2
+          ).replace(/</g, "\\u003c"),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
           __html: JSON.stringify(buildPageSchema(blogFaqs, false), null, 2).replace(
             /</g,
             "\\u003c"
           ),
         }}
       />
-      <SectionContainer>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 py-8">
+      <section className="w-full pt-4 pb-1 md:pt-6 md:pb-2 bg-white text-text-body">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
             <h1 className="text-3xl md:text-4xl font-extrabold mb-4 text-text-heading">
               {post.tittle}
             </h1>
-            <div className="text-sm text-text-muted mb-4 font-semibold">
-              {dateFormatted} • by Admin
-            </div>
+            
+            <BlogAuthorHeader
+              author={author}
+              dateFormatted={dateFormatted}
+              readingTime={readingTime}
+            />
 
             <div className="w-full relative mb-8 rounded-2xl overflow-hidden shadow-md bg-white">
               <Image
@@ -190,6 +317,9 @@ export default async function BlogDetailPage({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
             </article>
+
+            {/* Author Profile Bio Section */}
+            <BlogAuthorBio author={author} />
           </div>
 
           <AnimateIn variant="fadeUp" delay={0.15} className="lg:col-span-4">
@@ -257,7 +387,8 @@ export default async function BlogDetailPage({ params }: Props) {
             </div>
           </AnimateIn>
         </div>
-      </SectionContainer>
+      </div>
+    </section>
 
       {/* Blog FAQs Section */}
       {(() => {
@@ -305,6 +436,7 @@ export default async function BlogDetailPage({ params }: Props) {
             title="Frequently Asked Questions"
             description="Helpful answers to common questions about our articles and academic guidance."
             faqs={blogFaqs}
+            containerClassName="pt-4 pb-8 md:pt-5 md:pb-10 bg-[#faf9fe] border-t border-slate-100"
           />
         );
       })()}
