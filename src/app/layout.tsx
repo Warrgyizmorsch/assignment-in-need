@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { TawkToChat } from "@/components/ui/TawkToChat";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { ReferWidget } from "@/components/ui/ReferWidget";
+import { HalloweenWidget } from "@/components/ui/HalloweenWidget";
 import { QuoteModal } from "@/components/ui/QuoteModal";
 // import { PromoModal } from "@/components/ui/PromoModal"; // Temporarily disabled by user request
 import { SamplePromoModal } from "@/components/ui/SamplePromoModal";
@@ -177,6 +178,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <main className="flex-grow">{children}</main>
         <Footer />
         <WhatsAppButton />
+        <HalloweenWidget />
         <ReferWidget />
         <TawkToChat />
         <QuoteModal />
