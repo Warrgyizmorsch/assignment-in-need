@@ -39,6 +39,7 @@ import PopularServices from "@/components/home/PopularServices";
 import ExploreSubjects from "@/components/home/ExploreSubjects";
 import PromoBannerHome from "@/components/home/PromoBannerHome";
 import AssignmentSamples from "@/components/home/AssignmentSamples";
+import WhyStudentsPickUs from "@/components/home/WhyStudentsPickUs";
 import ResultsAndTools from "@/components/home/ResultsAndTools";
 import ReviewsAndFaq from "@/components/home/ReviewsAndFaq";
 import CtaBanner from "@/components/home/CtaBanner";
@@ -129,6 +130,7 @@ export default function Home() {
       <ExploreSubjects />
       <PromoBannerHome />
       <AssignmentSamples />
+      <WhyStudentsPickUs />
 
       <SeoContentSection />
       <ResultsAndTools />
