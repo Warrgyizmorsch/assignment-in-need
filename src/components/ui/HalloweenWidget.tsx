@@ -5,6 +5,26 @@ import { Sparkles, Copy, Check, X, Clock, ArrowRight } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { openQuoteModal } from "@/components/ui/QuoteModal";
 
+function getHalloweenTimeLeft() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  // Target: 31st October of current year at 23:59:59 local time (Month 9 is October in 0-indexed JS Date)
+  const targetDate = new Date(currentYear, 9, 31, 23, 59, 59).getTime();
+  const difference = targetDate - now.getTime();
+
+  // If past 31st October 23:59:59 or not October, offer is expired
+  if (difference <= 0 || now.getMonth() > 9) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
+  }
+
+  const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((difference / (1000 * 60)) % 60);
+  const seconds = Math.floor((difference / 1000) % 60);
+
+  return { days, hours, minutes, seconds, isExpired: false };
+}
+
 export function HalloweenWidget() {
   const [isAutoExpanded, setIsAutoExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -12,17 +32,23 @@ export function HalloweenWidget() {
   const [copied, setCopied] = useState(false);
   const isHoveredRef = useRef(false);
 
-  // Countdown timer state
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 8,
-    minutes: 42,
-    seconds: 19,
-  });
+  // Exact countdown timer state to 31st October 23:59:59
+  const [timeLeft, setTimeLeft] = useState(() => getHalloweenTimeLeft());
 
   // Keep ref in sync with hover state for timer callbacks
   useEffect(() => {
     isHoveredRef.current = isHovered;
   }, [isHovered]);
+
+  // Live countdown timer ticking down to October 31st
+  useEffect(() => {
+    setTimeLeft(getHalloweenTimeLeft());
+    const timer = setInterval(() => {
+      setTimeLeft(getHalloweenTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Auto slide-out loop: stays expanded for 3.2s, then reappears every 2s
   useEffect(() => {
@@ -62,29 +88,11 @@ export function HalloweenWidget() {
     }, 1500);
   };
 
-  // Countdown timer effect
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        }
-        return { hours: 12, minutes: 0, seconds: 0 };
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   const handleCopyCode = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    navigator.clipboard.writeText("SPOOKY25");
+    navigator.clipboard.writeText("SPOOKY20");
     setCopied(true);
-    toast.success("🎃 Code SPOOKY25 copied! 25% OFF applied.", {
+    toast.success("🎃 Code SPOOKY20 copied! 20% OFF applied.", {
       icon: "👻",
       style: {
         borderRadius: "12px",
@@ -105,6 +113,11 @@ export function HalloweenWidget() {
     }, 300);
   };
 
+  // If Halloween (October 31st) has ended, hide the widget and modal completely
+  if (timeLeft.isExpired) {
+    return null;
+  }
+
   const isExpanded = isAutoExpanded || isHovered;
 
   return (
@@ -120,7 +133,7 @@ export function HalloweenWidget() {
           onClick={() => setIsModalOpen(true)}
           role="button"
           tabIndex={0}
-          aria-label="Halloween 25% Off Discount Button"
+          aria-label="Halloween 20% Off Discount Button"
           className={`flex items-center bg-gradient-to-r from-[#17072a] via-[#240b3f] to-[#1a0830] hover:from-[#210a3c] hover:to-[#270c46] text-white rounded-r-full shadow-[0_6px_24px_rgba(255,102,0,0.38)] transform transition-transform duration-500 ease-in-out h-11 sm:h-12 focus:outline-none cursor-pointer border-y border-r border-[#ff6600]/70 group ${
             isExpanded
               ? "translate-x-0"
@@ -136,7 +149,7 @@ export function HalloweenWidget() {
 
             {/* Offer Text */}
             <span className="font-black text-sm sm:text-base tracking-wide text-white drop-shadow-sm">
-              FLAT <span className="text-[#ff7700]">25% OFF</span>
+              FLAT <span className="text-[#ff7700]">20% OFF</span>
             </span>
           </div>
 
@@ -201,8 +214,17 @@ export function HalloweenWidget() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg rounded-3xl p-5 sm:p-8 bg-gradient-to-b from-[#1b082e] via-[#120521] to-[#0a0214] text-white border-2 border-orange-500/80 shadow-[0_0_60px_rgba(255,107,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-300 max-h-[92vh] overflow-y-auto"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className="halloween-modal-dialog relative w-full max-w-[460px] rounded-3xl p-4 sm:p-5 bg-gradient-to-b from-[#1b082e] via-[#120521] to-[#0a0214] text-white border-2 border-orange-500/80 shadow-[0_0_60px_rgba(255,107,0,0.5)] max-h-[96vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden animate-in zoom-in-95 duration-300"
           >
+            <style dangerouslySetInnerHTML={{ __html: `
+              .halloween-modal-dialog::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+              }
+            `}} />
+
             {/* Background Spooky Ambient Glow */}
             <div className="absolute -top-24 -left-24 w-56 h-56 bg-orange-600/20 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute -bottom-24 -right-24 w-56 h-56 bg-purple-600/25 rounded-full blur-3xl pointer-events-none"></div>
@@ -211,80 +233,84 @@ export function HalloweenWidget() {
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors z-10 cursor-pointer"
+              className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors z-10 cursor-pointer"
               aria-label="Close Modal"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
             {/* Modal Content */}
             <div className="text-center relative z-10">
               {/* Header Badges with floating bats & pumpkins */}
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <span className="text-2xl animate-bounce">🦇</span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/40">
-                  <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+              <div className="flex items-center justify-center gap-2 mb-1.5 sm:mb-2">
+                <span className="text-lg sm:text-xl animate-bounce">🦇</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/40">
+                  <Sparkles className="w-3 h-3 text-orange-400" />
                   Spooky Halloween Savings
                 </span>
-                <span className="text-2xl animate-bounce" style={{ animationDelay: "0.2s" }}>
+                <span className="text-lg sm:text-xl animate-bounce" style={{ animationDelay: "0.2s" }}>
                   🎃
                 </span>
               </div>
 
               {/* Title */}
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-2 font-heading">
-                Claim Your <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 bg-clip-text text-transparent">FLAT 25% OFF</span>
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white mb-1 font-heading">
+                Claim Your <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 bg-clip-text text-transparent">FLAT 20% OFF</span>
               </h2>
 
-              <p className="text-sm text-slate-300 max-w-sm mx-auto mb-5 leading-relaxed">
-                Trick or Treat! Don&apos;t let tough assignments or dissertations scare you. Get top UK academic expert assistance at an exclusive 25% discount.
+              <p className="text-xs sm:text-[13px] text-slate-300 max-w-sm mx-auto mb-2.5 leading-relaxed">
+                Trick or Treat! Don&apos;t let tough assignments or dissertations scare you. Get top UK academic expert assistance at an exclusive 20% discount.
               </p>
 
-              {/* Live Urgency Countdown Timer */}
-              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-black/40 border border-purple-500/40 mb-6 shadow-inner">
-                <div className="flex items-center gap-1 text-xs text-slate-300 font-semibold">
+              {/* Live Urgency Countdown Timer (Exact to October 31st Halloween) */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-black/40 border border-purple-500/40 mb-2.5 sm:mb-3 shadow-inner">
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-slate-300 font-semibold">
                   <Clock className="w-3.5 h-3.5 text-orange-400" />
                   <span>Offer Ends In:</span>
                 </div>
-                <div className="flex items-center gap-1 font-mono font-black text-sm text-amber-300">
-                  <span className="bg-purple-950/80 px-2 py-0.5 rounded border border-purple-700/50">
+                <div className="flex items-center gap-1 font-mono font-black text-xs sm:text-sm text-amber-300">
+                  <span className="bg-purple-950/80 px-1.5 sm:px-2 py-0.5 rounded border border-purple-700/50">
+                    {String(timeLeft.days).padStart(2, "0")}d
+                  </span>
+                  <span>:</span>
+                  <span className="bg-purple-950/80 px-1.5 sm:px-2 py-0.5 rounded border border-purple-700/50">
                     {String(timeLeft.hours).padStart(2, "0")}h
                   </span>
                   <span>:</span>
-                  <span className="bg-purple-950/80 px-2 py-0.5 rounded border border-purple-700/50">
+                  <span className="bg-purple-950/80 px-1.5 sm:px-2 py-0.5 rounded border border-purple-700/50">
                     {String(timeLeft.minutes).padStart(2, "0")}m
                   </span>
                   <span>:</span>
-                  <span className="bg-purple-950/80 px-2 py-0.5 rounded border border-purple-700/50 text-orange-400">
+                  <span className="bg-purple-950/80 px-1.5 sm:px-2 py-0.5 rounded border border-purple-700/50 text-orange-400">
                     {String(timeLeft.seconds).padStart(2, "0")}s
                   </span>
                 </div>
               </div>
 
               {/* Promo Code Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-orange-950/40 via-purple-950/30 to-orange-950/40 border-2 border-dashed border-orange-500/60 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-center sm:text-left">
-                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+              <div className="p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-orange-950/40 via-purple-950/30 to-orange-950/40 border-2 border-dashed border-orange-500/60 mb-2.5 sm:mb-3 flex items-center justify-between gap-2.5 sm:gap-3">
+                <div className="text-left pl-1">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
                     Your Exclusive Coupon Code
                   </div>
-                  <div className="text-2xl font-black font-mono tracking-widest text-orange-400 drop-shadow-[0_2px_8px_rgba(255,107,0,0.5)]">
-                    SPOOKY25
+                  <div className="text-xl sm:text-2xl font-black font-mono tracking-widest text-orange-400 drop-shadow-[0_2px_8px_rgba(255,107,0,0.5)]">
+                    SPOOKY20
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => handleCopyCode()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-md transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-white" />
+                      <Check className="w-3.5 h-3.5 text-white" />
                       <span>Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-4 h-4" />
+                      <Copy className="w-3.5 h-3.5" />
                       <span>Copy Code</span>
                     </>
                   )}
@@ -292,27 +318,27 @@ export function HalloweenWidget() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={handleClaimOffer}
-                  className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-black text-base shadow-[0_5px_25px_rgba(255,107,0,0.5)] hover:shadow-[0_8px_35px_rgba(255,107,0,0.7)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 px-5 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-black text-sm sm:text-base shadow-[0_5px_25px_rgba(255,107,0,0.5)] hover:shadow-[0_8px_35px_rgba(255,107,0,0.7)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>🎃 Claim 25% Discount Now</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <span>🎃 Claim 20% Discount Now</span>
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
                 <a
-                  href="https://wa.me/447826233106?text=Hi!%20I%20want%20to%20claim%20the%2025%25%20Halloween%20Discount%20(Code:%20SPOOKY25)%20for%20my%20assignment."
+                  href="https://wa.me/447826233106?text=Hi!%20I%20want%20to%20claim%20the%2020%25%20Halloween%20Discount%20(Code:%20SPOOKY20)%20for%20my%20assignment."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 px-6 rounded-2xl bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2 px-5 rounded-2xl bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2"
                 >
                   <span>💬 Claim on WhatsApp (Fast Response)</span>
                 </a>
               </div>
 
-              <div className="mt-4 text-[11px] text-slate-400">
+              <div className="mt-2 text-[10px] sm:text-[11px] text-slate-400">
                 🔒 Valid on all subjects, assignments, essays & dissertations. 100% Plagiarism-Free.
               </div>
             </div>
