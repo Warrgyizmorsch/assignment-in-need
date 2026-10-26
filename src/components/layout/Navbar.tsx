@@ -722,7 +722,7 @@ export const Navbar = () => {
               +44 7826233106
             </a>
             {/* <a
-              href="mailto:order@assignmentinneed.co.uk"
+              href="mailto:Order@assignnmentinneed.com"
               className="flex items-center gap-[5px] font-semibold text-[12.5px] max-md:text-[11px] whitespace-nowrap [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:shrink-0"
             >
               <svg
@@ -738,7 +738,7 @@ export const Navbar = () => {
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7" />
               </svg>
-              order@assignmentinneed.co.uk
+              Order@assignnmentinneed.com
             </a> */}
           </div>
 

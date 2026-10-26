@@ -330,7 +330,7 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <Link
-                      href="mailto:order@assignmentinneed.co.uk"
+                      href="mailto:Order@assignnmentinneed.com"
                       className="w-full sm:w-auto mt-2 sm:mt-0 shrink-0"
                     >
                       <Button
@@ -338,7 +338,7 @@ export default function ContactPage() {
                         size="sm"
                         className="font-extrabold text-[10px] lowercase tracking-wider h-[38px] w-full sm:w-auto whitespace-nowrap shrink-0"
                       >
-                        order@assignmentinneed.co.uk
+                        Order@assignnmentinneed.com
                       </Button>
                     </Link>
                   </div>

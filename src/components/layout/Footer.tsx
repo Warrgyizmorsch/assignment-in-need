@@ -422,10 +422,10 @@ export const Footer = () => {
             <li className="flex items-start gap-3 text-[0.9rem] leading-relaxed">
               <Mail className="text-[#d1d5db] w-4 h-4 mt-1 shrink-0" />
               <a
-                href="mailto:order@assignmentinneed.co.uk"
+                href="mailto:Order@assignnmentinneed.com"
                 className="text-[#d1d5db] no-underline transition-colors duration-200 hover:text-white"
               >
-                order@assignmentinneed.co.uk
+                Order@assignnmentinneed.com
               </a>
             </li>
             <li className="flex items-start gap-3 text-[0.9rem] leading-relaxed">
