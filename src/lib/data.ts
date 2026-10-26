@@ -551,7 +551,7 @@ export const organizationSchema = {
   description:
     "Assignment In Need offers expert academic assistance for UK students, including essays, dissertations, coursework, and case studies, delivered by 150+ subject specialists.",
   telephone: "+44 7917481696",
-  email: "Order@assignnmentinneed.com",
+  email: "order@assignmentinneed.co.uk",
   priceRange: "£8 - £25",
   address: {
     "@type": "PostalAddress",
