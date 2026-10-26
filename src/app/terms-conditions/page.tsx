@@ -379,7 +379,7 @@ export default function TermsConditionsPage() {
                   Phone Support
                 </span>
                 <span className="text-gray-800 font-bold text-sm">
-                  +44 78262 33106
+                  +44 7917481696
                 </span>
               </div>
               <div className="flex flex-col text-xs font-semibold text-gray-500 gap-1 border-t border-gray-100 pt-3">

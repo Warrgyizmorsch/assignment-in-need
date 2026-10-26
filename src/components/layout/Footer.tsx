@@ -416,7 +416,7 @@ export const Footer = () => {
                 href="tel:+447826233106"
                 className="text-[#d1d5db] no-underline transition-colors duration-200 hover:text-white"
               >
-                +44 78262 33106
+                +44 7917481696
               </a>
             </li>
             <li className="flex items-start gap-3 text-[0.9rem] leading-relaxed">

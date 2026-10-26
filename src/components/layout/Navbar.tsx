@@ -84,7 +84,7 @@ const ASSIGNMENT_SERVICE_SUBJECTS: NavLinkItem[] = [
 ];
 const isNonServicePage = (item: ServicePageApiItem) => {
   const rawSlug = (item.slug || "").toLowerCase().trim().replace(/^\/+/, "");
-  
+
   const excludedServices = [
     "service/assignment-services",
     "service/essay-writing-service",
@@ -286,8 +286,8 @@ const DesktopDropdown = ({
         )}
       >
         {items.map((item, idx) => (
-          <li 
-            key={`${item.path}-${item.name}-${idx}`} 
+          <li
+            key={`${item.path}-${item.name}-${idx}`}
             className="znh-dropdown-item"
             onMouseEnter={(e) => handleMouseEnter(e, item)}
           >
@@ -306,9 +306,9 @@ const DesktopDropdown = ({
           </li>
         ))}
       </ul>
-      
+
       {/* Submenu rendered outside scrollable container to prevent clipping */}
-      <ul 
+      <ul
         className="znh-submenu"
         style={{
           top: '100%',
@@ -488,8 +488,8 @@ export const Navbar = () => {
         const items = Array.isArray(payload?.data)
           ? payload.data
           : Array.isArray(payload)
-          ? payload
-          : [];
+            ? payload
+            : [];
 
         if (items.length > 0) {
           const mapped = items.map((item: any) => {
@@ -521,16 +521,16 @@ export const Navbar = () => {
           Array.isArray(payload) && payload.length > 0
             ? payload
             : Array.isArray(payload?.data) && payload.data.length > 0
-            ? payload.data
-            : Array.isArray(payload?.data?.pages) && payload.data.pages.length > 0
-            ? payload.data.pages
-            : Array.isArray(payload?.pages) && payload.pages.length > 0
-            ? payload.pages
-            : Array.isArray(payload?.cities) && payload.cities.length > 0
-            ? payload.cities
-            : Array.isArray(payload?.static_cities)
-            ? payload.static_cities
-            : [];
+              ? payload.data
+              : Array.isArray(payload?.data?.pages) && payload.data.pages.length > 0
+                ? payload.data.pages
+                : Array.isArray(payload?.pages) && payload.pages.length > 0
+                  ? payload.pages
+                  : Array.isArray(payload?.cities) && payload.cities.length > 0
+                    ? payload.cities
+                    : Array.isArray(payload?.static_cities)
+                      ? payload.static_cities
+                      : [];
 
         const seenPaths = new Set<string>();
         const completeCities: NavLinkItem[] = [];
@@ -1051,13 +1051,13 @@ export const Navbar = () => {
             <a
               href="tel:+447826233106"
               className="znh-contact-widget"
-              aria-label="Call +44 78262 33106 for 24/7 Support"
+              aria-label="Call +44 7917481696 for 24/7 Support"
             >
               <div className="znh-contact-icon">
                 <Phone className="h-[18px] w-[18px]" />
               </div>
               <div className="znh-contact-text">
-                <span className="znh-contact-number">+44 78262 33106</span>
+                <span className="znh-contact-number">+44 7917481696</span>
                 <span className="znh-contact-label">24/7 Support</span>
               </div>
             </a>

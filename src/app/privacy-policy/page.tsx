@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
       {/* 2. Content Section */}
       <AnimateIn variant="fadeUp" delay={0.15} as="main" className="max-w-[1000px] mx-auto px-6 mt-8 md:mt-12 block">
         <div className="bg-white rounded-3xl border border-gray-150/70 shadow-[0_10px_40px_rgba(0,0,0,0.02)] p-6 md:p-10 flex flex-col gap-8 text-left">
-          
+
           {/* Section 1 */}
           <section className="flex flex-col gap-3">
             <h2 className="text-xl md:text-2xl font-black text-gray-950 flex items-center gap-2.5">
@@ -108,7 +108,7 @@ export default function PrivacyPolicyPage() {
               At-a-Glance: Data Collection Summary
             </h2>
             <div className="h-0.5 w-12 bg-purple-100 rounded-full mb-2" />
-            
+
             {/* Custom styled table with bold borders */}
             <div className="overflow-x-auto rounded-2xl border border-gray-950 mt-2">
               <table className="min-w-full divide-y divide-gray-950">
@@ -292,7 +292,7 @@ export default function PrivacyPolicyPage() {
               Contact Our Privacy Team
             </h2>
             <div className="h-0.5 w-12 bg-purple-100 rounded-full mb-2" />
-            
+
             <div className="bg-[#fcfbff] border border-purple-100 rounded-2xl p-5 flex flex-col gap-3 max-w-lg">
               <div className="flex flex-col text-xs font-semibold text-gray-500 gap-1">
                 <span className="text-gray-400 font-bold uppercase tracking-wider text-[9px]">Email Address</span>
@@ -302,7 +302,7 @@ export default function PrivacyPolicyPage() {
               </div>
               <div className="flex flex-col text-xs font-semibold text-gray-500 gap-1 border-t border-gray-100 pt-3">
                 <span className="text-gray-400 font-bold uppercase tracking-wider text-[9px]">Phone Support</span>
-                <span className="text-gray-800 font-bold text-sm">+44 78262 33106</span>
+                <span className="text-gray-800 font-bold text-sm">+44 7917481696</span>
               </div>
               <div className="flex flex-col text-xs font-semibold text-gray-500 gap-1 border-t border-gray-100 pt-3">
                 <span className="text-gray-400 font-bold uppercase tracking-wider text-[9px]">Registered Office</span>

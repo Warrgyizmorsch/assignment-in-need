@@ -64,7 +64,7 @@ export default function ContactPage() {
             setSubjectsOptions(mapped);
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     };
     fetchSubjects();
   }, []);
@@ -309,7 +309,7 @@ export default function ContactPage() {
                         size="sm"
                         className="font-extrabold text-[10px] uppercase tracking-wider h-[38px] w-full sm:w-auto whitespace-nowrap shrink-0"
                       >
-                        +44 78262 33106
+                        +44 7917481696
                       </Button>
                     </Link>
                   </div>

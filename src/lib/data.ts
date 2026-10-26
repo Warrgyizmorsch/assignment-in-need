@@ -550,7 +550,7 @@ export const organizationSchema = {
   logo: "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   description:
     "Assignment In Need offers expert academic assistance for UK students, including essays, dissertations, coursework, and case studies, delivered by 150+ subject specialists.",
-  telephone: "+44 78262 33106",
+  telephone: "+44 7917481696",
   email: "order@assignmentinneed.co.uk",
   priceRange: "£8 - £25",
   address: {
@@ -593,7 +593,7 @@ export const localBusinessSchema = {
   name: "Assignment In Need",
   image: "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   url: "https://assignmentinneed.co.uk/",
-  telephone: "+44 78262 33106",
+  telephone: "+44 7917481696",
   priceRange: "£8 - £25",
   address: {
     "@type": "PostalAddress",
