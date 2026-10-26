@@ -351,6 +351,9 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
                 ))}
               </div>
 
+              {/* Quick Order Form Skeleton on Mobile */}
+              <div className="block lg:hidden h-80 bg-slate-100 rounded-2xl animate-pulse"></div>
+
               {/* Rich Content Placeholder */}
               <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm space-y-4">
                 <div className="h-6 bg-slate-200 rounded w-1/3 mb-6"></div>
@@ -366,7 +369,7 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
 
             {/* Sidebar Skeleton */}
             <div className="lg:col-span-4 flex flex-col gap-6 sticky top-24">
-              <div className="h-48 bg-slate-200 rounded-2xl w-full"></div>
+              <div className="hidden lg:block h-48 bg-slate-200 rounded-2xl w-full"></div>
               <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm space-y-4">
                 <div className="h-6 bg-slate-200 rounded w-2/3 mb-4"></div>
                 {Array.from({ length: 5 }).map((_, idx) => (
@@ -468,6 +471,13 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
               </div>
             </div>
 
+            {/* Quick Order Form (Mobile only: placed right below stats/downloads and before content starts) */}
+            <div className="block lg:hidden">
+              <SidebarQuoteForm
+                sourceName={`Sample Detail Page: ${sample.title || "General"}`}
+              />
+            </div>
+
             {/* Dynamic Rich HTML Content */}
             <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden">
               {/* Unblurred Content (Intro + First 3 Headings & Text) */}
@@ -535,10 +545,12 @@ export default function SampleDetailPage({ params, initialSample }: SampleDetail
 
           {/* Right Sidebar Form & Widgets */}
           <div className="lg:col-span-4 flex flex-col gap-6 sticky top-6">
-            {/* Quick Order Form */}
-            <SidebarQuoteForm
-              sourceName={`Sample Detail Page: ${sample?.title || "General"}`}
-            />
+            {/* Quick Order Form (Desktop only, since on mobile it is positioned above content) */}
+            <div className="hidden lg:block">
+              <SidebarQuoteForm
+                sourceName={`Sample Detail Page: ${sample?.title || "General"}`}
+              />
+            </div>
 
             {/* Popular Subjects counters */}
             <div className="bg-[#fafaff] border border-gray-100 rounded-3xl p-6 text-left shadow-sm">

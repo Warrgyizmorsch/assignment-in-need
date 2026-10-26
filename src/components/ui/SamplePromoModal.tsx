@@ -186,40 +186,40 @@ export function SamplePromoModal() {
           if (e.target === e.currentTarget) handleClose();
         }}
       >
-      <div className="relative w-full max-w-[700px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col sm:flex-row animate-slideUp border border-purple-100">
+      <div className="relative w-full max-w-[700px] max-h-[92vh] overflow-y-auto bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col sm:flex-row animate-slideUp border border-purple-100">
         <button
           onClick={handleClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-900 transition-colors z-20 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white sm:text-gray-400 hover:text-white sm:hover:text-gray-900 transition-colors z-30 bg-black/30 sm:bg-gray-100 hover:bg-black/50 sm:hover:bg-gray-200 rounded-full p-1.5 focus:outline-none"
         >
           <X className="w-4 h-4" />
         </button>
 
-        {/* Left Side - Premium Look */}
-        <div className="sm:w-[45%] bg-gradient-to-br from-[#1e143b] via-[#3a1d6b] to-[#5a2c99] p-6 sm:p-8 flex flex-col justify-center text-left text-white relative overflow-hidden hidden sm:flex">
+        {/* Left Side (Top banner on Mobile, Left column on Desktop) */}
+        <div className="w-full sm:w-[45%] bg-gradient-to-br from-[#1e143b] via-[#3a1d6b] to-[#5a2c99] p-5 sm:p-8 flex flex-col justify-center text-left text-white relative overflow-hidden shrink-0">
           {/* Decorative shapes */}
           <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 rounded-full bg-white opacity-5 blur-2xl"></div>
           <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-48 h-48 rounded-full bg-fuchsia-500 opacity-20 blur-3xl"></div>
           
           <div className="relative z-10 flex flex-col h-full justify-center">
-            <span className="bg-white/20 text-white border border-white/30 backdrop-blur-md font-bold px-3 py-1 rounded-full text-[10px] uppercase tracking-widest w-max mb-5 shadow-sm">
+            <span className="bg-white/20 text-white border border-white/30 backdrop-blur-md font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[9px] sm:text-[10px] uppercase tracking-widest w-max mb-2 sm:mb-5 shadow-sm inline-block">
               Exclusive Offer
             </span>
-            <h2 className="text-[32px] font-black leading-none mb-3 text-white">
+            <h2 className="text-2xl sm:text-[32px] font-black leading-tight sm:leading-none mb-1.5 sm:mb-3 text-white">
               Unlock <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">500 Words</span> Free!
             </h2>
-            <p className="text-sm font-medium text-purple-200 leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm font-medium text-purple-200 leading-snug sm:leading-relaxed mb-3 sm:mb-6">
               Boost your grades instantly. Claim your free words on your first assignment with us.
             </p>
             
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5 sm:gap-3">
               {[
                 "Premium Quality Content",
                 "100% Plagiarism Free",
                 "Expert UK Writers"
               ].map((feature, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-[13px] text-purple-100 font-medium">
-                  <div className="w-4 h-4 rounded-full bg-green-400/20 flex items-center justify-center shrink-0">
-                    <svg className="w-2.5 h-2.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                <div key={idx} className="flex items-center gap-2 text-xs sm:text-[13px] text-purple-100 font-medium">
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-green-400/20 flex items-center justify-center shrink-0">
+                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
                   </div>
                   {feature}
                 </div>
@@ -229,10 +229,10 @@ export function SamplePromoModal() {
         </div>
 
         {/* Right side form */}
-        <div className="p-6 sm:p-8 sm:w-[55%] bg-white w-full flex flex-col justify-center">
-          <div className="mb-5 text-center sm:text-left">
-            <h3 className="text-[22px] font-extrabold text-purple-800 mb-1.5">Where should we send it?</h3>
-            <p className="text-[13px] text-gray-500 font-medium">Enter your details below to claim your free words.</p>
+        <div className="p-5 sm:p-8 w-full sm:w-[55%] bg-white flex flex-col justify-center">
+          <div className="mb-4 sm:mb-5 text-center sm:text-left">
+            <h3 className="text-lg sm:text-[22px] font-extrabold text-purple-800 mb-1 sm:mb-1.5">Where should we send it?</h3>
+            <p className="text-xs sm:text-[13px] text-gray-500 font-medium">Enter your details below to claim your free words.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 text-left">
