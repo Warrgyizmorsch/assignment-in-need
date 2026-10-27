@@ -297,17 +297,20 @@ export default function PopularServices() {
       <div className="max-w-[1200px] mx-auto px-4 md:px-8 w-full">
         <AnimateIn
           variant="fadeUp"
-          className="flex flex-col text-center items-center mb-8 md:mb-12"
+          className="flex flex-col text-center items-center mb-7 md:mb-9"
         >
-          <h2 className="text-xl md:text-[1.75rem] font-black text-gray-900 m-0 mb-3 leading-tight">
+          <h2 className="text-xl md:text-[1.75rem] font-black text-gray-900 m-0 mb-2 leading-tight">
             Our Most{" "}
             <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent overflow-hidden text-ellipsis">
               Popular Services
             </span>
           </h2>
-          <p className="text-[1.02rem] max-md:text-[0.95rem] text-gray-500 m-0 leading-normal max-w-2xl">
+          <p className="text-[0.95rem] md:text-[1.02rem] text-gray-700 font-medium m-0 leading-normal max-w-2xl">
             Explore our top-rated academic writing and support services tailored
             to your module needs.
+          </p>
+          <p className="text-[0.85rem] md:text-[0.92rem] text-gray-500 mt-2 leading-relaxed max-w-4xl">
+            Most students don’t need a miracle. They need a clear price, a writer who knows the subject, and someone who replies when the deadline is close. That’s what AIN is built for. You get a fixed quote before you pay, a writer matched to your course and level, and a direct chat with them while they work. If the work doesn’t match your brief, you ask for changes and we fix them. We’re also upfront about one thing: our work is a model answer and study guide to help you understand the topic and write your own, not something to hand in as yours.
           </p>
         </AnimateIn>
 
