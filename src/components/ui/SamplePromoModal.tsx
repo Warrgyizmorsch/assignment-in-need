@@ -182,14 +182,16 @@ export function SamplePromoModal() {
       />
       <div 
         className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) handleClose();
-        }}
       >
       <div className="relative w-full max-w-[700px] max-h-[92vh] overflow-y-auto bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col sm:flex-row animate-slideUp border border-purple-100">
         <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white sm:text-gray-400 hover:text-white sm:hover:text-gray-900 transition-colors z-30 bg-black/30 sm:bg-gray-100 hover:bg-black/50 sm:hover:bg-gray-200 rounded-full p-1.5 focus:outline-none"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClose();
+          }}
+          aria-label="Close modal"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white sm:text-gray-400 hover:text-white sm:hover:text-gray-900 transition-colors z-50 bg-black/30 sm:bg-gray-100 hover:bg-black/50 sm:hover:bg-gray-200 rounded-full p-1.5 focus:outline-none cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>

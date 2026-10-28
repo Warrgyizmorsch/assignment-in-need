@@ -386,10 +386,9 @@ export function openQuoteModal() {
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-2 sm:p-4 overflow-y-auto bg-black/70 backdrop-blur-sm">
-          {/* Backdrop Click */}
+          {/* Backdrop (Clicking outside does NOT close modal) */}
           <div
-            className="fixed inset-0 -z-10"
-            onClick={handleClose}
+            className="fixed inset-0 -z-10 pointer-events-none"
             aria-hidden="true"
           />
 
@@ -402,10 +401,13 @@ export function openQuoteModal() {
           >
             {/* Close Button */}
             <button
-              onClick={handleClose}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClose();
+              }}
               type="button"
               aria-label="Close modal"
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 hover:bg-white text-gray-700 hover:text-purple-700 rounded-full shadow-md flex items-center justify-center transition-all cursor-pointer border border-gray-200 focus:outline-none"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 z-50 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 hover:bg-white text-gray-700 hover:text-purple-700 rounded-full shadow-md flex items-center justify-center transition-all cursor-pointer border border-gray-200 focus:outline-none"
             >
               <X className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
             </button>

@@ -210,7 +210,6 @@ export function HalloweenWidget() {
       {isModalOpen && (
         <div
           className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
-          onClick={() => setIsModalOpen(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -232,8 +231,11 @@ export function HalloweenWidget() {
             {/* Close Button */}
             <button
               type="button"
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors z-10 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsModalOpen(false);
+              }}
+              className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors z-50 cursor-pointer"
               aria-label="Close Modal"
             >
               <X className="w-4 h-4" />
