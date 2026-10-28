@@ -147,24 +147,31 @@ const ALL_SUBJECTS: SubjectItem[] = [
   },
 ];
 
+// Helper to calculate the exact last date of the current active month dynamically
+function getLastDateOfCurrentMonth(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed (0 = Jan, 11 = Dec)
+  // Day 0 of (month + 1) gives the last day of the current month (e.g. 31, 30, 28/29)
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  return `${lastDay} ${months[month]} ${year}`;
+}
+
 export default function OffersPage() {
   const router = useRouter();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [endDateFormatted, setEndDateFormatted] = useState<string>("31 Oct 2026");
+  const [endDateFormatted, setEndDateFormatted] = useState<string>(getLastDateOfCurrentMonth);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Dynamic end-date calculator (calculates the last day of the current month)
+  // Dynamic end-date calculator (ensures last day of current month automatically)
   useEffect(() => {
-    try {
-      const now = new Date();
-      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" };
-      setEndDateFormatted(lastDay.toLocaleDateString("en-GB", options));
-    } catch {
-      setEndDateFormatted("End of this month");
-    }
+    setEndDateFormatted(getLastDateOfCurrentMonth());
   }, []);
 
   // Copy Promo Code Handler

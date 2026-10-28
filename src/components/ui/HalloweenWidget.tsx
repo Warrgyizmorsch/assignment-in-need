@@ -12,8 +12,8 @@ function getHalloweenTimeLeft() {
   const targetDate = new Date(currentYear, 9, 31, 23, 59, 59).getTime();
   const difference = targetDate - now.getTime();
 
-  // If past 31st October 23:59:59 or not October, offer is expired
-  if (difference <= 0 || now.getMonth() > 9) {
+  // If past 31st October 23:59:59 or not October, Halloween offer is completely expired
+  if (difference <= 0 || now.getMonth() !== 9) {
     return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true };
   }
 
@@ -40,18 +40,29 @@ export function HalloweenWidget() {
     isHoveredRef.current = isHovered;
   }, [isHovered]);
 
-  // Live countdown timer ticking down to October 31st
+  // Live countdown timer ticking down to October 31st 23:59:59
+  // As soon as Halloween expires, it automatically closes the modal and hides the widget
   useEffect(() => {
-    setTimeLeft(getHalloweenTimeLeft());
-    const timer = setInterval(() => {
-      setTimeLeft(getHalloweenTimeLeft());
-    }, 1000);
+    const checkExpiry = () => {
+      const remaining = getHalloweenTimeLeft();
+      setTimeLeft(remaining);
+      if (remaining.isExpired) {
+        setIsModalOpen(false);
+        setIsAutoExpanded(false);
+      }
+    };
+
+    checkExpiry();
+    const timer = setInterval(checkExpiry, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
   // Auto slide-out loop: stays expanded for 3.2s, then reappears every 2s
+  // Completely disabled if Halloween has ended
   useEffect(() => {
+    if (timeLeft.isExpired) return;
+
     let timer: NodeJS.Timeout;
 
     const cycle = () => {
@@ -76,7 +87,7 @@ export function HalloweenWidget() {
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, [timeLeft.isExpired]);
 
   // If user leaves hover while auto-expanded, allow collapse after small grace period
   const handleMouseLeave = () => {
