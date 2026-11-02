@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import SampleCategoryClient from "./SampleCategoryClient";
 import { constructMetadata } from "@/lib/metadata";
 
@@ -6,9 +7,35 @@ type Props = {
   params: Promise<{ category: string }>;
 };
 
+const BASE_URL =
+  process.env.BACKEND_INTERNAL_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "https://ain.warrgyizmorsch.com";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const category = resolvedParams.category;
+
+  // Check if single slug is actually a sample detail page
+  try {
+    const res = await fetch(`${BASE_URL}/api/samples/${encodeURIComponent(category)}`, { cache: "no-store" });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.data?.slug) {
+        const sample = json.data;
+        const catSlug = sample.category_name
+          ? sample.category_name.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+          : "business";
+        return constructMetadata({
+          title: `${sample.meta_title || sample.title} | Assignment In Need`,
+          description: sample.meta_description || "Read free academic assignment sample.",
+          canonicalUrl: `/samples/${catSlug}/${sample.slug}`,
+        });
+      }
+    }
+  } catch {
+    // ignore
+  }
 
   const formattedName = category
     .replace(/-/g, " ")
@@ -24,6 +51,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SampleCategoryPage({ params }: Props) {
   const resolvedParams = await params;
   const category = resolvedParams.category;
+
+  // Check if this single slug is actually a sample rather than a category
+  try {
+    const res = await fetch(`${BASE_URL}/api/samples/${encodeURIComponent(category)}`, { cache: "no-store" });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.data?.slug) {
+        const catSlug = json.data.category_name
+          ? json.data.category_name.toLowerCase().replace(/[^a-z0-9]+/g, "-")
+          : "business";
+        redirect(`/samples/${catSlug}/${json.data.slug}`);
+      }
+    }
+  } catch (e: any) {
+    if (e?.digest?.startsWith("NEXT_REDIRECT")) throw e;
+  }
+
   const formattedName = category
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
