@@ -120,11 +120,7 @@ export default function HeroSection() {
 
               <div className="max-lg:text-center max-md:text-left">
                 <p className="text-[0.92rem] max-md:text-[0.78rem] text-gray-600 leading-relaxed mb-4">
-                  Get trusted assignment help online for essays, reports,
-                  coursework, dissertations, and case studies. Our subject
-                  specialists provide original, human-written academic support
-                  tailored to UK university standards, your module requirements,
-                  and your deadlines.
+                  Get reliable assignment help for essays, coursework, reports, dissertations, and research projects. Our subject specialists provide structured academic guidance and evidence-based research aligned with UK university standards, including Harvard, APA 7th, and OSCOLA referencing styles.
                 </p>
               </div>
 

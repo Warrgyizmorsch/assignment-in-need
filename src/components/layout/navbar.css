@@ -180,19 +180,28 @@
   top: 0;
   left: 100%;
   background: #ffffff;
-  min-width: 260px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  min-width: 270px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
   padding: 10px 0;
   opacity: 0;
   visibility: hidden;
   transform: translateX(10px);
-  transition: all 0.1s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
   list-style: none;
   margin: 0;
-  max-height: 60vh;
+  max-height: 65vh;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
+  scroll-padding-top: 10px;
+  scroll-padding-bottom: 10px;
+}
+
+.znh-submenu .znh-dropdown-link {
+  white-space: nowrap;
+  padding: 8px 20px;
+  line-height: 1.45;
 }
 
 .znh-dropdown-item:hover>.znh-submenu {

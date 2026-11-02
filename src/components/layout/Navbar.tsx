@@ -62,57 +62,22 @@ const ensureRelativePath = (url: string): string => {
   return url.startsWith("/") ? url : `/${url}`;
 };
 
-const ASSIGNMENT_SERVICE_SUBJECTS: NavLinkItem[] = [
-  {
-    name: "Marketing Assignment Help UK",
-    path: canonicalSubjectPath("marketing"),
-  },
-  { name: "MBA Assignment Help", path: canonicalSubjectPath("mba") },
-  {
-    name: "Accounting Assignment Help",
-    path: canonicalSubjectPath("accounting"),
-  },
-  { name: "Law Assignment Help", path: canonicalSubjectPath("law") },
-  {
-    name: "Programming Assignment Help",
-    path: canonicalSubjectPath("programming"),
-  },
-  {
-    name: "Nursing Assignment Help",
-    path: canonicalSubjectPath("nursing"),
-  },
-];
 const isNonServicePage = (item: ServicePageApiItem) => {
   const rawSlug = (item.slug || "").toLowerCase().trim().replace(/^\/+/, "");
-
-  const excludedServices = [
-    "service/assignment-services",
-    "service/essay-writing-service",
-    "service/dissertation",
-    "service/case-study-help",
-    "service/report-writing",
-    "service/coursework-help",
-    "service/editing-and-formatting",
-    "service/proofreading" // Adding this just in case, as it's the 8th card
-  ];
-  if (excludedServices.includes(rawSlug)) {
-    return true;
-  }
 
   if (
     rawSlug.startsWith("cities/") ||
     rawSlug.startsWith("city/") ||
     rawSlug.includes("/cities/") ||
     rawSlug.includes("/city/") ||
-    rawSlug.startsWith("assignment-help-") ||
     rawSlug.startsWith("subject/") ||
     rawSlug.startsWith("subjects/") ||
     rawSlug.includes("/subject/") ||
-    rawSlug.includes("/subjects/") ||
-    rawSlug.includes("management-assignment-help")
+    rawSlug.includes("/subjects/")
   ) {
     return true;
   }
+
   const searchableText = [
     item.slug,
     item.title,
@@ -128,94 +93,277 @@ const isNonServicePage = (item: ServicePageApiItem) => {
   );
 };
 
+const FALLBACK_SERVICES: NavLinkItem[] = [
+  {
+    name: "Assignment Services",
+    path: "/service/assignment",
+    children: [
+      { name: "Buy Assignment Online UK", path: "/service/buy-assignment-online" },
+      { name: "CACHE Assignment Help", path: "/service/cache-assignment-help" },
+      { name: "Capstone Project Assignment Help", path: "/service/capstone-project-assignment-help" },
+      { name: "Custom Assignment Help UK", path: "/service/custom-assignment-help" },
+      { name: "Education Assignment Help", path: "/service/education-assignment-help" },
+      { name: "Fashion Assignment Help", path: "/service/fashion-assignment-help" },
+      { name: "High School Assignment", path: "/service/high-school-assignment-help" },
+      { name: "HNC Assignment Help", path: "/service/hnc-assignment-help" },
+      { name: "HND Assignment Help UK", path: "/service/hnd-assignment-help" },
+      { name: "Last Minute Assignment Help", path: "/service/last-minute-assignment-help" },
+      { name: "Pay Someone to Do My Assignment UK", path: "/service/pay-someone-to-do-my-assignment" },
+      { name: "Resit Assignment Help", path: "/service/resit-assignment-help" },
+      { name: "University Assignment Help UK", path: "/service/university-assignment-help" },
+    ],
+  },
+  {
+    name: "Assignment by Country",
+    path: "/service/assignment",
+    children: [
+      { name: "Assignment Help England", path: "/service/assignment-help-england" },
+      { name: "Assignment Help Ireland", path: "/service/assignment-help-ireland" },
+      { name: "Assignment Help Scotland", path: "/service/assignment-help-scotland" },
+      { name: "Assignment Help Wales", path: "/service/assignment-help-wales" },
+    ],
+  },
+  {
+    name: "Dissertation Writing Services",
+    path: "/service/dissertation",
+    children: [
+      { name: "Chemistry Dissertation Help", path: "/service/chemistry-dissertation-help" },
+      { name: "Law Dissertation Help", path: "/service/law-dissertation-help" },
+      { name: "MBA Dissertation Help", path: "/service/mba-dissertation-help" },
+      { name: "Psychology Dissertation Help", path: "/service/psychology-dissertation-help" },
+      { name: "Write My Dissertation", path: "/service/write-my-dissertation" },
+    ],
+  },
+];
+
 const mapServicePagesToMenu = (
   services: ServicePageApiItem[],
 ): NavLinkItem[] => {
-  return services
-    .filter((service) => !isNonServicePage(service))
-    .map((service) => {
-      const parentSlug = (service.slug?.trim().replace(/^\/+/, "") || "").replace(/^service\/subject\//, "service/").replace(/^subject\//, "service/");
-      const parentPath = `/${parentSlug}`;
+  if (!Array.isArray(services) || services.length === 0) {
+    return FALLBACK_SERVICES;
+  }
 
-      const parentName = service.title?.trim() || service.hero_heading?.trim() || service.meta_title?.trim() || humanizeSlug(parentSlug || "service");
+  // Dynamic categorization matching Google Spreadsheet blueprint
+  const countryKeywords = ["england", "scotland", "ireland", "wales"];
+  const dissertationKeywords = ["dissertation"];
+  const assignmentKeywords = [
+    "do-my-assignment", "pay-someone", "hnd", "high-school", "buy-assignment",
+    "custom-assignment", "last-minute", "fashion", "hnc", "capstone", "resit",
+    "education", "university", "cache", "assignment"
+  ];
 
-      const isAssignmentParent =
-        parentSlug === "service/assignment" ||
-        parentSlug === "assignment" ||
-        parentSlug === "assignment-writing-uk" ||
-        /assignment writing (?:help )?uk/i.test(parentName);
+  const assignmentChildren: NavLinkItem[] = [];
+  const countryChildren: NavLinkItem[] = [];
+  const dissertationChildren: NavLinkItem[] = [];
 
-      const mappedChildren = isAssignmentParent
-        ? ASSIGNMENT_SERVICE_SUBJECTS
-        : Array.isArray(service.children)
-          ? service.children
-            .filter((child) => !isNonServicePage(child))
-            .map((child) => {
-              const rawChildSlug = (child.slug?.trim().replace(/^\/+/, "") || "").replace(/^service\/subject\//, "service/").replace(/^subject\//, "service/");
-              let childPath = `/${rawChildSlug}`;
-              const childName = child.title?.trim() || child.hero_heading?.trim() || child.meta_title?.trim() || humanizeSlug(rawChildSlug || "service");
-              return {
-                name: childName,
-                path: childPath,
-              };
-            }).sort((first, second) => first.name.localeCompare(second.name))
-          : undefined;
+  for (const item of services) {
+    if (!item) continue;
+    const rawSlug = (item.slug || "").trim().toLowerCase().replace(/^\/+/, "");
+    if (!rawSlug || isNonServicePage(item)) continue;
 
-      return {
-        name: parentName,
-        path: parentPath,
-        children: mappedChildren,
-      };
-    }).sort((first, second) => first.name.localeCompare(second.name));
+    const path = `/${rawSlug}`;
+    const name = item.title?.trim() || item.hero_heading?.trim() || item.meta_title?.trim() || humanizeSlug(rawSlug);
+
+    // Skip the main category parent hubs themselves from appearing as their own children
+    if (rawSlug === "service/assignment" || rawSlug === "service/assignment-services" || rawSlug === "assignment") {
+      continue;
+    }
+    if (rawSlug === "service/dissertation" || rawSlug === "dissertation") {
+      continue;
+    }
+
+    if (countryKeywords.some((k) => rawSlug.includes(k))) {
+      countryChildren.push({ name, path });
+    } else if (dissertationKeywords.some((k) => rawSlug.includes(k))) {
+      dissertationChildren.push({ name, path });
+    } else if (assignmentKeywords.some((k) => rawSlug.includes(k))) {
+      assignmentChildren.push({ name, path });
+    }
+  }
+
+  return [
+    {
+      name: "Assignment Services",
+      path: "/service/assignment",
+      children: assignmentChildren.length > 0
+        ? assignmentChildren.sort((a, b) => a.name.localeCompare(b.name))
+        : FALLBACK_SERVICES[0].children,
+    },
+    {
+      name: "Assignment by Country",
+      path: "/service/assignment",
+      children: countryChildren.length > 0
+        ? countryChildren.sort((a, b) => a.name.localeCompare(b.name))
+        : FALLBACK_SERVICES[1].children,
+    },
+    {
+      name: "Dissertation Writing Services",
+      path: "/service/dissertation",
+      children: dissertationChildren.length > 0
+        ? dissertationChildren.sort((a, b) => a.name.localeCompare(b.name))
+        : FALLBACK_SERVICES[2].children,
+    },
+  ];
 };
 
-const SUBJECTS: NavLinkItem[] = [
-  ["Math Assignment Help", "subjects/maths"],
-  ["Chemistry Assignment Help", "subjects/chemistry"],
-  ["History Assignment Help UK", "subjects/history"],
-  ["Marketing Assignment Help UK", "subjects/marketing"],
-  ["Business Assignment Help", "subjects/business"],
-  ["MBA Assignment Help", "subjects/mba-assignment-help"],
-  ["Finance Assignment Help", "subjects/finance-assignment-help"],
-  ["Accounting Assignment Help", "subjects/accounting-assignment-help"],
-  ["Statistics Assignment Help", "subjects/statistics-assignment-help"],
-  ["Law Assignment Help", "subjects/law-assignment-help"],
-  ["Corporate Law Assignment Help", "subjects/corporate-law-assignment-help"],
-  ["HR Assignment Help", "subjects/hr-assignment-help"],
-  ["Project Management Assignment Help", "subjects/project-management-assignment-help"],
-  ["Programming Assignment Help", "subjects/programming-assignment-help"],
-].map(([name, slug]) => {
-  return { name, path: canonicalSubjectPath(slug) };
-});
+const SUBJECT_CATEGORY_DEFINITIONS = [
+  {
+    name: "Management",
+    slug: "management-assignment-help",
+    keywords: ["management", "mba", "hr", "leadership", "entrepreneur", "hospitality", "iwfm", "change-management", "mentorship", "btec", "athe"],
+  },
+  {
+    name: "Engineering",
+    slug: "engineering-assignment-help",
+    keywords: ["engineering", "civil", "electrical", "chemical", "autocad", "software-engineering", "fluid", "solidworks", "electronics", "architecture", "hydraulics"],
+  },
+  {
+    name: "Computer Science",
+    slug: "computer-science-assignment-help",
+    keywords: ["computer", "database", "data-structure", "data-science", "operating-system", "data-analysis", "data-mining", "machine-learning", "assembly", "cloud", "artificial-intelligence", "ai", "network", "oracle", "vlsi", "cryptography", "cyber", "it assignment", "computation"],
+  },
+  {
+    name: "Programming",
+    slug: "programming-assignment-help",
+    keywords: ["programming", "spss", "matlab", "java", "python", "dbms", "php", "uml", "sql", "javascript", "sas", "ajax", "web-design", "web-designing", "asp-net", "asp.net", "ruby", "fortran", "kaplan", "pascal", "nvivo"],
+  },
+  {
+    name: "Economics",
+    slug: "economics-assignment-help",
+    keywords: ["economic", "statistics", "game-theory", "anova", "eviews", "oxmetrics"],
+  },
+  {
+    name: "Mathematics",
+    slug: "maths-assignment-help",
+    keywords: ["math", "calculus", "algebra", "geometry", "trigonometry", "probability"],
+  },
+  {
+    name: "Finance",
+    slug: "finance-assignment-help",
+    keywords: ["finance", "accounting", "capital", "myob", "bookkeeping", "audit", "mfrd"],
+  },
+  {
+    name: "Business",
+    slug: "business-assignment-help",
+    keywords: ["business", "commerce"],
+  },
+  {
+    name: "Humanities",
+    slug: "humanities-assignment-help",
+    keywords: ["humanities", "psychology", "history", "sociology", "geography", "philosophy", "media", "social-science", "english", "linguistic", "communication"],
+  },
+  {
+    name: "Science",
+    slug: "science-assignment-help",
+    keywords: ["science", "biology", "chemistry", "physics", "biotechnology", "thermodynamics", "botany", "physiology", "zoology", "agroecology", "immunology", "biomechanics"],
+  },
+  {
+    name: "Law",
+    slug: "law-assignment-help",
+    keywords: ["law", "tort", "criminal", "taxation", "legal"],
+  },
+  {
+    name: "Marketing",
+    slug: "marketing-assignment-help",
+    keywords: ["marketing", "cipd", "public-relations", "tourism", "travel"],
+  },
+  {
+    name: "Healthcare",
+    slug: "healthcare-assignment-help",
+    keywords: ["health", "nursing", "pharmacology", "pharmacy", "childcare", "nutrition", "medical"],
+  },
+];
+
+const mapSubjectPagesToMenu = (items: any[]): NavLinkItem[] => {
+  if (!Array.isArray(items) || items.length === 0) return [];
+
+  // If CRM returns subjects with direct hierarchy/children, respect that directly
+  const hasDirectHierarchy = items.some(
+    (item) => Array.isArray(item.children) && item.children.length > 0
+  );
+
+  if (hasDirectHierarchy) {
+    return items
+      .filter((item) => item && (item.title || item.slug))
+      .map((item) => {
+        const cleanParentSlug = (item.slug || "").replace(/^\/+/, "").replace(/^(subjects|subject)\//, "");
+        const mappedChildren = Array.isArray(item.children) && item.children.length > 0
+          ? item.children.map((child: any) => {
+              const cleanChildSlug = (child.slug || "").replace(/^\/+/, "").replace(/^(subjects|subject)\//, "");
+              return {
+                name: child.title?.trim() || cleanChildSlug.replace(/-/g, " "),
+                path: `/subjects/${cleanChildSlug}`,
+              };
+            }).sort((a: any, b: any) => a.name.localeCompare(b.name))
+          : undefined;
+
+        return {
+          name: item.title?.trim() || cleanParentSlug.replace(/-/g, " "),
+          path: `/subjects/${cleanParentSlug}`,
+          children: mappedChildren,
+        };
+      });
+  }
+
+  // Dynamic automatic categorization for all CRM subject pages
+  const categoryBuckets = new Map<string, NavLinkItem[]>();
+  SUBJECT_CATEGORY_DEFINITIONS.forEach((cat) => categoryBuckets.set(cat.name, []));
+  const unassignedItems: NavLinkItem[] = [];
+
+  for (const item of items) {
+    if (!item) continue;
+    const rawSlug = (item.slug || "").trim().replace(/^\/+/, "").replace(/^(subjects|subject)\//, "");
+    const title = item.title?.trim() || rawSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+    const path = `/subjects/${rawSlug}`;
+
+    const navItem: NavLinkItem = { name: title, path };
+    const searchable = `${rawSlug} ${title}`.toLowerCase().replace(/-/g, " ");
+
+    let matched = false;
+    for (const cat of SUBJECT_CATEGORY_DEFINITIONS) {
+      if (cat.keywords.some((k) => searchable.includes(k.replace(/-/g, " ")))) {
+        categoryBuckets.get(cat.name)!.push(navItem);
+        matched = true;
+        break;
+      }
+    }
+
+    if (!matched) {
+      unassignedItems.push(navItem);
+    }
+  }
+
+  const result: NavLinkItem[] = [];
+
+  SUBJECT_CATEGORY_DEFINITIONS.forEach((cat) => {
+    const children = categoryBuckets.get(cat.name) || [];
+    if (children.length > 0) {
+      result.push({
+        name: cat.name,
+        path: `/subjects/${cat.slug}`,
+        children: children.sort((a, b) => a.name.localeCompare(b.name)),
+      });
+    }
+  });
+
+  if (unassignedItems.length > 0) {
+    result.push({
+      name: "Other Subjects",
+      path: "/subjects",
+      children: unassignedItems.sort((a, b) => a.name.localeCompare(b.name)),
+    });
+  }
+
+  return result;
+};
+
+const SUBJECTS: NavLinkItem[] = [];
 
 const RESOURCES: NavLinkItem[] = [
   { name: "Offers", path: "/offer" },
   { name: "Blog", path: "/blog" },
   { name: "Pricing", path: "/pricing" },
   { name: "Reviews", path: "/review" },
-];
-
-const FALLBACK_SERVICES: NavLinkItem[] = [
-  {
-    name: "Assignment Writing Help UK",
-    path: "/service/assignment",
-    children: [
-      ...ASSIGNMENT_SERVICE_SUBJECTS,
-    ],
-  },
-  {
-    name: "Dissertation Writing Services UK",
-    path: "/service/dissertation",
-    children: [
-      { name: "Dissertation Help", path: "/service/dissertation" },
-      { name: "Proofreading", path: "/service/proofreading-services" },
-      { name: "Editing & Formatting", path: "/service/editing-and-formatting" },
-    ],
-  },
-  {
-    name: "Pay Someone To Do My Assignment",
-    path: "/service/pay-someone-to-do-my-assignment",
-  },
 ];
 
 const CITIES: NavLinkItem[] = [
@@ -241,16 +389,62 @@ const DesktopDropdown = ({
   const [hoveredSubmenu, setHoveredSubmenu] = useState<NavLinkItem[] | null>(null);
   const [submenuOffset, setSubmenuOffset] = useState<number>(0);
   const [submenuLeft, setSubmenuLeft] = useState<number>(240);
+  const [submenuMaxHeight, setSubmenuMaxHeight] = useState<number | undefined>(undefined);
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const submenuRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (submenuRef.current) {
+      submenuRef.current.scrollTop = 0;
+    }
+  }, [hoveredSubmenu]);
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLLIElement>, item: NavLinkItem) => {
     if (item.children && item.children.length > 0) {
       setHoveredSubmenu(item.children);
+
       const li = e.currentTarget;
       const ul = dropdownRef.current;
       if (ul) {
-        setSubmenuOffset(li.offsetTop - ul.scrollTop);
+        const ulRect = ul.getBoundingClientRect();
+        const liRect = li.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        // Visual offset of this item relative to the top of the main dropdown
+        const itemTop = liRect.top - ulRect.top;
+        const itemBottom = liRect.bottom - ulRect.top;
+
+        // Estimate submenu height: ~38px per item + 20px padding
+        const count = item.children.length;
+        const estHeight = count * 38 + 20;
+
+        // Available space below and above this item
+        const spaceBelow = viewportHeight - liRect.top - 20;
+        let targetOffset = itemTop;
+        let calculatedMaxHeight = Math.min(viewportHeight * 0.72, viewportHeight - 100);
+
+        // Responsive positioning: If not enough room below, open UPWARDS!
+        if (spaceBelow < estHeight && itemTop > 100) {
+          // Align bottom of submenu with bottom of hovered item
+          targetOffset = itemBottom - estHeight;
+
+          // Don't let the submenu top extend above the dropdown top
+          if (targetOffset < 0) {
+            targetOffset = 0;
+            const availFromTop = viewportHeight - ulRect.top - 20;
+            calculatedMaxHeight = Math.min(availFromTop, calculatedMaxHeight);
+          }
+        } else {
+          // Open downwards: align top of submenu with hovered item
+          const maxAvailBelow = viewportHeight - (ulRect.top + targetOffset) - 20;
+          if (maxAvailBelow < estHeight) {
+            calculatedMaxHeight = Math.max(160, maxAvailBelow);
+          }
+        }
+
+        setSubmenuOffset(Math.round(targetOffset));
         setSubmenuLeft(ul.offsetWidth);
+        setSubmenuMaxHeight(Math.round(calculatedMaxHeight));
       }
     } else {
       setHoveredSubmenu(null);
@@ -262,9 +456,15 @@ const DesktopDropdown = ({
   };
 
   if (!items || items.length === 0) {
+    const fallbackHref =
+      label.toLowerCase() === "subjects"
+        ? "/subjects"
+        : label.toLowerCase() === "services"
+        ? "/service/assignment"
+        : "/cities";
     return (
       <li className="znh-nav-item">
-        <Link href="/cities" className="znh-nav-link">
+        <Link href={fallbackHref} className="znh-nav-link">
           {label}
         </Link>
       </li>
@@ -309,16 +509,18 @@ const DesktopDropdown = ({
 
       {/* Submenu rendered outside scrollable container to prevent clipping */}
       <ul
+        ref={submenuRef}
         className="znh-submenu"
         style={{
           top: '100%',
           left: `${submenuLeft}px`,
           marginTop: `${submenuOffset}px`,
+          maxHeight: submenuMaxHeight ? `${submenuMaxHeight}px` : undefined,
           opacity: hoveredSubmenu ? 1 : 0,
           visibility: hoveredSubmenu ? 'visible' : 'hidden',
           transform: hoveredSubmenu ? 'translateX(0)' : 'translateX(10px)',
           pointerEvents: hoveredSubmenu ? 'auto' : 'none',
-          zIndex: 101, // Ensure it appears in front of the main dropdown
+          zIndex: 101,
         }}
       >
         {hoveredSubmenu && hoveredSubmenu.map((child, childIdx) => (
@@ -437,6 +639,11 @@ const MobileDropdown = ({
   </li>
 );
 
+// Module-level cache to prevent multiple fetches and re-renders across page navigations
+let cachedServiceMenu: NavLinkItem[] | null = null;
+let cachedSubjectsMenu: NavLinkItem[] | null = null;
+let cachedCitiesMenu: NavLinkItem[] | null = null;
+
 export const Navbar = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -449,37 +656,46 @@ export const Navbar = () => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [nestedGroups, setNestedGroups] = useState<Record<string, boolean>>({});
-  const [serviceMenu, setServiceMenu] = useState<NavLinkItem[]>([]);
-  const [subjects, setSubjects] = useState<NavLinkItem[]>([]);
-  const [citiesMenu, setCitiesMenu] = useState<NavLinkItem[]>([]);
+  const [serviceMenu, setServiceMenu] = useState<NavLinkItem[]>(() => cachedServiceMenu || FALLBACK_SERVICES);
+  const [subjects, setSubjects] = useState<NavLinkItem[]>(() => cachedSubjectsMenu || []);
+  const [citiesMenu, setCitiesMenu] = useState<NavLinkItem[]>(() => cachedCitiesMenu || []);
   const accountDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchServiceMenu = async () => {
+      if (cachedServiceMenu) {
+        setServiceMenu(cachedServiceMenu);
+        return;
+      }
       try {
         const response = await dedupedFetch(SERVICE_PAGES_API_URL, {
           headers: { Accept: "application/json" },
-          cache: "no-store",
         });
 
         const payload = await response.json();
         if (!response.ok || payload?.success === false) {
-          setServiceMenu([]);
           return;
         }
 
         const services = Array.isArray(payload?.data) ? payload.data : [];
-        setServiceMenu(mapServicePagesToMenu(services));
+        const mapped = mapServicePagesToMenu(services);
+        if (mapped.length > 0) {
+          cachedServiceMenu = mapped;
+          setServiceMenu(mapped);
+        }
       } catch {
-        setServiceMenu([]);
+        // Keeps FALLBACK_SERVICES gracefully
       }
     };
 
     const fetchSubjects = async () => {
+      if (cachedSubjectsMenu) {
+        setSubjects(cachedSubjectsMenu);
+        return;
+      }
       try {
         const response = await dedupedFetch("/api/subject-pages", {
           headers: { Accept: "application/json" },
-          cache: "no-store",
         }).catch(() => null);
 
         if (!response || !response.ok) return;
@@ -492,15 +708,9 @@ export const Navbar = () => {
             : [];
 
         if (items.length > 0) {
-          const mapped = items.map((item: any) => {
-            const rawSlug = (item.slug || "").replace(/^\/+/, "").replace(/^subject\//, "");
-            const name = item.title?.trim() || rawSlug.replace(/-/g, " ");
-            return {
-              name,
-              path: canonicalSubjectPath(rawSlug),
-            };
-          });
-          setSubjects(mapped);
+          const categorized = mapSubjectPagesToMenu(items);
+          cachedSubjectsMenu = categorized;
+          setSubjects(categorized);
         }
       } catch (err) {
         console.warn("Failed to fetch dynamic subjects list:", err);
@@ -564,6 +774,7 @@ export const Navbar = () => {
         }
 
         if (completeCities.length > 0) {
+          cachedCitiesMenu = completeCities;
           setCitiesMenu(completeCities);
         }
       } catch (err) {
@@ -660,7 +871,7 @@ export const Navbar = () => {
   const serviceDropdownItems =
     serviceMenu.length > 0 ? serviceMenu : FALLBACK_SERVICES;
 
-  const subjectsDropdownItems = subjects.length > 0 ? subjects : SUBJECTS;
+  const subjectsDropdownItems = subjects;
   const citiesDropdownItems = citiesMenu.length > 0 ? citiesMenu : CITIES;
 
   return (
