@@ -44,6 +44,7 @@ import ResultsAndTools from "@/components/home/ResultsAndTools";
 import ReviewsAndFaq from "@/components/home/ReviewsAndFaq";
 import CtaBanner from "@/components/home/CtaBanner";
 import { WritersAndTrust } from "@/components/home/WritersAndTrust";
+import CountryServicesSection from "@/components/home/CountryServicesSection";
 import HomeStudentReviews from "@/components/home/HomeStudentReviews";
 import VideoTestimonials from "@/components/home/VideoTestimonials";
 
@@ -135,6 +136,7 @@ export default function Home() {
       <SeoContentSection />
       <ResultsAndTools />
       <HomeStudentReviews />
+      <CountryServicesSection />
       <WritersAndTrust />
       <ReviewsAndFaq />
       <CtaBanner />

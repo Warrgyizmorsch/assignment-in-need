@@ -183,9 +183,9 @@ function SampleCard({ sample, index }: { sample: HomeSample; index: number }) {
         />
       </div>
       <div className="p-4 max-md:p-2 relative flex flex-col gap-1 text-left">
-        <p className="m-0 text-[0.95rem] max-md:text-[0.65rem] font-bold text-gray-900 max-md:leading-tight line-clamp-2">
+        <h3 className="m-0 text-[0.95rem] max-md:text-[0.65rem] font-bold text-gray-900 max-md:leading-tight line-clamp-2">
           {sample.title}
-        </p>
+        </h3>
         <span className="text-[0.75rem] max-md:text-[0.55rem] text-gray-500 font-medium line-clamp-1">
           {sample.subject}
         </span>
@@ -255,11 +255,8 @@ export default function AssignmentSamples() {
     <section className="py-8 md:py-10 px-8 max-md:py-4 max-md:px-4 bg-[#fafaff] font-sans flex justify-center overflow-hidden border-b border-[#f3e8ff]/50">
       <div className="max-w-[1200px] w-full flex items-center gap-10 max-lg:flex-col max-lg:items-start max-lg:gap-6">
         <AnimateIn variant="fadeUp" className="w-[260px] max-lg:w-full shrink-0 flex flex-col gap-4 max-lg:flex-row max-lg:items-center max-lg:justify-between max-md:flex-col max-md:items-start">
-          <h2 className="text-2xl md:text-[1.8rem] font-extrabold text-[#1e1b4b] m-0 leading-tight max-md:text-[1.4rem] text-left">
-            Assignment{" "}
-            <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent overflow-hidden text-ellipsis">
-              Samples
-            </span>
+          <h2 id="assignment-samples-heading" className="text-2xl md:text-[1.8rem] font-extrabold text-[#1e1b4b] m-0 leading-tight max-md:text-[1.4rem] text-left">
+            Assignment <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent">Samples</span>
           </h2>
           <p className="text-[0.95rem] text-gray-600 m-0 leading-relaxed max-lg:hidden max-md:block max-md:text-[0.85rem] text-left">
             High-quality work samples to get an idea of our writing quality.
@@ -326,6 +323,18 @@ export default function AssignmentSamples() {
         >
           View All Samples &rarr;
         </Link>
+      </div>
+    
+      {/* Semantic SSR list of samples for search engine crawlers and source code inspection */}
+      <div className="sr-only" aria-hidden="true">
+        <h3>Assignment Samples</h3>
+        <ul>
+          {samples.map((sample) => (
+            <li key={`ssr-sample-${sample.id}`}>
+              <a href={sample.href}>{sample.title}</a> - {sample.subject} ({sample.type})
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
