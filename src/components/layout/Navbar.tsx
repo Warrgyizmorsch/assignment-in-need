@@ -93,6 +93,36 @@ const isNonServicePage = (item: ServicePageApiItem) => {
   );
 };
 
+const ACRONYMS = new Set([
+  "UK", "USA", "US", "HND", "HNC", "MBA", "SPSS", "DBMS", "PHP", "UML",
+  "SQL", "SAS", "AI", "IT", "CACHE", "ATHE", "BTEC", "IWFM", "VLSI",
+  "MYOB", "MFRD", "ANOVA", "CIPD", "PDF", "NVIVO", "HTML", "CSS", "HR",
+  "GCSE", "ICU", "FTSE", "APA", "GRE", "GMAT", "IELTS", "TOEFL"
+]);
+
+export function toTitleCase(input: string): string {
+  if (!input) return "";
+  return input
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .map((word) => {
+      const upperWord = word.toUpperCase();
+      const cleanWord = upperWord.replace(/[^A-Z0-9.]/g, "");
+      if (ACRONYMS.has(cleanWord)) {
+        return upperWord;
+      }
+      if (upperWord === "ASP.NET" || upperWord.includes("ASP.NET")) {
+        return "ASP.NET";
+      }
+      if (upperWord === "C++") {
+        return "C++";
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+}
+
 const FALLBACK_SERVICES: NavLinkItem[] = [
   {
     name: "Assignment Services",
@@ -108,13 +138,13 @@ const FALLBACK_SERVICES: NavLinkItem[] = [
       { name: "HNC Assignment Help", path: "/service/hnc-assignment-help" },
       { name: "HND Assignment Help UK", path: "/service/hnd-assignment-help" },
       { name: "Last Minute Assignment Help", path: "/service/last-minute-assignment-help" },
-      { name: "Pay Someone to Do My Assignment UK", path: "/service/pay-someone-to-do-my-assignment" },
+      { name: "Pay Someone To Do My Assignment UK", path: "/service/pay-someone-to-do-my-assignment" },
       { name: "Resit Assignment Help", path: "/service/resit-assignment-help" },
       { name: "University Assignment Help UK", path: "/service/university-assignment-help" },
     ],
   },
   {
-    name: "Assignment by Country",
+    name: "Assignment By Country",
     path: "/service/assignment",
     children: [
       { name: "Assignment Help England", path: "/service/assignment-help-england" },
@@ -190,7 +220,7 @@ const mapServicePagesToMenu = (
         : FALLBACK_SERVICES[0].children,
     },
     {
-      name: "Assignment by Country",
+      name: "Assignment By Country",
       path: "/service/assignment",
       children: countryChildren.length > 0
         ? countryChildren.sort((a, b) => a.name.localeCompare(b.name))
@@ -210,27 +240,27 @@ const SUBJECT_CATEGORY_DEFINITIONS = [
   {
     name: "Management",
     slug: "management-assignment-help",
-    keywords: ["management", "mba", "hr", "leadership", "entrepreneur", "hospitality", "iwfm", "change-management", "mentorship", "btec", "athe"],
+    keywords: ["management", "leadership", "human-resource", "supply-chain", "operations", "project-management", "risk-management", "change-management", "strategic-management", "strategic", "mba", "hr", "hospitality", "iwfm", "mentorship", "btec", "athe"],
   },
   {
     name: "Engineering",
     slug: "engineering-assignment-help",
-    keywords: ["engineering", "civil", "electrical", "chemical", "autocad", "software-engineering", "fluid", "solidworks", "electronics", "architecture", "hydraulics"],
+    keywords: ["engineering", "mechanical", "civil", "electrical", "aerospace", "chemical", "structural", "autocad", "matlab", "solidworks", "ansys", "abacus", "catia", "biomedical", "architecture", "fluid", "hydraulics", "vlsi", "electronics"],
   },
   {
     name: "Computer Science",
     slug: "computer-science-assignment-help",
-    keywords: ["computer", "database", "data-structure", "data-science", "operating-system", "data-analysis", "data-mining", "machine-learning", "assembly", "cloud", "artificial-intelligence", "ai", "network", "oracle", "vlsi", "cryptography", "cyber", "it assignment", "computation"],
+    keywords: ["computer-science", "cyber-security", "network", "cloud", "data-science", "data-structure", "algorithm", "machine-learning", "artificial-intelligence", "deep-learning", "blockchain", "iot", "database", "data-mining", "data-analysis", "operating-system", "computer-graphics", "computation", "cryptography", "it"],
   },
   {
     name: "Programming",
     slug: "programming-assignment-help",
-    keywords: ["programming", "spss", "matlab", "java", "python", "dbms", "php", "uml", "sql", "javascript", "sas", "ajax", "web-design", "web-designing", "asp-net", "asp.net", "ruby", "fortran", "kaplan", "pascal", "nvivo"],
+    keywords: ["programming", "spss", "java", "python", "dbms", "php", "uml", "sql", "javascript", "sas", "ajax", "web-design", "asp.net", "c-programming", "c++", "r-programming", "stata", "html", "css", "coding", "ruby", "fortran", "oracle", "pascal", "assembly"],
   },
   {
     name: "Economics",
     slug: "economics-assignment-help",
-    keywords: ["economic", "statistics", "game-theory", "anova", "eviews", "oxmetrics"],
+    keywords: ["economic", "statistics", "game-theory", "anova", "eviews", "oxmetrics", "nvivo"],
   },
   {
     name: "Mathematics",
@@ -240,12 +270,12 @@ const SUBJECT_CATEGORY_DEFINITIONS = [
   {
     name: "Finance",
     slug: "finance-assignment-help",
-    keywords: ["finance", "accounting", "capital", "myob", "bookkeeping", "audit", "mfrd"],
+    keywords: ["finance", "accounting", "capital", "myob", "bookkeeping", "audit", "mfrd", "kaplan"],
   },
   {
     name: "Business",
     slug: "business-assignment-help",
-    keywords: ["business", "commerce"],
+    keywords: ["business", "commerce", "entrepreneurship"],
   },
   {
     name: "Humanities",
@@ -313,7 +343,7 @@ const mapSubjectPagesToMenu = (items: any[]): NavLinkItem[] => {
   for (const item of items) {
     if (!item) continue;
     const rawSlug = (item.slug || "").trim().replace(/^\/+/, "").replace(/^(subjects|subject)\//, "");
-    const title = item.title?.trim() || rawSlug.replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase());
+    const title = toTitleCase(item.title?.trim() || rawSlug.replace(/-/g, " "));
     const path = `/subjects/${rawSlug}`;
 
     const navItem: NavLinkItem = { name: title, path };
@@ -357,7 +387,616 @@ const mapSubjectPagesToMenu = (items: any[]): NavLinkItem[] => {
   return result;
 };
 
-const SUBJECTS: NavLinkItem[] = [];
+const FALLBACK_SUBJECTS: NavLinkItem[] = [
+  {
+    "name": "Management",
+    "path": "/subjects/management-assignment-help",
+    "children": [
+      {
+        "name": "ATHE Assignment Help",
+        "path": "/subjects/athe-assignment-help"
+      },
+      {
+        "name": "BTEC Assignment Help UK",
+        "path": "/subjects/btec-assignment-help"
+      },
+      {
+        "name": "Change Management Assignment Help",
+        "path": "/subjects/change-management-assignment-help"
+      },
+      {
+        "name": "Construction Management Assignment Help",
+        "path": "/subjects/construction-management-assignment-help"
+      },
+      {
+        "name": "Customer Relationship Management Assignment Help",
+        "path": "/subjects/customer-relationship-management-assignment-help"
+      },
+      {
+        "name": "Hospitality Assignment Help",
+        "path": "/subjects/hospitality-assignment-help"
+      },
+      {
+        "name": "HR Assignment Help",
+        "path": "/subjects/hr-assignment-help"
+      },
+      {
+        "name": "IT Management Assignment Help",
+        "path": "/subjects/it-management-assignment-help"
+      },
+      {
+        "name": "IWFM Assignment Help",
+        "path": "/subjects/iwfm-assignment-help"
+      },
+      {
+        "name": "Leadership Assignment Help",
+        "path": "/subjects/leadership-assignment-help"
+      },
+      {
+        "name": "Management Assignment Help",
+        "path": "/subjects/management-assignment-help"
+      },
+      {
+        "name": "MBA Assignment Help",
+        "path": "/subjects/mba-assignment-help"
+      },
+      {
+        "name": "Mentorship Assignment Help",
+        "path": "/subjects/mentorship-assignment-help"
+      },
+      {
+        "name": "Operations Management Assignment Help",
+        "path": "/subjects/operations-management-assignment-help"
+      },
+      {
+        "name": "Project Management Assignment Help",
+        "path": "/subjects/project-management-assignment-help"
+      },
+      {
+        "name": "Strategic Management Assignment Help",
+        "path": "/subjects/strategic-management-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Engineering",
+    "path": "/subjects/engineering-assignment-help",
+    "children": [
+      {
+        "name": "Architecture Assignment Help",
+        "path": "/subjects/architecture-assignment-help"
+      },
+      {
+        "name": "Autocad Assignment Help UK",
+        "path": "/subjects/autocad-assignment-help"
+      },
+      {
+        "name": "Chemical Engineering Assignment Help",
+        "path": "/subjects/chemical-engineering-assignment-help"
+      },
+      {
+        "name": "Civil Engineering Assignment Help UK",
+        "path": "/subjects/civil-engineering-assignment-help"
+      },
+      {
+        "name": "Electrical Engineering Assignment Help",
+        "path": "/subjects/electrical-engineering-assignment-help"
+      },
+      {
+        "name": "Electronics Assignment Help",
+        "path": "/subjects/electronics-assignment-help"
+      },
+      {
+        "name": "Engineering Assignment Help UK",
+        "path": "/subjects/engineering-assignment-help"
+      },
+      {
+        "name": "Fluid Mechanics Assignment Help",
+        "path": "/subjects/fluid-mechanics-assignment-help"
+      },
+      {
+        "name": "Hydraulics Assignment Help",
+        "path": "/subjects/hydraulics-assignment-help"
+      },
+      {
+        "name": "Matlab Assignment Help UK",
+        "path": "/subjects/matlab-assignment-help"
+      },
+      {
+        "name": "Software Engineering Assignment Help",
+        "path": "/subjects/software-engineering-assignment-help"
+      },
+      {
+        "name": "Solidworks Assignment Help",
+        "path": "/subjects/solidworks-assignment-help"
+      },
+      {
+        "name": "VLSI Assignment Help",
+        "path": "/subjects/vlsi-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Computer Science",
+    "path": "/subjects/computer-science-assignment-help",
+    "children": [
+      {
+        "name": "Artificial Intelligence Assignment Help",
+        "path": "/subjects/artificial-intelligence-assignment-help"
+      },
+      {
+        "name": "Audit Assignment Help",
+        "path": "/subjects/audit-assignment-help"
+      },
+      {
+        "name": "Biotechnology Assignment Help",
+        "path": "/subjects/biotechnology-assignment-help"
+      },
+      {
+        "name": "Capital Budgeting Assignment Help",
+        "path": "/subjects/capital-budgeting-assignment-help"
+      },
+      {
+        "name": "Clinical Nutrition Assignment Help",
+        "path": "/subjects/clinical-nutrition-assignment-help"
+      },
+      {
+        "name": "Cloud Computing Assignment Help",
+        "path": "/subjects/cloud-computing-assignment-help"
+      },
+      {
+        "name": "Computation Assignment Help",
+        "path": "/subjects/computation-assignment-help"
+      },
+      {
+        "name": "Computer Graphics Assignment Help",
+        "path": "/subjects/computer-graphics-assignment-help"
+      },
+      {
+        "name": "Computer Network Assignment Help",
+        "path": "/subjects/computer-network-assignment-help"
+      },
+      {
+        "name": "Computer Science Assignment Help",
+        "path": "/subjects/computer-science-assignment-help"
+      },
+      {
+        "name": "Cryptography Assignment Help",
+        "path": "/subjects/cryptography-assignment-help"
+      },
+      {
+        "name": "Data Analysis Assignment Help UK",
+        "path": "/subjects/data-analysis-assignment-help"
+      },
+      {
+        "name": "Data Mining Assignment Help",
+        "path": "/subjects/data-mining-assignment-help"
+      },
+      {
+        "name": "Data Science Assignment Help",
+        "path": "/subjects/data-science-assignment-help"
+      },
+      {
+        "name": "Data Structure Assignment Help",
+        "path": "/subjects/data-structure-assignment-help"
+      },
+      {
+        "name": "Database Assignment Help",
+        "path": "/subjects/database-assignment-help"
+      },
+      {
+        "name": "Humanities Assignment Help",
+        "path": "/subjects/humanities-assignment-help"
+      },
+      {
+        "name": "IT Assignment Help UK",
+        "path": "/subjects/it-assignment-help"
+      },
+      {
+        "name": "Machine Learning Assignment Help",
+        "path": "/subjects/machine-learning-assignment-help"
+      },
+      {
+        "name": "Operating System Assignment Help",
+        "path": "/subjects/operating-system-assignment-help"
+      },
+      {
+        "name": "Political Science Assignment Help",
+        "path": "/subjects/political-science-assignment-help"
+      },
+      {
+        "name": "Probability Assignment Help",
+        "path": "/subjects/probability-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Programming",
+    "path": "/subjects/programming-assignment-help",
+    "children": [
+      {
+        "name": "Ajax Assignment Help",
+        "path": "/subjects/ajax-assignment-help"
+      },
+      {
+        "name": "ASP.NET Assignment Help",
+        "path": "/subjects/asp-net-assignment-help"
+      },
+      {
+        "name": "Assembly Language Assignment Help",
+        "path": "/subjects/assembly-language-assignment-help"
+      },
+      {
+        "name": "DBMS Assignment Help UK",
+        "path": "/subjects/dbms-assignment-help"
+      },
+      {
+        "name": "Fortran Assignment Help",
+        "path": "/subjects/fortran-assignment-help"
+      },
+      {
+        "name": "Java Assignment Help UK",
+        "path": "/subjects/java-assignment-help"
+      },
+      {
+        "name": "Javascript Assignment Help",
+        "path": "/subjects/javascript-assignment-help"
+      },
+      {
+        "name": "Oracle Assignment Help",
+        "path": "/subjects/oracle-assignment-help"
+      },
+      {
+        "name": "Pascal Assignment Help",
+        "path": "/subjects/pascal-assignment-help"
+      },
+      {
+        "name": "PHP Assignment Help UK",
+        "path": "/subjects/php-assignment-help"
+      },
+      {
+        "name": "Programming Assignment Help",
+        "path": "/subjects/programming-assignment-help"
+      },
+      {
+        "name": "Python Assignment Help UK",
+        "path": "/subjects/python-assignment-help"
+      },
+      {
+        "name": "Ruby Assignment Help UK By",
+        "path": "/subjects/ruby-assignment-help"
+      },
+      {
+        "name": "SAS Assignment Help UK",
+        "path": "/subjects/sas-assignment-help"
+      },
+      {
+        "name": "SPSS Assignment Help UK",
+        "path": "/subjects/spss-assignment-help"
+      },
+      {
+        "name": "SQL Assignment Help UK",
+        "path": "/subjects/sql-assignment-help"
+      },
+      {
+        "name": "UML Assignment Help UK",
+        "path": "/subjects/uml-assignment-help"
+      },
+      {
+        "name": "Web Designing Assignment Help",
+        "path": "/subjects/web-designing-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Economics",
+    "path": "/subjects/economics-assignment-help",
+    "children": [
+      {
+        "name": "ANOVA Assignment Help",
+        "path": "/subjects/anova-assignment-help"
+      },
+      {
+        "name": "Economics Assignment Help UK",
+        "path": "/subjects/economics-assignment-help"
+      },
+      {
+        "name": "Eviews Assignment Help",
+        "path": "/subjects/eviews-assignment-help"
+      },
+      {
+        "name": "Game Theory Assignment Help",
+        "path": "/subjects/game-theory-assignment-help"
+      },
+      {
+        "name": "NVIVO Assignment Help",
+        "path": "/subjects/nvivo-assignment-help"
+      },
+      {
+        "name": "Oxmetrics Assignment Help",
+        "path": "/subjects/oxmetrics-assignment-help"
+      },
+      {
+        "name": "Statistics Assignment Help",
+        "path": "/subjects/statistics-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Mathematics",
+    "path": "/subjects/maths-assignment-help",
+    "children": [
+      {
+        "name": "Algebra Assignment Help UK",
+        "path": "/subjects/algebra-assignment-help"
+      },
+      {
+        "name": "Calculus Assignment Help",
+        "path": "/subjects/calculus-assignment-help"
+      },
+      {
+        "name": "Geometry Assignment Help",
+        "path": "/subjects/geometry-assignment-help"
+      },
+      {
+        "name": "Math Assignment Help",
+        "path": "/subjects/maths"
+      },
+      {
+        "name": "Trigonometry Assignment Help",
+        "path": "/subjects/trigonometry-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Finance",
+    "path": "/subjects/finance-assignment-help",
+    "children": [
+      {
+        "name": "Accounting Assignment Help",
+        "path": "/subjects/accounting-assignment-help"
+      },
+      {
+        "name": "Bookkeeping Assignment Help",
+        "path": "/subjects/bookkeeping-assignment-help"
+      },
+      {
+        "name": "Corporate Finance Assignment Help",
+        "path": "/subjects/corporate-finance-assignment-help"
+      },
+      {
+        "name": "Cost Accounting Assignment Help",
+        "path": "/subjects/cost-accounting-assignment-help"
+      },
+      {
+        "name": "Finance Assignment Help UK",
+        "path": "/subjects/finance-assignment-help"
+      },
+      {
+        "name": "Kaplan Assignment Help",
+        "path": "/subjects/kaplan-assignment-help"
+      },
+      {
+        "name": "MFRD Assignment Help UK",
+        "path": "/subjects/mfrd-assignment-help"
+      },
+      {
+        "name": "MYOB Assignment Help",
+        "path": "/subjects/myob-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Business",
+    "path": "/subjects/business-assignment-help",
+    "children": [
+      {
+        "name": "Business Assignment Help",
+        "path": "/subjects/business"
+      },
+      {
+        "name": "Business Development Assignment Help",
+        "path": "/subjects/business-development-assignment-help"
+      },
+      {
+        "name": "Business Environment Assignment Help",
+        "path": "/subjects/business-environment-assignment-help"
+      },
+      {
+        "name": "Business Intelligence Assignment Help",
+        "path": "/subjects/business-intelligence-assignment-help"
+      },
+      {
+        "name": "Business Law Assignment Help",
+        "path": "/subjects/business-law-assignment-help"
+      },
+      {
+        "name": "Entrepreneurship Assignment Help",
+        "path": "/subjects/entrepreneurship-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Humanities",
+    "path": "/subjects/humanities-assignment-help",
+    "children": [
+      {
+        "name": "Communication Assignment Help",
+        "path": "/subjects/communication-assignment-help"
+      },
+      {
+        "name": "English Assignment Help UK",
+        "path": "/subjects/english-assignment-help"
+      },
+      {
+        "name": "Geography Assignment Help UK",
+        "path": "/subjects/geography-assignment-help"
+      },
+      {
+        "name": "History Assignment Help UK",
+        "path": "/subjects/history"
+      },
+      {
+        "name": "Linguistics Assignment Help UK",
+        "path": "/subjects/linguistics-assignment-help"
+      },
+      {
+        "name": "Media Assignment Help",
+        "path": "/subjects/media-assignment-help"
+      },
+      {
+        "name": "Philosophy Assignment Help",
+        "path": "/subjects/philosophy-assignment-help"
+      },
+      {
+        "name": "Psychology Assignment Help",
+        "path": "/subjects/psychology-assignment-help"
+      },
+      {
+        "name": "Social Science Assignment Help",
+        "path": "/subjects/social-science-assignment-help"
+      },
+      {
+        "name": "Sociology Assignment Help UK",
+        "path": "/subjects/sociology-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Science",
+    "path": "/subjects/science-assignment-help",
+    "children": [
+      {
+        "name": "Agroecology Assignment Help",
+        "path": "/subjects/agroecology-assignment-help"
+      },
+      {
+        "name": "Biology Assignment Help",
+        "path": "/subjects/biology-assignment-help"
+      },
+      {
+        "name": "Biomechanics Assignment Help UK",
+        "path": "/subjects/biomechanics-assignment-help"
+      },
+      {
+        "name": "Botany Assignment Help",
+        "path": "/subjects/botany-assignment-help"
+      },
+      {
+        "name": "Chemistry Assignment Help",
+        "path": "/subjects/chemistry"
+      },
+      {
+        "name": "Immunology Assignment Help",
+        "path": "/subjects/immunology-assignment-help"
+      },
+      {
+        "name": "Physics Assignment Help UK",
+        "path": "/subjects/physics-assignment-help"
+      },
+      {
+        "name": "Physiology Assignment Help",
+        "path": "/subjects/physiology-assignment-help"
+      },
+      {
+        "name": "Science Assignment Help",
+        "path": "/subjects/science-assignment-help"
+      },
+      {
+        "name": "Thermodynamics Assignment Help",
+        "path": "/subjects/thermodynamics-assignment-help"
+      },
+      {
+        "name": "Zoology Assignment Help",
+        "path": "/subjects/zoology-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Law",
+    "path": "/subjects/law-assignment-help",
+    "children": [
+      {
+        "name": "Company Law Assignment Help UK",
+        "path": "/subjects/company-law-assignment-help"
+      },
+      {
+        "name": "Corporate Law Assignment Help",
+        "path": "/subjects/corporate-law-assignment-help"
+      },
+      {
+        "name": "Criminal Law Assignment Help UK",
+        "path": "/subjects/criminal-law-assignment-help"
+      },
+      {
+        "name": "Law Assignment Help UK",
+        "path": "/subjects/law-assignment-help"
+      },
+      {
+        "name": "Taxation Law Assignment Help UK",
+        "path": "/subjects/taxation-law-assignment-help"
+      },
+      {
+        "name": "Tort Law Assignment Help",
+        "path": "/subjects/tort-law-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Marketing",
+    "path": "/subjects/marketing-assignment-help",
+    "children": [
+      {
+        "name": "CIPD Assignment Help",
+        "path": "/subjects/cipd-assignment-help"
+      },
+      {
+        "name": "Marketing Assignment Help UK",
+        "path": "/subjects/marketing"
+      },
+      {
+        "name": "Public Relations Assignment Help",
+        "path": "/subjects/public-relations-assignment-help"
+      },
+      {
+        "name": "Travel & Tourism Assignment Help",
+        "path": "/subjects/travel-and-tourism-assignment-help"
+      }
+    ]
+  },
+  {
+    "name": "Healthcare",
+    "path": "/subjects/healthcare-assignment-help",
+    "children": [
+      {
+        "name": "Childcare Assignment Help",
+        "path": "/subjects/childcare-assignment-help"
+      },
+      {
+        "name": "Healthcare Assignment Help",
+        "path": "/subjects/healthcare-assignment-help"
+      },
+      {
+        "name": "Medical Assignment Help",
+        "path": "/subjects/medical-assignment-help"
+      },
+      {
+        "name": "Nursing Assignment Help",
+        "path": "/subjects/nursing-assignment-help"
+      },
+      {
+        "name": "Pharmacology Assignment Help",
+        "path": "/subjects/pharmacology-assignment-help"
+      },
+      {
+        "name": "Pharmacy Assignment Help",
+        "path": "/subjects/pharmacy-assignment-help"
+      }
+    ]
+  }
+];
+
+const SUBJECTS: NavLinkItem[] = FALLBACK_SUBJECTS;
 
 const RESOURCES: NavLinkItem[] = [
   { name: "Offers", path: "/offer" },
@@ -493,15 +1132,34 @@ const DesktopDropdown = ({
           >
             {item.disabled ? (
               <span className="znh-dropdown-link znh-dropdown-link-disabled">
-                {item.name}
+                {toTitleCase(item.name)}
               </span>
             ) : (
               <Link href={ensureRelativePath(item.path)} className="znh-dropdown-link">
-                <span>{item.name}</span>
+                <span>{toTitleCase(item.name)}</span>
                 {item.children && item.children.length > 0 && (
                   <ChevronRight className="znh-right-icon" />
                 )}
               </Link>
+            )}
+
+            {/* SSR semantic hierarchy for source code inspection & SEO */}
+            {item.children && item.children.length > 0 && (
+              <ul className="znh-ssr-sublist" aria-hidden="true">
+                {item.children.map((child, cIdx) => (
+                  <li key={`ssr-${child.path}-${child.name}-${cIdx}`}>
+                    {child.disabled ? (
+                      <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                        {toTitleCase(child.name)}
+                      </span>
+                    ) : (
+                      <Link href={ensureRelativePath(child.path)} className="znh-dropdown-link">
+                        {toTitleCase(child.name)}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
             )}
           </li>
         ))}
@@ -524,10 +1182,10 @@ const DesktopDropdown = ({
         }}
       >
         {hoveredSubmenu && hoveredSubmenu.map((child, childIdx) => (
-          <li key={`${child.path}-${child.name}-${childIdx}`}>
+          <li key={`${child.path}-${toTitleCase(child.name)}-${childIdx}`}>
             {child.disabled ? (
               <span className="znh-dropdown-link znh-dropdown-link-disabled">
-                {child.name}
+                {toTitleCase(child.name)}
               </span>
             ) : (
               <Link href={ensureRelativePath(child.path)} className="znh-dropdown-link">
@@ -657,7 +1315,7 @@ export const Navbar = () => {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [nestedGroups, setNestedGroups] = useState<Record<string, boolean>>({});
   const [serviceMenu, setServiceMenu] = useState<NavLinkItem[]>(() => cachedServiceMenu || FALLBACK_SERVICES);
-  const [subjects, setSubjects] = useState<NavLinkItem[]>(() => cachedSubjectsMenu || []);
+  const [subjects, setSubjects] = useState<NavLinkItem[]>(() => cachedSubjectsMenu || FALLBACK_SUBJECTS);
   const [citiesMenu, setCitiesMenu] = useState<NavLinkItem[]>(() => cachedCitiesMenu || []);
   const accountDropdownRef = useRef<HTMLDivElement | null>(null);
 

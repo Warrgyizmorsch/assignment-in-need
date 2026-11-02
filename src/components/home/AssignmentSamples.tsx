@@ -39,14 +39,86 @@ const isApiRecord = (value: unknown): value is ApiRecord =>
 const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value) : "";
 
-const fallbackSamples: HomeSample[] = SAMPLES.map((sample, index) => ({
-  id: `${sample.title}-${index}`,
-  title: sample.title,
-  subject: sample.subject,
-  image: sample.image,
-  href: sample.href,
-  type: "PDF",
-}));
+const ACRONYMS = new Set([
+  "UK", "USA", "US", "HND", "HNC", "MBA", "SPSS", "DBMS", "PHP", "UML",
+  "SQL", "SAS", "AI", "IT", "CACHE", "ATHE", "BTEC", "IWFM", "VLSI",
+  "MYOB", "MFRD", "ANOVA", "CIPD", "PDF", "NVIVO", "HTML", "CSS", "HR",
+  "GCSE", "ICU", "FTSE", "APA", "GRE", "GMAT", "IELTS", "TOEFL", "MG412"
+]);
+
+function toTitleCase(input: string): string {
+  if (!input) return "";
+  return input
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .map((word) => {
+      const upperWord = word.toUpperCase();
+      const cleanWord = upperWord.replace(/[^A-Z0-9.]/g, "");
+      if (ACRONYMS.has(cleanWord)) {
+        return upperWord;
+      }
+      if (upperWord === "ASP.NET" || upperWord.includes("ASP.NET")) {
+        return "ASP.NET";
+      }
+      if (upperWord === "C++") {
+        return "C++";
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+}
+
+const fallbackSamples: HomeSample[] = [
+  {
+    id: "sample-265",
+    title: "Market Failure And Externalities Assignment Sample",
+    subject: "Economics",
+    image: "/new-home-page-images/Business-Report.webp",
+    href: "/samples/economic/market-failure-and-externalities-assignment-sample",
+    type: "PDF",
+  },
+  {
+    id: "sample-cyber-risk",
+    title: "Cyber Risk Management And Business Continuity: A Case Study Of Marks & Spencer",
+    subject: "Business",
+    image: "/new-home-page-images/Case-Study-Help.webp",
+    href: "/samples/business/cyber-risk-management-and-business-continuity-a-case-study-of-marks-spencer",
+    type: "PDF",
+  },
+  {
+    id: "sample-greggs",
+    title: "Business Organisations Case Study: Greggs Plc",
+    subject: "Business",
+    image: "/new-home-page-images/Report-Writing.webp",
+    href: "/samples/business/business-organisations-case-study-greggs-plc",
+    type: "PDF",
+  },
+  {
+    id: "sample-literacy",
+    title: "Emergent Literacy Assignment Sample: Supporting Children From Birth To 7 Years",
+    subject: "Mathematics",
+    image: "/new-home-page-images/Essay-Writing.webp",
+    href: "/samples/math/emergent-literacy-assignment-sample-supporting-children-from-birth-to-7-years",
+    type: "PDF",
+  },
+  {
+    id: "sample-fish-shop",
+    title: "Business Plan Report For The Gifting Fish Shop",
+    subject: "Business",
+    image: "/new-home-page-images/Business-Report.webp",
+    href: "/samples/business/business-plan-report-for-the-gifting-fish-shop",
+    type: "PDF",
+  },
+  {
+    id: "sample-red-bull",
+    title: "MG412 Principles Of Marketing: Red Bull Marketing Report",
+    subject: "Management",
+    image: "/new-home-page-images/Case-Study-Help.webp",
+    href: "/samples/management/mg412-principles-of-marketing-red-bull-marketing-report",
+    type: "PDF",
+  },
+];
 
 const mapSample = (sample: ApiRecord, index: number): HomeSample => {
   const category =
@@ -57,10 +129,11 @@ const mapSample = (sample: ApiRecord, index: number): HomeSample => {
     asString(sample.type_name) ||
     "";
   const sampleSlug = asString(sample.slug);
-  const title =
+  const rawTitle =
     asString(sample.title) ||
     asString(sample.meta_title) ||
     "Assignment Sample";
+  const title = toTitleCase(rawTitle);
   const categorySlug = slugify(category);
   const href =
     sampleSlug && categorySlug
@@ -70,11 +143,12 @@ const mapSample = (sample: ApiRecord, index: number): HomeSample => {
   return {
     id: asString(sample.id) || sampleSlug || `${title}-${index}`,
     title,
-    subject:
+    subject: toTitleCase(
       asString(sample.type_name) ||
       asString(sample.category_name) ||
       asString(sample.category) ||
-      "Assignment",
+      "Assignment"
+    ),
     image:
       asString(sample.image) ||
       asString(sample.thumbnail) ||

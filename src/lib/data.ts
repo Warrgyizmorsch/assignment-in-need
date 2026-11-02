@@ -543,7 +543,7 @@ export const FAQS: FAQ[] = [
 ];
 
 export const organizationSchema = {
-  "@type": "Organization",
+  "@type": "EducationalOrganization",
   name: "Assignment In Need",
   alternateName: "Assignment In Need UK",
   url: "https://assignmentinneed.co.uk/",
@@ -552,7 +552,6 @@ export const organizationSchema = {
     "Assignment In Need offers expert academic assistance for UK students, including essays, dissertations, coursework, and case studies, delivered by 150+ subject specialists.",
   telephone: "+44 7917481696",
   email: "order@assignmentinneed.co.uk",
-  priceRange: "£8 - £25",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Roehampton Lane",
@@ -594,7 +593,6 @@ export const localBusinessSchema = {
   image: "https://assignmentinneed.co.uk/assets/media/layout/ain-logo.webp",
   url: "https://assignmentinneed.co.uk/",
   telephone: "+44 7917481696",
-  priceRange: "£8 - £25",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Roehampton Lane",

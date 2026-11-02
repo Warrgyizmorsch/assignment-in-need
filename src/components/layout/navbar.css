@@ -640,3 +640,8 @@
     max-width: 100%;
   }
 }
+
+/* SSR semantic hierarchy hidden from visual desktop flyout */
+.znh-dropdown-menu .znh-ssr-sublist {
+  display: none;
+}
