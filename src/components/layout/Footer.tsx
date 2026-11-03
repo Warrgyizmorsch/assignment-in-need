@@ -400,6 +400,14 @@ export const Footer = () => {
                   Terms & Conditions
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/academic-integrity-policy"
+                  className="text-[#d1d5db] no-underline text-[0.9rem] transition-colors duration-200 hover:text-white hover:underline"
+                >
+                  Academic Integrity Policy
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

@@ -43,6 +43,7 @@ export function slugify(text: string): string {
 export const staticRoutes = [
   "",
   "/about",
+  "/academic-integrity-policy",
   "/blog",
   "/cities",
   "/contact",

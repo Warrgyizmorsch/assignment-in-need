@@ -153,6 +153,12 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
     previewBio = previewBio + "...";
   }
 
+  // Resolve clean slug and profile URL for proper crawling and user navigation
+  const cleanSlug = (slug && !/^\d+$/.test(slug))
+    ? slug
+    : name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const profileUrl = `/writers/${cleanSlug}`;
+
   return (
     <div
       className={cn(
@@ -167,24 +173,36 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
       <div className="relative z-10 px-3 pt-5 pb-4 flex flex-col flex-1">
         {/* Avatar */}
         <div className="mx-auto mb-3">
-          <div className="w-[85px] h-[85px] rounded-full border-[3px] border-[#ea580c] shadow-sm overflow-hidden bg-white mx-auto">
-            <img
-              src={imgSrc}
-              alt={name}
-              width={85}
-              height={85}
-              onError={() => setImgSrc(DEFAULT_BLANK_AVATAR)}
-              className="h-full w-full object-cover object-top"
-            />
-          </div>
+          <Link
+            href={profileUrl}
+            title={`View ${name}'s Profile`}
+            className="block group/avatar focus:outline-none"
+          >
+            <div className="w-[85px] h-[85px] rounded-full border-[3px] border-[#ea580c] group-hover/avatar:border-[#3f159a] group-hover/avatar:scale-105 transition-all shadow-sm overflow-hidden bg-white mx-auto">
+              <img
+                src={imgSrc}
+                alt={name}
+                width={85}
+                height={85}
+                onError={() => setImgSrc(DEFAULT_BLANK_AVATAR)}
+                className="h-full w-full object-cover object-top"
+              />
+            </div>
+          </Link>
         </div>
 
         {/* Name and Rating */}
         <div className="text-center mb-1.5">
           <div className="flex items-center justify-center gap-1.5 flex-wrap">
-            <h3 className="font-bold text-[17px] text-gray-900 m-0 leading-tight">
-              {name}
-            </h3>
+            <Link
+              href={profileUrl}
+              title={`View ${name}'s Profile`}
+              className="group/name focus:outline-none"
+            >
+              <h3 className="font-bold text-[17px] text-gray-900 group-hover/name:text-[#3f159a] transition-colors m-0 leading-tight">
+                {name}
+              </h3>
+            </Link>
             <ShieldCheck className="w-[18px] h-[18px] text-[#22c55e]" fill="#22c55e" stroke="white" />
             <div className="flex items-center gap-0.5 ml-1 border-l border-gray-200 pl-2">
               {(() => {
@@ -253,8 +271,8 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({
         <p className="text-[12.5px] text-slate-500 leading-snug text-center mb-3 px-1 min-h-[54px] flex items-center justify-center flex-wrap">
           <span>{previewBio}</span>
           <Link
-            href={"/writers/" + (slug && !/^\d+$/.test(slug) ? slug : name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}
-            className="text-[#ff5722] hover:text-red-700 font-medium ml-1 whitespace-nowrap"
+            href={profileUrl}
+            className="text-[#ff5722] hover:text-[#3f159a] font-semibold ml-1 whitespace-nowrap"
           >
             Read More
           </Link>

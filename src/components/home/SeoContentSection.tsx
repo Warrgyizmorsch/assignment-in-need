@@ -217,6 +217,16 @@ export default function SeoContentSection() {
             <p className="mt-4">
               This is assignment help online the way it should work transparent, subject-matched, and built around your actual course, not a one-size-fits-all template.
             </p>
+
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mt-6 mb-3">
+              Get 40% Off Assignment Help UK &ndash; Exclusive Student Offer
+            </h2>
+            <p className="mt-2">
+              Need reliable academic support at a price that suits your student budget? Assignment In Need brings you an exclusive opportunity to save <strong>40% on assignment help services</strong>. From essays and dissertations to coursework, case studies and academic reports, get subject-specific guidance tailored to your university requirements. Have questions about your assignment or want to claim your discount? Simply call or WhatsApp our team on <a href="https://wa.me/447826233106?text=I%20want%20to%20claim%2040%25%20discount" target="_blank" rel="noopener noreferrer" className="hover:underline text-[#3f159a]"><strong>+44 7826233106</strong></a> to discuss your requirements and find the right support. Don't miss this opportunity to make your academic workload more manageable while saving on the support you need.
+            </p>
+            <p className="mt-3">
+              <strong>Contact Assignment In Need Today and Save 40%!</strong>
+            </p>
             <p className="font-bold text-[#3f159a] border-l-4 border-[#3f159a] pl-4 py-1.5 mt-6">
               Need help with an assignment today? Get in touch and tell us your deadline, subject, and requirements we'll match you with the right assignment helper and give you a straight answer on turnaround before you commit to anything.
             </p>
