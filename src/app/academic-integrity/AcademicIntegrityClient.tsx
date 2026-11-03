@@ -68,7 +68,7 @@ const AI_RULES_TABLE = [
   },
 ];
 
-export default function AcademicIntegrityPolicyPage() {
+export default function AcademicIntegrityClient() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const toggleFaq = (idx: number) => {
@@ -88,8 +88,8 @@ export default function AcademicIntegrityPolicyPage() {
       {
         "@type": "ListItem",
         position: 2,
-        name: "Academic Integrity Policy",
-        item: "https://www.assignmentinneed.co.uk/academic-integrity-policy",
+        name: "Academic Integrity",
+        item: "https://www.assignmentinneed.co.uk/academic-integrity",
       },
     ],
   };
@@ -123,7 +123,7 @@ export default function AcademicIntegrityPolicyPage() {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": "https://www.assignmentinneed.co.uk/academic-integrity-policy",
+      "@id": "https://www.assignmentinneed.co.uk/academic-integrity",
     },
   };
 
@@ -160,7 +160,7 @@ export default function AcademicIntegrityPolicyPage() {
                 Home
               </Link>
               <ChevronRight className="w-3.5 h-3.5" />
-              <span className="text-white">Academic Integrity Policy</span>
+              <span className="text-white">Academic Integrity</span>
             </div>
 
             <div className="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-300/30 px-3.5 py-1 rounded-full mb-3 backdrop-blur-sm">

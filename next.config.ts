@@ -76,6 +76,11 @@ const nextConfig: NextConfig = {
         destination: "/service/pay-someone-to-do-my-assignment",
         permanent: true,
       },
+      {
+        source: "/academic-integrity-policy",
+        destination: "/academic-integrity",
+        permanent: true,
+      },
     ];
   },
   async headers() {

@@ -1003,6 +1003,7 @@ const RESOURCES: NavLinkItem[] = [
   { name: "Blog", path: "/blog" },
   { name: "Pricing", path: "/pricing" },
   { name: "Reviews", path: "/review" },
+  { name: "Academic Integrity", path: "/academic-integrity" },
 ];
 
 const CITIES: NavLinkItem[] = [
