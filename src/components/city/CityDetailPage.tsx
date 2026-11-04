@@ -431,7 +431,7 @@ export default function CityDetailPage({
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 <Link
-                  href="#quote-form"
+                  href="/writers"
                   className="btn-shutter-blue-open text-white font-extrabold py-3.5 px-6 rounded-lg text-[11px] tracking-wider transition uppercase shadow-md flex items-center justify-center gap-2 w-full sm:w-auto text-center shrink-0 cursor-pointer border-none"
                 >
                   Talk To An Expert <ArrowRight className="w-3.5 h-3.5" />
