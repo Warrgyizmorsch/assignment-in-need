@@ -231,6 +231,17 @@ export function openQuoteModal() {
 
       const href = (clickable.getAttribute("href") || "").toLowerCase();
       const text = (clickable.textContent || "").trim().toLowerCase();
+
+      // If the element has a real page navigation link (e.g. /writers, /samples) and is not explicitly a quote modal trigger, do not intercept
+      if (
+        href &&
+        !href.startsWith("#") &&
+        !href.startsWith("javascript:") &&
+        clickable.getAttribute("data-open-quote-modal") !== "true"
+      ) {
+        return;
+      }
+
       const isQuoteTrigger =
         href === "#quote-modal" ||
         href === "#quote-form" ||
@@ -239,7 +250,6 @@ export function openQuoteModal() {
         text.includes("get instant quote") ||
         text.includes("get discounted quote") ||
         text.includes("get quote") ||
-        text.includes("talk to an expert") ||
         text.includes("contact support");
 
       if (isQuoteTrigger) {
