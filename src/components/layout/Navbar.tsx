@@ -1218,85 +1218,118 @@ const MobileDropdown = ({
   onToggle: (key: string) => void;
   onNestedToggle: (key: string) => void;
   onNavigate: () => void;
-}) => (
-  <li className="znh-nav-item">
-    <button type="button" className="znh-nav-link" onClick={() => onToggle(id)}>
-      {label}
-      <ChevronDown
-        className={cn("znh-down-icon", openGroups[id] && "rotate-180")}
-      />
-    </button>
-    <ul className={cn("znh-dropdown-menu", openGroups[id] && "active")}>
-      {items.map((item, idx) => {
-        const nestedKey = `${id}-${item.name}-${idx}`;
-        const hasChildren = item.children && item.children.length > 0;
+}) => {
+  const fallbackHref =
+    id === "subjects"
+      ? "/subjects"
+      : id === "services"
+      ? "/service/assignment-services"
+      : id === "cities"
+      ? "/cities"
+      : "/review";
 
-        return (
-          <li key={`${item.path}-${item.name}-${idx}`} className="znh-dropdown-item">
-            {hasChildren ? (
-              <button
-                type="button"
-                className="znh-dropdown-link"
-                onClick={() => onNestedToggle(nestedKey)}
-              >
-                <span>{item.name}</span>
-                <ChevronRight
-                  className={cn(
-                    "znh-right-icon",
-                    nestedGroups[nestedKey] && "rotate-90",
-                  )}
-                />
-              </button>
-            ) : (
-              <>
-                {item.disabled ? (
-                  <span className="znh-dropdown-link znh-dropdown-link-disabled">
-                    {item.name}
-                  </span>
-                ) : (
+  return (
+    <li className="znh-nav-item">
+      <div className="znh-mobile-top-row">
+        <Link
+          href={fallbackHref}
+          className="znh-nav-link znh-mobile-top-link"
+          onClick={onNavigate}
+        >
+          {label}
+        </Link>
+        <button
+          type="button"
+          className="znh-mobile-top-toggle"
+          onClick={() => onToggle(id)}
+          aria-label={`Toggle ${label} menu`}
+        >
+          <ChevronDown
+            className={cn("znh-down-icon", openGroups[id] && "rotate-180")}
+          />
+        </button>
+      </div>
+      <ul className={cn("znh-dropdown-menu", openGroups[id] && "active")}>
+        {items.map((item, idx) => {
+          const nestedKey = `${id}-${item.name}-${idx}`;
+          const hasChildren = item.children && item.children.length > 0;
+
+          return (
+            <li key={`${item.path}-${item.name}-${idx}`} className="znh-dropdown-item">
+              {hasChildren ? (
+                <div className="znh-mobile-parent-row">
                   <Link
                     href={ensureRelativePath(item.path)}
-                    className="znh-dropdown-link"
+                    className="znh-dropdown-link znh-mobile-parent-link"
                     onClick={onNavigate}
                   >
-                    {item.name}
+                    <span>{item.name}</span>
                   </Link>
-                )}
-              </>
-            )}
+                  <button
+                    type="button"
+                    className="znh-mobile-nested-toggle"
+                    onClick={() => onNestedToggle(nestedKey)}
+                    aria-label={`Toggle ${item.name} sub-options`}
+                  >
+                    <ChevronRight
+                      className={cn(
+                        "znh-right-icon",
+                        nestedGroups[nestedKey] && "rotate-90",
+                      )}
+                    />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {item.disabled ? (
+                    <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                      {item.name}
+                    </span>
+                  ) : (
+                    <Link
+                      href={ensureRelativePath(item.path)}
+                      className="znh-dropdown-link"
+                      onClick={onNavigate}
+                    >
+                      {item.name}
+                    </Link>
+                  )}
+                </>
+              )}
 
-            {hasChildren && (
-              <ul
-                className={cn(
-                  "znh-submenu",
-                  nestedGroups[nestedKey] && "active",
-                )}
-              >
-                {item.children!.map((child, childIdx) => (
-                  <li key={`${child.path}-${child.name}-${childIdx}`}>
-                    {child.disabled ? (
-                      <span className="znh-dropdown-link znh-dropdown-link-disabled">
-                        {child.name}
-                      </span>
-                    ) : (
-                      <Link
-                        href={ensureRelativePath(child.path)}
-                        className="znh-dropdown-link"
-                        onClick={onNavigate}
-                      >
-                        {child.name}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        );
-      })}
-    </ul>
-  </li>
-);
+              {hasChildren && (
+                <ul
+                  className={cn(
+                    "znh-submenu",
+                    nestedGroups[nestedKey] && "active",
+                  )}
+                >
+                  {item.children!.map((child, childIdx) => (
+                    <li key={`${child.path}-${child.name}-${childIdx}`}>
+                      {child.disabled ? (
+                        <span className="znh-dropdown-link znh-dropdown-link-disabled">
+                          {child.name}
+                        </span>
+                      ) : (
+                        <Link
+                          href={ensureRelativePath(child.path)}
+                          className="znh-dropdown-link"
+                          onClick={onNavigate}
+                        >
+                          {child.name}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </li>
+  );
+};
 
 // Module-level cache to prevent multiple fetches and re-renders across page navigations
 let cachedServiceMenu: NavLinkItem[] | null = null;
@@ -1934,7 +1967,7 @@ export const Navbar = () => {
 
             <Link
               href="/order"
-              className="btn-shutter-orange-open text-white py-2 px-3 md:py-3 md:px-6 rounded-lg font-semibold text-[11px] md:text-base inline-flex items-center justify-center whitespace-nowrap"
+              className="hidden sm:inline-flex btn-shutter-orange-open text-white py-2 px-3 md:py-3 md:px-6 rounded-lg font-semibold text-[11px] md:text-base items-center justify-center whitespace-nowrap"
             >
               Get Free Quote
             </Link>

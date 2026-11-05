@@ -406,13 +406,22 @@
     width: 100%;
   }
 
+  .znh-header-container {
+    padding: 8px 16px;
+    gap: 12px;
+  }
+
+  .znh-logo img {
+    height: 44px;
+  }
+
   .znh-contact-text,
   .znh-btn-quote.desktop-only {
     display: none !important;
   }
 
   .znh-right-actions {
-    gap: 15px;
+    gap: 8px;
   }
 
   .znh-mobile-toggle {
@@ -579,6 +588,43 @@
   .znh-nav-item,
   .znh-dropdown-item {
     width: 100%;
+  }
+
+  .znh-mobile-top-row,
+  .znh-mobile-parent-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .znh-mobile-top-link,
+  .znh-mobile-parent-link {
+    flex: 1 1 auto !important;
+    border-bottom: 0 !important;
+    text-decoration: none !important;
+  }
+
+  .znh-mobile-top-toggle,
+  .znh-mobile-nested-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    cursor: pointer !important;
+    padding: 10px 14px !important;
+    color: #e2e8f0 !important;
+    transition: color 0.2s ease, transform 0.2s ease;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .znh-mobile-top-toggle:hover,
+  .znh-mobile-nested-toggle:hover {
+    color: #f06a33 !important;
   }
 
   .znh-nav-link,

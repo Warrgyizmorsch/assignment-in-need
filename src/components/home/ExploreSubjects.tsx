@@ -170,7 +170,7 @@ export default function ExploreSubjects() {
           </AnimateIn>
           <Link
             href="/subjects"
-            className="hidden md:flex text-[0.95rem] font-bold text-[#4f46e5] hover:text-[#3730a3] items-center gap-2 transition-colors duration-300"
+            className="flex text-[0.88rem] sm:text-[0.95rem] font-bold text-[#4f46e5] hover:text-[#3730a3] items-center gap-1.5 transition-colors duration-300 mt-2 md:mt-0"
           >
             Explore All Subjects &rarr;
           </Link>

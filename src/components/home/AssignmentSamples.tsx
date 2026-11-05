@@ -263,7 +263,7 @@ export default function AssignmentSamples() {
           </p>
           <Link
             href="/samples"
-            className="hidden md:block btn-shutter-blue-open text-white font-semibold text-[0.9rem] py-3 px-5 rounded-lg text-center w-max transition-all duration-300 mt-2"
+            className="inline-flex btn-shutter-blue-open text-white font-semibold text-[0.85rem] sm:text-[0.9rem] py-2.5 px-4 sm:py-3 sm:px-5 rounded-lg text-center w-max transition-all duration-300 mt-2"
           >
             View All Samples
           </Link>

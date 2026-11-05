@@ -11,9 +11,41 @@ const Link = (props: React.ComponentProps<typeof NextLink>) => (
   <NextLink {...props} prefetch={false} />
 );
 
+const DEFAULT_FOOTER_SUBJECTS = [
+  { id: 1, title: "Business Assignment Help", slug: "business" },
+  { id: 2, title: "Nursing Assignment Help", slug: "nursing" },
+  { id: 3, title: "Law Assignment Help", slug: "law" },
+  { id: 4, title: "Economics Assignment Help", slug: "economics" },
+  { id: 5, title: "Marketing Assignment Help", slug: "marketing" },
+  { id: 6, title: "Psychology Assignment Help", slug: "psychology" },
+];
+
+const DEFAULT_FOOTER_CITIES = [
+  { city: "London", slug: "assignment-help-london" },
+  { city: "Birmingham", slug: "assignment-help-birmingham" },
+  { city: "Manchester", slug: "assignment-help-manchester" },
+  { city: "Leeds", slug: "assignment-help-leeds" },
+  { city: "Glasgow", slug: "assignment-help-glasgow" },
+  { city: "Edinburgh", slug: "assignment-help-edinburgh" },
+  { city: "Liverpool", slug: "assignment-help-liverpool" },
+  { city: "Bristol", slug: "assignment-help-bristol" },
+  { city: "Cardiff", slug: "assignment-help-cardiff" },
+  { city: "Oxford", slug: "assignment-help-oxford" },
+  { city: "Cambridge", slug: "assignment-help-cambridge" },
+  { city: "Sheffield", slug: "assignment-help-sheffield" },
+  { city: "Newcastle", slug: "assignment-help-newcastle" },
+  { city: "Nottingham", slug: "assignment-help-nottingham" },
+  { city: "Southampton", slug: "assignment-help-southampton" },
+  { city: "Leicester", slug: "assignment-help-leicester" },
+  { city: "Coventry", slug: "assignment-help-coventry" },
+  { city: "Belfast", slug: "assignment-help-belfast" },
+  { city: "Aberdeen", slug: "assignment-help-aberdeen" },
+  { city: "Swansea", slug: "assignment-help-swansea" },
+];
+
 export const Footer = () => {
-  const [subjects, setSubjects] = React.useState<any[]>([]);
-  const [cities, setCities] = React.useState<any[]>([]);
+  const [subjects, setSubjects] = React.useState<any[]>(DEFAULT_FOOTER_SUBJECTS);
+  const [cities, setCities] = React.useState<any[]>(DEFAULT_FOOTER_CITIES);
 
   React.useEffect(() => {
     const fetchSubjects = async () => {
