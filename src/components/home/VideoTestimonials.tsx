@@ -263,7 +263,7 @@ export default function VideoTestimonials() {
           <h2 className="text-2xl sm:text-3xl lg:text-[2rem] leading-tight font-extrabold text-[#0f172a] mb-2.5 tracking-tight">
             See Why UK Students Trust,{" "}
             <span className="bg-gradient-to-r from-purple-800 to-orange-600 bg-clip-text text-transparent">
-              Us With Their Assignments.
+              Us With Their Assignments
             </span>
           </h2>
           <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
