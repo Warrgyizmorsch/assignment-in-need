@@ -45,8 +45,12 @@ if (backendHostname) {
 }
 
 const nextConfig: NextConfig = {
+  compress: true,
+  poweredByHeader: false,
   images: {
     remotePatterns,
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2592000,
   },
   async redirects() {
     return [
@@ -99,6 +103,33 @@ const nextConfig: NextConfig = {
           {
             key: "Expires",
             value: "0",
+          },
+        ],
+      },
+      {
+        source: "/assets/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },

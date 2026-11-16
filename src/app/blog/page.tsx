@@ -1,22 +1,14 @@
 import type { Metadata } from "next";
 import BlogListClient from "./BlogListClient";
 import { getBaseUrl } from "@/lib/api";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = constructMetadata({
   title: "Academic Blogs & Study Guides | Assignment In Need",
   description:
     "Read our latest academic writing guides, study tips, assignment advice, and university dissertation insights.",
-  openGraph: {
-    title: "Academic Blogs & Study Guides | Assignment In Need",
-    description:
-      "Read our latest academic writing guides, study tips, assignment advice, and university dissertation insights.",
-  },
-  twitter: {
-    title: "Academic Blogs & Study Guides | Assignment In Need",
-    description:
-      "Read our latest academic writing guides, study tips, assignment advice, and university dissertation insights.",
-  },
-};
+  canonicalUrl: "/blog",
+});
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

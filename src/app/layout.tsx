@@ -17,7 +17,7 @@ import "@/components/layout/navbar.css";
 const roboto = Roboto({
   variable: "--font-roboto",
   subsets: ["latin"],
-  weight: ["100", "300", "400", "500", "700", "900"],
+  weight: ["300", "400", "500", "700", "900"],
   display: "swap",
 });
 
@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   title: "Assignment Help UK | Human-Written Academic Support",
   description:
     "Need reliable Assignment Help UK? Get human-written essays, reports, coursework, and dissertations from subject specialists who understand UK universities.",
+  alternates: {
+    canonical: "https://www.assignmentinneed.co.uk",
+  },
 
   robots: {
     index: true,
@@ -91,6 +94,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href="https://ain.warrgyizmorsch.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://ain.warrgyizmorsch.com" />
+        <link rel="preconnect" href="https://embed.tawk.to" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://embed.tawk.to" />
         <Script
           id="chunk-error-handler"
           dangerouslySetInnerHTML={{

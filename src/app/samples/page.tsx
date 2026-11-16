@@ -1,21 +1,13 @@
 import type { Metadata } from "next";
 import SamplesPageClient from "./SamplesPageClient";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = constructMetadata({
   title: "Free Assignment Samples & Academic Essays | Assignment In Need",
   description:
     "Browse our free collection of high-quality university assignment samples, essays, case studies, and dissertations.",
-  openGraph: {
-    title: "Free Assignment Samples & Academic Essays | Assignment In Need",
-    description:
-      "Browse our free collection of high-quality university assignment samples, essays, case studies, and dissertations.",
-  },
-  twitter: {
-    title: "Free Assignment Samples & Academic Essays | Assignment In Need",
-    description:
-      "Browse our free collection of high-quality university assignment samples, essays, case studies, and dissertations.",
-  },
-};
+  canonicalUrl: "/samples",
+});
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

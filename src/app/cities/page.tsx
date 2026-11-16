@@ -1,21 +1,13 @@
 import type { Metadata } from "next";
 import CitiesListClient from "./CitiesListClient";
+import { constructMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = constructMetadata({
   title: "Assignment Help Cities | UK & Global University Locations",
   description:
     "Get localized assignment help across top university cities in the UK, Australia, and worldwide.",
-  openGraph: {
-    title: "Assignment Help Cities | UK & Global University Locations",
-    description:
-      "Get localized assignment help across top university cities in the UK, Australia, and worldwide.",
-  },
-  twitter: {
-    title: "Assignment Help Cities | UK & Global University Locations",
-    description:
-      "Get localized assignment help across top university cities in the UK, Australia, and worldwide.",
-  },
-};
+  canonicalUrl: "/cities",
+});
 
 export default function CitiesPage() {
   const heading = "We Support Students in 100+ Cities Globally";
@@ -40,14 +32,15 @@ export default function CitiesPage() {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "reviewCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",
+    "url": "https://www.assignmentinneed.co.uk/offer",
     "priceCurrency": "GBP",
     "lowPrice": "4.00",
     "highPrice": "10.00",
-    "offerCount": "7"
+    "offerCount": "2"
   }
 }`
         }}

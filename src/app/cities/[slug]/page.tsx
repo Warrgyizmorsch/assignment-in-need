@@ -20,6 +20,10 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
   let cityName = cityDataSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   let countryName = "United Kingdom";
 
+  const canonicalCitySlug = slug.startsWith("assignment-help-")
+    ? slug
+    : `assignment-help-${slug.replace(/-assignment-help$/, "")}`;
+
   try {
     const pageData = (await getFreshCityPage(slug))?.page;
     if (pageData && (pageData.meta_title || pageData.title || pageData.hero_heading)) {
@@ -33,7 +37,7 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
       return constructMetadata({
         title,
         description,
-        canonicalUrl: `/cities/${slug}`,
+        canonicalUrl: `/cities/${canonicalCitySlug}`,
       });
     }
   } catch (error) {
@@ -44,7 +48,7 @@ export async function generateMetadata({ params }: CityRoutePageProps): Promise<
   return constructMetadata({
     title: `${cityName} Assignment Help UK | Top Experts in ${cityName}`,
     description: `Need assignment help in ${cityName}? Get top-rated academic writing support from expert writers in ${cityName}, ${countryName}. 100% plagiarism free & on-time.`,
-    canonicalUrl: `/cities/${slug}`,
+    canonicalUrl: `/cities/${canonicalCitySlug}`,
   });
 }
 
@@ -81,14 +85,15 @@ export default async function CityRoutePage({ params }: CityRoutePageProps) {
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.96",
-    "ratingCount": "46799"
+    "reviewCount": "25507"
   },
   "offers": {
     "@type": "AggregateOffer",
+    "url": "https://www.assignmentinneed.co.uk/offer",
     "priceCurrency": "GBP",
     "lowPrice": "4.00",
     "highPrice": "10.00",
-    "offerCount": "7"
+    "offerCount": "2"
   }
 }`
         }}

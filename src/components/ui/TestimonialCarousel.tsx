@@ -36,6 +36,16 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
   const getVisibleSlides = () => {
     const total = testimonials.length;
     if (total === 0) return [];
+    if (total === 1) {
+      return [{ data: testimonials[0], index: 0, position: "center" }];
+    }
+    if (total === 2) {
+      const other = (activeIndex + 1) % 2;
+      return [
+        { data: testimonials[other], index: other, position: "left" },
+        { data: testimonials[activeIndex], index: activeIndex, position: "center" },
+      ];
+    }
     
     const prev = (activeIndex - 1 + total) % total;
     const current = activeIndex;
@@ -54,16 +64,18 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
       onMouseLeave={() => setIsHovered(false)}
       className={cn("w-full flex flex-col items-center gap-8", className)}
     >
-      {/* Desktop view: 3-column layout where the center item is featured */}
-      <div className="hidden md:grid grid-cols-3 gap-6 w-full items-stretch min-h-[300px]">
+      {/* Responsive testimonials grid (unified to render each card once without source code duplication) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full items-stretch min-h-[300px]">
         {getVisibleSlides().map(({ data, index, position }) => {
           const isFeatured = position === "center";
           return (
             <div
-              key={`desktop-testimonial-${position}-${index}`}
+              key={`testimonial-${position}-${index}`}
               className={cn(
-                "transition-all duration-500 flex flex-col justify-stretch",
-                isFeatured ? "scale-100 z-10 opacity-100" : "scale-95 opacity-60 hover:opacity-80"
+                "transition-all duration-500 flex-col justify-stretch",
+                isFeatured
+                  ? "flex scale-100 z-10 opacity-100"
+                  : "hidden md:flex scale-95 opacity-60 hover:opacity-80"
               )}
             >
               <TestimonialCard
@@ -78,23 +90,6 @@ export const TestimonialCarousel: React.FC<TestimonialCarouselProps> = ({
             </div>
           );
         })}
-      </div>
-
-      {/* Mobile view: single card slide */}
-      <div className="flex md:hidden w-full">
-        {testimonials.length > 0 && (
-          <div className="w-full transition-all duration-300">
-            <TestimonialCard
-              name={testimonials[activeIndex].name}
-              institution={testimonials[activeIndex].institution}
-              quote={testimonials[activeIndex].quote}
-              rating={testimonials[activeIndex].rating}
-              avatar={testimonials[activeIndex].avatar}
-              featured={true}
-              className="w-full"
-            />
-          </div>
-        )}
       </div>
 
       {/* Navigation dots (Visible on Mobile only) */}

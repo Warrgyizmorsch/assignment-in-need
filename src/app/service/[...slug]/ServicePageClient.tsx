@@ -66,7 +66,7 @@ const fallbackWhyItems = [
   { title: "AI-Free Writing", desc: "Human-written assignments, no AI tools." },
   { title: "UK Academic Standards", desc: "Followed by experts as per UK university guidelines." },
   { title: "Unlimited Revisions", desc: "We work until you are 100% satisfied with the result." },
-  { title: "On-Time Delivery", desc: "Always delivered before the deadline." },
+  { title: "Prompt Turnaround", desc: "Always delivered before the deadline." },
   { title: "Confidential Service", desc: "Your privacy and information are 100% safe." },
 ];
 
