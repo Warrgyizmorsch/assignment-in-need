@@ -93,11 +93,34 @@ const mapReviewToTestimonial = (review: any) => ({
   avatar: review?.name?.charAt(0) || "S",
 });
 
+const PAY_SOMEONE_REVIEWS = [
+  {
+    name: "Carys Morgan",
+    institution: "London • Assignment",
+    quote: "I was looking online for a reliable service after searching for “pay someone to do my assignment”. I found their website and decided to give it a try. The process was simple, and I received regular updates about my assignment. Everything was explained clearly, and the team were helpful whenever I had questions.",
+    rating: 5,
+    avatar: "C",
+  },
+  {
+    name: "Finley Mercer",
+    institution: "London • Assignment",
+    quote: "When I searched for “pay someone to do my assignment”, I came across their service and decided to place an order. I was a little unsure at first, but the communication throughout the process was really good. They kept me informed and made the whole experience straightforward. I appreciated the support and quick responses.",
+    rating: 5,
+    avatar: "F",
+  },
+  {
+    name: "Elowen Price",
+    institution: "London • Assignment",
+    quote: "I needed help with a difficult assignment, so I searched for “pay someone to do my assignment” and found their service. The ordering process was easy, and I was kept updated along the way. I also liked that they responded quickly when I had questions. Overall, the experience was smooth and convenient.",
+    rating: 4,
+    avatar: "E",
+  },
+];
+
 type Props = {
   initialPageData?: any;
   initialExperts?: any[];
   initialExpertsFromPage?: boolean;
-  initialReviews?: any[];
   initialAllServicePages?: any[];
   initialSlug?: string;
 };
@@ -106,9 +129,8 @@ export default function ServiceLanding({
   initialPageData = null,
   initialExperts = [],
   initialExpertsFromPage = false,
-  initialReviews = [],
   initialAllServicePages = [],
-  initialSlug = ""
+  initialSlug = "",
 }: Props = {}) {
   const params = useParams();
   const slugArray = params?.slug;
@@ -119,7 +141,7 @@ export default function ServiceLanding({
   const [pageData, setPageData] = useState<any>(initialPageData);
   const [experts, setExperts] = useState<any[]>(initialExperts);
   const [expertsFromPage, setExpertsFromPage] = useState(initialExpertsFromPage); // NEW: track source of experts
-  const [reviews, setReviews] = useState<any[]>(initialReviews);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [allServicePages, setAllServicePages] = useState<any[]>(initialAllServicePages);
   const [loading, setLoading] = useState(!initialPageData);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -559,7 +581,16 @@ export default function ServiceLanding({
 
   // Experts list
   const expertsToShow = experts.length > 0 ? experts : WRITERS.slice(0, 4);
-  const testimonialsToShow = reviews.length > 0 ? reviews : TESTIMONIALS;
+  const isPaySomeone =
+    fullSlug === "pay-someone-to-do-my-assignment" ||
+    fullSlug === "service/pay-someone-to-do-my-assignment" ||
+    fullSlug.endsWith("/pay-someone-to-do-my-assignment");
+
+  const testimonialsToShow = isPaySomeone
+    ? PAY_SOMEONE_REVIEWS
+    : reviews.length > 0
+    ? reviews
+    : TESTIMONIALS;
 
   // FIX: these fields were being fetched from the API and then completely
   // ignored. They now drive the two "long copy" sections and an optional

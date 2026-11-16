@@ -243,7 +243,6 @@ export default async function ServicePage({ params }: Props) {
         initialPageData={initialPageData}
         initialExperts={initialExperts}
         initialExpertsFromPage={initialExpertsFromPage}
-        initialReviews={initialReviews}
         initialAllServicePages={allServicePages}
       />
     </>
