@@ -368,7 +368,7 @@ export default function SamplesPage({ initialCategories = [] }: { initialCategor
         <div className="absolute inset-0 z-0 lg:hidden flex justify-center items-center opacity-10 pointer-events-none">
           <img
             src="/new-sample-img/hero1.png"
-            alt=""
+            alt="Free university assignment samples and academic writing guides - Assignment In Need"
             className="w-[120%] max-w-none h-auto object-contain"
             style={{
               WebkitMaskImage:
@@ -463,7 +463,7 @@ export default function SamplesPage({ initialCategories = [] }: { initialCategor
         >
           <img
             src="/new-sample-img/hero1.png"
-            alt="Free Samples Illustration"
+            alt="Free university assignment samples and academic guides - Assignment In Need"
             className="w-full max-w-[760px] h-auto object-contain"
           />
         </AnimateIn>
