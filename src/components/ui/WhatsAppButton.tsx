@@ -9,8 +9,16 @@ export function WhatsAppButton() {
 
   // Listen to bottom popup active status
   useEffect(() => {
+    // Check initial global state if already set
+    if (typeof window !== "undefined" && (window as any).__ainBottomPopupActive) {
+      setIsBannerActive(true);
+    }
+
     const handleBannerActive = (e: any) => {
       setIsBannerActive(Boolean(e.detail?.active));
+      if (e.detail?.active) {
+        setIsAutoPopped(false); // Force close immediately when banner is active
+      }
     };
 
     window.addEventListener("ain-bottom-popup-active", handleBannerActive);
@@ -19,27 +27,28 @@ export function WhatsAppButton() {
     };
   }, []);
 
-  // WhatsApp auto-popup runs ONLY when the bottom banner is closed / not active:
-  // "jb ye popup rhe tab whatsapp ka popup open close na ho udhar side me die (folded) rahe,
-  // agar uske upar mouse jaye tab bahar aaye, jaise popup close ho tab fir wo andar bahar ho"
+  // "jb ye popup rhe tba whatsapp ka popup open close na ho udhar side me die (folded) rahe"
+  // "jese vo popup close ker de to fhir vo popup bhar ander ho"
   useEffect(() => {
+    // If bottom banner is showing, DO NOT auto-pop at all!
     if (isBannerActive) {
       setIsAutoPopped(false);
       return;
     }
 
-    // Initial popup 3.5 seconds after banner is closed / absent
+    // When bottom banner is closed or absent:
+    // 1. Initial pop after 3.5 seconds
     const initialTimer = setTimeout(() => {
       setIsAutoPopped(true);
-      setTimeout(() => setIsAutoPopped(false), 4000);
+      setTimeout(() => setIsAutoPopped(false), 3800);
     }, 3500);
 
-    // Auto-pop the "Order on WhatsApp EXTRA FLAT 10% OFF" every 7 to 9 seconds (8s interval)
+    // 2. Auto-pop every 7 to 9 seconds (8s interval)
     const interval = setInterval(() => {
       setIsAutoPopped(true);
       setTimeout(() => {
         setIsAutoPopped(false);
-      }, 4000);
+      }, 3800);
     }, 8000);
 
     return () => {
@@ -48,7 +57,7 @@ export function WhatsAppButton() {
     };
   }, [isBannerActive]);
 
-  // If hovered, ALWAYS expand. If not hovered, only auto-expand when banner is NOT active!
+  // Expand only if hovered, OR if auto-popped while banner is closed
   const isExpanded = isHovered || (!isBannerActive && isAutoPopped);
 
   return (
@@ -62,16 +71,14 @@ export function WhatsAppButton() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Order on WhatsApp - EXTRA FLAT 10% OFF"
-        className={`flex items-center bg-gradient-to-r from-[#20ba59] to-[#25D366] text-white rounded-r-full shadow-[0_4px_25px_rgba(37,211,102,0.5)] border border-green-300/40 transform transition-all duration-500 ease-out h-[52px] focus:outline-none ${
-          isExpanded
-            ? "translate-x-0 shadow-2xl scale-105"
-            : "-translate-x-[calc(100%-54px)]"
-        }`}
+        className="flex items-center bg-gradient-to-r from-[#20ba59] to-[#25D366] text-white rounded-r-full shadow-[0_4px_25px_rgba(37,211,102,0.5)] border border-green-300/40 h-[52px] focus:outline-none overflow-hidden transition-all duration-500 ease-out hover:scale-105"
       >
-        {/* Expanded Content: Matches Image 1 reference */}
+        {/* Expanded Content - smoothly expands/collapses width with zero overflow leakage */}
         <div
-          className={`flex flex-col items-start leading-tight pl-4 pr-3 transition-opacity duration-300 ${
-            isExpanded ? "opacity-100" : "opacity-0 pointer-events-none"
+          className={`flex flex-col items-start leading-tight transition-all duration-500 ease-out overflow-hidden ${
+            isExpanded
+              ? "max-w-[200px] opacity-100 pl-4 pr-3 py-1"
+              : "max-w-0 opacity-0 p-0 pointer-events-none"
           }`}
         >
           <span className="text-[11px] font-medium text-white/95 whitespace-nowrap">
@@ -82,8 +89,8 @@ export function WhatsAppButton() {
           </span>
         </div>
 
-        {/* Circular WhatsApp Icon on right edge (always visible on the folded tab) */}
-        <div className="w-[54px] h-[52px] flex items-center justify-center shrink-0 border-l border-white/20">
+        {/* Circular WhatsApp Icon (Always visible on the folded edge) */}
+        <div className="w-[52px] h-[52px] flex items-center justify-center shrink-0">
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md">
             <svg
               width="24"

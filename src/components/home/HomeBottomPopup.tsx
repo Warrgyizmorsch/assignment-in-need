@@ -7,18 +7,33 @@ import { X, Phone, Mail } from "lucide-react";
 export default function HomeBottomPopup() {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [qrTargetUrl, setQrTargetUrl] = useState("https://www.assignmentinneed.co.uk/app");
 
   useEffect(() => {
-    // 1. Initial 4-second auto trigger on page load/refresh
+    // Dynamically set QR URL:
+    // In local dev, use local LAN IP so scanning from a phone on WiFi works immediately!
+    // In production, use the live assignmentinneed.co.uk/app router!
+    if (typeof window !== "undefined") {
+      if (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+      ) {
+        setQrTargetUrl("http://192.168.29.27:3000/app");
+      } else {
+        setQrTargetUrl(`${window.location.origin}/app`);
+      }
+    }
+
+    // 1. Initial 1.5-second trigger on page visit/load
     const timer = setTimeout(() => {
       if (!isDismissed) {
         setIsVisible(true);
       }
-    }, 4000);
+    }, 1500);
 
     // 2. Show immediately on scroll down on homepage
     const handleScroll = () => {
-      if (!isDismissed && window.scrollY > 120) {
+      if (!isDismissed && window.scrollY > 80) {
         setIsVisible(true);
       }
     };
@@ -31,9 +46,10 @@ export default function HomeBottomPopup() {
     };
   }, [isDismissed]);
 
-  // Broadcast banner active status so WhatsApp button knows to stay quiet/folded while banner is shown
+  // Sync banner active status across all widgets (WhatsApp button, etc.)
   useEffect(() => {
     if (typeof window !== "undefined") {
+      (window as any).__ainBottomPopupActive = isVisible;
       window.dispatchEvent(
         new CustomEvent("ain-bottom-popup-active", {
           detail: { active: isVisible },
@@ -44,10 +60,9 @@ export default function HomeBottomPopup() {
 
   const handleClose = () => {
     setIsVisible(false);
-    setIsDismissed(true); // Closed for this page view, but on hard refresh it appears again!
+    setIsDismissed(true); // Closed for this view only. When user revisits/refreshes, it shows again!
     if (typeof window !== "undefined") {
-      // Clear any past sessionStorage locks
-      sessionStorage.removeItem("ain_bottom_banner_closed");
+      (window as any).__ainBottomPopupActive = false;
       window.dispatchEvent(
         new CustomEvent("ain-bottom-popup-active", {
           detail: { active: false },
@@ -127,23 +142,20 @@ export default function HomeBottomPopup() {
 
           {/* Right: Universal Smart QR Code Scanner + Store Links */}
           <div className="flex items-center gap-3 shrink-0">
-            {/* QR Code Scanner (Points to smart auto-detect /app route) */}
+            {/* QR Code Scanner - Proper Clean Square */}
             <a
-              href="/app"
+              href={qrTargetUrl}
               target="_blank"
               rel="noopener noreferrer"
               title="Scan to download App (Auto-detects iOS & Android)"
-              className="hidden sm:flex flex-col items-center bg-white p-1.5 rounded-xl shadow-md border-2 border-white/50 hover:scale-105 transition-transform"
+              className="hidden sm:flex items-center justify-center bg-white p-1.5 rounded-lg shadow-md border border-white/40 shrink-0 hover:scale-105 transition-transform"
             >
               <QRCode
-                value="https://www.assignmentinneed.co.uk/app"
-                size={62}
+                value={qrTargetUrl}
+                size={70}
                 level="M"
-                fgColor="#14052e"
+                fgColor="#000000"
               />
-              <span className="text-[8px] font-black text-[#14052e] mt-0.5 tracking-tight uppercase">
-                Scan App
-              </span>
             </a>
 
             {/* App Store & Google Play Download Buttons */}
