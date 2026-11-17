@@ -7,23 +7,9 @@ import { X, Phone, Mail } from "lucide-react";
 export default function HomeBottomPopup() {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const [qrTargetUrl, setQrTargetUrl] = useState("https://www.assignmentinneed.co.uk/app");
+  const qrTargetUrl = "https://www.assignmentinneed.co.uk/app";
 
   useEffect(() => {
-    // Dynamically set QR URL:
-    // In local dev, use local LAN IP so scanning from a phone on WiFi works immediately!
-    // In production, use the live assignmentinneed.co.uk/app router!
-    if (typeof window !== "undefined") {
-      if (
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
-      ) {
-        setQrTargetUrl("http://192.168.29.27:3000/app");
-      } else {
-        setQrTargetUrl(`${window.location.origin}/app`);
-      }
-    }
-
     // 1. Initial 1.5-second trigger on page visit/load
     const timer = setTimeout(() => {
       if (!isDismissed) {
