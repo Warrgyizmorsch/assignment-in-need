@@ -6,19 +6,13 @@ const APP_STORE_URL =
   "https://apps.apple.com/in/app/ain/id6829701003";
 
 export async function GET(request: NextRequest) {
-  const userAgent = request.headers.get("user-agent") || "";
+  const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
 
-  // 1. iOS detection (iPhone, iPad, iPod)
-  if (/iphone|ipad|ipod/i.test(userAgent)) {
+  // 1. Apple / iOS detection (iPhone, iPad, iPod, Mac) -> Direct to Apple App Store
+  if (/iphone|ipad|ipod|darwin|macintosh/.test(userAgent)) {
     return NextResponse.redirect(APP_STORE_URL, 307);
   }
 
-  // 2. Android detection
-  if (/android/i.test(userAgent)) {
-    return NextResponse.redirect(PLAY_STORE_URL, 307);
-  }
-
-  // 3. Desktop / Fallback -> show download app page
-  const downloadPageUrl = new URL("/download-app", request.url);
-  return NextResponse.redirect(downloadPageUrl, 307);
+  // 2. Android & all other devices -> Direct to Google Play Store (NEVER to website)
+  return NextResponse.redirect(PLAY_STORE_URL, 307);
 }
