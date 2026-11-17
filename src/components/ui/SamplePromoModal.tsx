@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { X, Gift, Loader2, ChevronDown, Check } from "lucide-react";
+import { X, Gift, Loader2, ChevronDown, Check, Sparkles, ShieldCheck, User, Mail, Phone } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import en from "react-phone-number-input/locale/en.json";
@@ -215,114 +215,179 @@ export function SamplePromoModal() {
         }}
       />
       <div 
-        className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        className="fixed inset-0 z-[100000] flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-sm animate-fadeIn"
       >
-      <div className="relative w-full max-w-[700px] max-h-[92vh] overflow-y-auto bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col sm:flex-row animate-slideUp border border-purple-100">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClose();
-          }}
-          aria-label="Close modal"
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white sm:text-gray-400 hover:text-white sm:hover:text-gray-900 transition-colors z-50 bg-black/30 sm:bg-gray-100 hover:bg-black/50 sm:hover:bg-gray-200 rounded-full p-1.5 focus:outline-none cursor-pointer"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        <div className="relative w-full max-w-[730px] max-h-[92vh] overflow-y-auto bg-white rounded-3xl shadow-[0_25px_70px_rgba(20,5,50,0.4)] flex flex-col sm:flex-row animate-slideUp border border-purple-100/80 overflow-hidden">
+          {/* Close button - sleek elevated style */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
+            aria-label="Close modal"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-500 hover:text-gray-900 bg-white/90 hover:bg-white shadow-md rounded-full p-2 z-50 transition-all hover:scale-110 cursor-pointer border border-gray-200/80"
+          >
+            <X className="w-4 h-4 font-bold" />
+          </button>
 
-        {/* Left Side (Top banner on Mobile, Left column on Desktop) */}
-        <div className="w-full sm:w-[45%] bg-gradient-to-br from-[#1e143b] via-[#3a1d6b] to-[#5a2c99] p-5 sm:p-8 flex flex-col justify-center text-left text-white relative overflow-hidden shrink-0">
-          {/* Decorative shapes */}
-          <div className="absolute top-0 right-0 -mr-8 -mt-8 w-40 h-40 rounded-full bg-white opacity-5 blur-2xl"></div>
-          <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-48 h-48 rounded-full bg-fuchsia-500 opacity-20 blur-3xl"></div>
-          
-          <div className="relative z-10 flex flex-col h-full justify-center">
-            <span className="bg-white/20 text-white border border-white/30 backdrop-blur-md font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[9px] sm:text-[10px] uppercase tracking-widest w-max mb-2 sm:mb-5 shadow-sm inline-block">
-              Exclusive Offer
-            </span>
-            <h2 className="text-2xl sm:text-[32px] font-black leading-tight sm:leading-none mb-1.5 sm:mb-3 text-white">
-              Unlock <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">500 Words</span> Free!
-            </h2>
-            <p className="text-xs sm:text-sm font-medium text-purple-200 leading-snug sm:leading-relaxed mb-3 sm:mb-6">
-              Boost your grades instantly. Claim your free words on your first assignment with us.
-            </p>
-            
-            <div className="flex flex-col gap-1.5 sm:gap-3">
-              {[
-                "Premium Quality Content",
-                "100% Plagiarism Free",
-                "Expert UK Writers"
-              ].map((feature, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-xs sm:text-[13px] text-purple-100 font-medium">
-                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-green-400/20 flex items-center justify-center shrink-0">
-                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                  </div>
-                  {feature}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+          {/* Left Side: Premium Brand Visual & Offer Highlight */}
+          <div className="w-full sm:w-[46%] bg-gradient-to-br from-[#160b33] via-[#2c1356] to-[#4c1d95] p-6 sm:p-8 flex flex-col justify-between text-left text-white relative overflow-hidden shrink-0">
+            {/* Glowing background ambient lights */}
+            <div className="absolute -top-10 -left-10 w-44 h-44 rounded-full bg-amber-500/15 blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-10 -right-10 w-44 h-44 rounded-full bg-fuchsia-500/25 blur-3xl pointer-events-none"></div>
 
-        {/* Right side form */}
-        <div className="p-5 sm:p-8 w-full sm:w-[55%] bg-white flex flex-col justify-center">
-          <div className="mb-4 sm:mb-5 text-center sm:text-left">
-            <h3 className="text-lg sm:text-[22px] font-extrabold text-purple-800 mb-1 sm:mb-1.5">Where should we send it?</h3>
-            <p className="text-xs sm:text-[13px] text-gray-500 font-medium">Enter your details below to claim your free words.</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 text-left">
-            <div>
-              <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none text-[13px] transition-all text-gray-800 font-medium placeholder:text-gray-400" placeholder="Full Name" />
-            </div>
-            <div className="flex gap-2 relative" ref={dropdownRef}>
-              <div 
-                className={`w-[130px] shrink-0 border border-gray-200 rounded-lg px-3 py-2.5 text-[13px] flex items-center justify-between transition-all font-medium bg-gray-50 text-gray-800 cursor-pointer hover:bg-white hover:border-purple-500`}
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <span className="truncate mr-2">{countryLabel}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+            <div className="relative z-10 flex flex-col justify-center">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-orange-400 text-purple-950 font-black px-3 py-1 rounded-full text-[10px] sm:text-[11px] uppercase tracking-wider shadow-[0_2px_12px_rgba(245,158,11,0.35)] w-max mb-3">
+                <Sparkles className="w-3.5 h-3.5 fill-purple-950 text-purple-950" />
+                <span>Exclusive Offer</span>
               </div>
-              
-              <input
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none text-[13px] transition-all text-gray-800 font-medium placeholder:text-gray-400"
-                placeholder="Phone Number"
-              />
 
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 w-[250px] bg-white border border-gray-100 shadow-xl rounded-xl max-h-60 overflow-y-auto z-50 py-1 text-[13px] font-medium">
-                  {COUNTRY_CODES.map((opt) => (
-                    <div
-                      key={opt.value + opt.label}
-                      onClick={() => {
-                        setCountryCode(opt.value);
-                        setCountryLabel(opt.label);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-purple-50 transition-colors ${countryLabel === opt.label ? 'bg-purple-50/50 text-purple-700' : 'text-gray-700'}`}
-                    >
-                      <span>{opt.label}</span>
-                      {countryLabel === opt.label && <Check className="w-3.5 h-3.5" />}
+              {/* High-Impact Headline with Outstanding 500 Words Free Banner */}
+              <h2 className="text-2xl sm:text-[28px] font-black leading-tight text-white mb-2">
+                Unlock
+                <span className="block my-1.5 py-1.5 px-3.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 text-[#1b0836] font-black rounded-xl shadow-[0_4px_18px_rgba(245,158,11,0.5)] w-max text-2xl sm:text-[30px] tracking-wide transform -rotate-1 border border-yellow-200/60">
+                  500 WORDS FREE!
+                </span>
+              </h2>
+
+              <p className="text-xs sm:text-[13px] font-medium text-purple-200/90 leading-relaxed mb-4">
+                Boost your grades instantly. Claim your free 500 words on your first assignment with our UK experts.
+              </p>
+
+              {/* Benefits */}
+              <div className="flex flex-col gap-2 sm:gap-2.5">
+                {[
+                  "Premium Quality Academic Content",
+                  "100% Turnitin Plagiarism-Free Report",
+                  "Top-Tier UK University Writers",
+                ].map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-2.5 text-xs sm:text-[12.5px] text-white/95 font-medium">
+                    <div className="w-4 h-4 rounded-full bg-emerald-400/20 border border-emerald-400/40 flex items-center justify-center shrink-0">
+                      <Check className="w-2.5 h-2.5 text-emerald-300 stroke-[3]" />
                     </div>
-                  ))}
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom security pill */}
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2 text-[11px] text-purple-200/80">
+                <ShieldCheck className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                <span>No Payment Needed • Instant Voucher Code</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side form */}
+          <div className="p-6 sm:p-8 w-full sm:w-[54%] bg-white flex flex-col justify-center">
+            <div className="mb-4 sm:mb-5 text-left">
+              <h3 className="text-xl sm:text-[22px] font-black text-gray-900 leading-tight">
+                Where should we send it?
+              </h3>
+              <p className="text-xs sm:text-[13px] text-gray-500 font-medium mt-1">
+                Enter your details below to claim your free 500 words instantly.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-left">
+              {/* Full Name */}
+              <div className="relative">
+                <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-600 focus:ring-4 focus:ring-purple-500/10 outline-none text-[13px] transition-all text-gray-800 font-medium placeholder:text-gray-400"
+                  placeholder="Full Name"
+                />
+              </div>
+
+              {/* Phone + Country Code */}
+              <div className="flex gap-2 relative" ref={dropdownRef}>
+                <div
+                  className="w-[125px] shrink-0 border border-gray-200 rounded-xl px-3 py-2.5 text-[13px] flex items-center justify-between transition-all font-medium bg-gray-50 text-gray-800 cursor-pointer hover:bg-white hover:border-purple-500"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  <span className="truncate mr-1 text-xs sm:text-[13px]">{countryLabel}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                 </div>
-              )}
-            </div>
-            <div>
-              <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none text-[13px] transition-all text-gray-800 font-medium placeholder:text-gray-400" placeholder="Email Address" />
-            </div>
-            <button type="submit" disabled={isLoading} className="btn-shutter-orange-open w-full text-white font-extrabold py-3 rounded-lg transition-all mt-1 shadow-[0_6px_20px_rgba(234,88,12,0.3)] hover:-translate-y-0.5 flex items-center justify-center gap-2 uppercase text-[13px] tracking-wider border-none relative group overflow-hidden">
-              {isLoading ? <><Loader2 className="w-4 h-4 animate-spin relative z-10" /> <span className="relative z-10">Claiming...</span></> : <span className="relative z-10">Claim My 500 Words</span>}
-            </button>
-            <p className="text-center text-[10px] text-gray-400 mt-1">By claiming, you agree to our terms of service.</p>
-          </form>
+
+                <div className="relative flex-1">
+                  <Phone className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-600 focus:ring-4 focus:ring-purple-500/10 outline-none text-[13px] transition-all text-gray-800 font-medium placeholder:text-gray-400"
+                    placeholder="Phone Number"
+                  />
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-2xl rounded-xl max-h-60 overflow-y-auto z-50 py-1 text-[13px] font-medium">
+                    {COUNTRY_CODES.map((opt) => (
+                      <div
+                        key={opt.value + opt.label}
+                        onClick={() => {
+                          setCountryCode(opt.value);
+                          setCountryLabel(opt.label);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`px-4 py-2 cursor-pointer flex items-center justify-between hover:bg-purple-50 transition-colors ${
+                          countryLabel === opt.label ? "bg-purple-50 text-purple-700 font-semibold" : "text-gray-700"
+                        }`}
+                      >
+                        <span>{opt.label}</span>
+                        {countryLabel === opt.label && <Check className="w-3.5 h-3.5 text-purple-600" />}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Email */}
+              <div className="relative">
+                <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-purple-600 focus:ring-4 focus:ring-purple-500/10 outline-none text-[13px] transition-all text-gray-800 font-medium placeholder:text-gray-400"
+                  placeholder="Email Address"
+                />
+              </div>
+
+              {/* Submit CTA */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-1 bg-gradient-to-r from-orange-500 via-[#ff6a1a] to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-black py-3.5 rounded-xl shadow-[0_8px_25px_rgba(249,115,22,0.38)] hover:shadow-[0_12px_30px_rgba(249,115,22,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 uppercase text-[13.5px] tracking-wider cursor-pointer border-none"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Claiming...</span>
+                  </>
+                ) : (
+                  <>
+                    <Gift className="w-4 h-4" />
+                    <span>Claim My 500 Words</span>
+                  </>
+                )}
+              </button>
+
+              <p className="text-center text-[10.5px] text-gray-400 mt-0.5 font-medium">
+                🔒 100% Confidential • By claiming, you agree to our terms.
+              </p>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
