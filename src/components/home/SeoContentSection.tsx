@@ -222,7 +222,7 @@ export default function SeoContentSection() {
               Get 40% Off Assignment Help UK &ndash; Exclusive Student Offer
             </h2>
             <p className="mt-2">
-              Need reliable academic support at a price that suits your student budget? Assignment In Need brings you an exclusive opportunity to save <strong>40% on assignment help services</strong>. From essays and dissertations to coursework, case studies and academic reports, get subject-specific guidance tailored to your university requirements. Have questions about your assignment or want to claim your discount? Simply call or contact our team on <a href="tel:+447917481696" className="hover:underline text-[#3f159a]"><strong>+44 7917481696</strong></a> to discuss your requirements and find the right support. Don't miss this opportunity to make your academic workload more manageable while saving on the support you need.
+              Need reliable academic support at a price that suits your student budget? Assignment In Need brings you an exclusive opportunity to save <strong>40% on assignment help services</strong>. From essays and dissertations to coursework, case studies and academic reports, get subject-specific guidance tailored to your university requirements. Have questions about your assignment or want to claim your discount? Simply call or contact our team on <a href="tel:+447917481696" rel="nofollow" className="hover:underline text-[#3f159a]"><strong>+44 7917481696</strong></a> to discuss your requirements and find the right support. Don't miss this opportunity to make your academic workload more manageable while saving on the support you need.
             </p>
             <p className="mt-3">
               <strong>Contact Assignment In Need Today and Save 40%!</strong>
@@ -284,7 +284,7 @@ export default function SeoContentSection() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-green-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#3f159a] rounded-full mix-blend-multiply filter blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
               <div className="relative z-10 text-center">
-                <a href="https://wa.me/447917481696?text=I%20need%20assignment%20help" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center transform transition-transform hover:-translate-y-1">
+                <a href="https://wa.me/447917481696?text=I%20need%20assignment%20help" target="_blank" rel="nofollow noopener noreferrer" className="flex flex-col items-center transform transition-transform hover:-translate-y-1">
                   <h4 className="font-extrabold text-[#1e1b4b] mb-4 leading-tight">Need Instant Help?</h4>
                   <div className="bg-white p-3 rounded-2xl shadow-[0_8px_30px_rgba(34,197,94,0.15)] border-2 border-green-100">
                     <QRCode

@@ -69,7 +69,7 @@ export function WhatsAppButton() {
       <a
         href="https://wa.me/447917481696?text=Hi%2C%20I%20want%20to%20claim%20EXTRA%20FLAT%2010%25%20OFF"
         target="_blank"
-        rel="noopener noreferrer"
+        rel="nofollow noopener noreferrer"
         aria-label="Order on WhatsApp - EXTRA FLAT 10% OFF"
         className="flex items-center bg-gradient-to-r from-[#20ba59] to-[#25D366] text-white rounded-r-full shadow-[0_4px_25px_rgba(37,211,102,0.5)] border border-green-300/40 h-[52px] focus:outline-none overflow-hidden transition-all duration-500 ease-out hover:scale-105"
       >

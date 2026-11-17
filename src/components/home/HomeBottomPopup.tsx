@@ -124,7 +124,7 @@ export default function HomeBottomPopup() {
             <a
               href="https://wa.me/447917481696?text=Hi%2C%20I%20need%20academic%20assignment%20help"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="nofollow noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-4.5 sm:py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-black text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -136,6 +136,7 @@ export default function HomeBottomPopup() {
             {/* Call */}
             <a
               href="tel:+447917481696"
+              rel="nofollow"
               className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-4.5 sm:py-3 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-white font-black text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
             >
               <Phone className="w-4 h-4" />
@@ -145,6 +146,7 @@ export default function HomeBottomPopup() {
             {/* Email */}
             <a
               href="mailto:order@assignmentinneed.co.uk"
+              rel="nofollow"
               className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-4.5 sm:py-3 rounded-xl bg-[#ff6b00] hover:bg-[#e56000] text-white font-black text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
             >
               <Mail className="w-4 h-4" />
@@ -158,7 +160,7 @@ export default function HomeBottomPopup() {
             <a
               href={qrTargetUrl}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="nofollow noopener noreferrer"
               title="Scan to download App (Auto-detects iOS & Android)"
               className="hidden sm:flex items-center justify-center bg-white p-1.5 rounded-lg shadow-md border border-white/40 shrink-0 hover:scale-105 transition-transform"
             >
@@ -176,7 +178,7 @@ export default function HomeBottomPopup() {
               <a
                 href="https://apps.apple.com/in/app/ain/id6829701003"
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="nofollow noopener noreferrer"
                 className="flex items-center gap-2 px-3 py-1.5 bg-black/90 hover:bg-black text-white rounded-xl border border-white/20 transition-all shadow-sm hover:border-white/50"
               >
                 <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
@@ -192,7 +194,7 @@ export default function HomeBottomPopup() {
               <a
                 href="https://play.google.com/store/apps/details?id=com.assignmetinneed.ain"
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="nofollow noopener noreferrer"
                 className="flex items-center gap-2 px-3 py-1.5 bg-black/90 hover:bg-black text-white rounded-xl border border-white/20 transition-all shadow-sm hover:border-white/50"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">

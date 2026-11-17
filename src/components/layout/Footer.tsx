@@ -446,6 +446,7 @@ export const Footer = () => {
               <Phone className="text-[#d1d5db] w-4 h-4 mt-1 shrink-0" />
               <a
                 href="tel:+447917481696"
+                rel="nofollow"
                 className="text-[#d1d5db] no-underline transition-colors duration-200 hover:text-white"
               >
                 +44 7917481696
@@ -455,6 +456,7 @@ export const Footer = () => {
               <Mail className="text-[#d1d5db] w-4 h-4 mt-1 shrink-0" />
               <a
                 href="mailto:order@assignmentinneed.co.uk"
+                rel="nofollow"
                 className="text-[#d1d5db] no-underline transition-colors duration-200 hover:text-white"
               >
                 order@assignmentinneed.co.uk

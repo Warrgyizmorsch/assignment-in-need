@@ -1608,6 +1608,7 @@ export const Navbar = () => {
           >
             <a
               href="tel:+447917481696"
+              rel="nofollow"
               className="flex items-center gap-[5px] font-semibold text-[12.5px] max-md:text-[11px] whitespace-nowrap [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:shrink-0"
             >
               <svg
@@ -1715,7 +1716,7 @@ export const Navbar = () => {
               <a
                 href="https://wa.me/447917481696"
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="nofollow noopener noreferrer"
                 className="inline-flex items-center gap-1 text-white font-extrabold text-[11px] max-md:text-[10px] py-1 px-3 max-md:py-[2px] max-md:px-2 rounded-full whitespace-nowrap cursor-pointer transition-all duration-200 no-underline hover:bg-green-300 hover:shadow-[0_2px_8px_rgba(34,197,94,0.4)]"
                 style={{
                   background: "linear-gradient(135deg, #22c55e, #16a34a)",
@@ -1953,6 +1954,7 @@ export const Navbar = () => {
           <div className="znh-right-actions">
             <a
               href="tel:+447917481696"
+              rel="nofollow"
               className="znh-contact-widget"
               aria-label="Call +44 7917481696 for 24/7 Support"
             >

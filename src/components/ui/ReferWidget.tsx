@@ -8,6 +8,7 @@ export function ReferWidget() {
   return (
     <Link
       href="/refer-and-earn"
+      rel="nofollow"
       className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-50 flex-col items-center justify-end w-12 bg-[#ff5722] text-white shadow-lg hover:shadow-2xl hover:w-14 transition-all duration-300 rounded-r-xl group py-4 overflow-hidden"
     >
       <div className="flex-1 flex items-center justify-center [writing-mode:vertical-rl] rotate-180 font-bold text-sm tracking-widest whitespace-nowrap opacity-90 group-hover:opacity-100 transition-opacity pb-4">
