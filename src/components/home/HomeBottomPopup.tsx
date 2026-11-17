@@ -6,22 +6,19 @@ import { X, Phone, Mail } from "lucide-react";
 
 export default function HomeBottomPopup() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    // If user already closed it once in this session, never show it again
-    if (
-      typeof window !== "undefined" &&
-      sessionStorage.getItem("ain_bottom_banner_closed") === "true"
-    ) {
-      return;
-    }
+    // 1. Initial 4-second auto trigger on page load/refresh
+    const timer = setTimeout(() => {
+      if (!isDismissed) {
+        setIsVisible(true);
+      }
+    }, 4000);
 
-    // Show on scroll down on homepage
+    // 2. Show immediately on scroll down on homepage
     const handleScroll = () => {
-      if (
-        window.scrollY > 160 &&
-        sessionStorage.getItem("ain_bottom_banner_closed") !== "true"
-      ) {
+      if (!isDismissed && window.scrollY > 120) {
         setIsVisible(true);
       }
     };
@@ -29,11 +26,12 @@ export default function HomeBottomPopup() {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isDismissed]);
 
-  // Broadcast banner active status so WhatsApp button knows to stay quiet/hidden while banner is shown
+  // Broadcast banner active status so WhatsApp button knows to stay quiet/folded while banner is shown
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
@@ -46,9 +44,10 @@ export default function HomeBottomPopup() {
 
   const handleClose = () => {
     setIsVisible(false);
-    // Permanently remember dismissal for this session - NO RE-OPENING
+    setIsDismissed(true); // Closed for this page view, but on hard refresh it appears again!
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("ain_bottom_banner_closed", "true");
+      // Clear any past sessionStorage locks
+      sessionStorage.removeItem("ain_bottom_banner_closed");
       window.dispatchEvent(
         new CustomEvent("ain-bottom-popup-active", {
           detail: { active: false },
