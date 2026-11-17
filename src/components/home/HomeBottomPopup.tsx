@@ -114,7 +114,7 @@ export default function HomeBottomPopup() {
           <div className="flex items-center flex-wrap justify-center gap-2.5 shrink-0">
             {/* WhatsApp */}
             <a
-              href="https://wa.me/447826233106?text=Hi%2C%20I%20need%20academic%20assignment%20help"
+              href="https://wa.me/447917481696?text=Hi%2C%20I%20need%20academic%20assignment%20help"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-4.5 sm:py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-black text-xs sm:text-sm shadow-md transition-transform hover:scale-105"

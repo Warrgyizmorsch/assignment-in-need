@@ -1713,7 +1713,7 @@ export const Navbar = () => {
             {/* Fixed CTA */}
             <div className="shrink-0 pl-2 md:pl-3">
               <a
-                href="https://wa.me/447826233106"
+                href="https://wa.me/447917481696"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-white font-extrabold text-[11px] max-md:text-[10px] py-1 px-3 max-md:py-[2px] max-md:px-2 rounded-full whitespace-nowrap cursor-pointer transition-all duration-200 no-underline hover:bg-green-300 hover:shadow-[0_2px_8px_rgba(34,197,94,0.4)]"

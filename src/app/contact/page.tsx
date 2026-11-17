@@ -269,7 +269,7 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <Link
-                      href="https://wa.me/447826233106"
+                      href="https://wa.me/447917481696"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full sm:w-auto mt-2 sm:mt-0 shrink-0"

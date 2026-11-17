@@ -307,7 +307,7 @@ export default function ReviewsAndFaq() {
     setQuoteSubmitted(true);
     setTimeout(() => {
       setQuoteSubmitted(false);
-      window.open(`https://wa.me/447826233106?text=Hi, I want a quote for my ${quoteForm.subject || "assignment"}. Service: ${quoteForm.service}, Deadline: ${quoteForm.deadline}`, "_blank");
+      window.open(`https://wa.me/447917481696?text=Hi, I want a quote for my ${quoteForm.subject || "assignment"}. Service: ${quoteForm.service}, Deadline: ${quoteForm.deadline}`, "_blank");
     }, 1000);
   };
 

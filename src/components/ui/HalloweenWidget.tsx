@@ -342,7 +342,7 @@ export function HalloweenWidget() {
                 </button>
 
                 <a
-                  href="https://wa.me/447826233106?text=Hi!%20I%20want%20to%20claim%20the%2020%25%20Halloween%20Discount%20(Code:%20SPOOKY20)%20for%20my%20assignment."
+                  href="https://wa.me/447917481696?text=Hi!%20I%20want%20to%20claim%20the%2020%25%20Halloween%20Discount%20(Code:%20SPOOKY20)%20for%20my%20assignment."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-2 px-5 rounded-2xl bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2"

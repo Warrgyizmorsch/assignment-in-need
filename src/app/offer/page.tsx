@@ -211,7 +211,7 @@ export default function OffersPage() {
     const text = encodeURIComponent(
       "Hi Assignment In Need! I want to claim the Extra 10% OFF discount on my assignment order (Code: EXTRA10)."
     );
-    window.open(`https://wa.me/447826233106?text=${text}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/447917481696?text=${text}`, "_blank", "noopener,noreferrer");
   };
 
   // Filtered subjects
@@ -230,7 +230,7 @@ export default function OffersPage() {
     },
     {
       q: "How does the Extra 10% WhatsApp offer work?",
-      a: "When you contact our academic team directly on WhatsApp (+44 7826 233106), mention code EXTRA10. Our senior student coordinator will instantly deduct an additional 10% from your order quote.",
+      a: "When you contact our academic team directly on WhatsApp (+44 7917 481696), mention code EXTRA10. Our senior student coordinator will instantly deduct an additional 10% from your order quote.",
     },
     {
       q: "Can I use the 40% offer for urgent same-day deadlines?",

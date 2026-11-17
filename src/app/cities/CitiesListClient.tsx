@@ -336,7 +336,7 @@ export default function CitiesListPage() {
               </Button>
             </Link>
             <a
-              href="https://wa.me/447826233106"
+              href="https://wa.me/447917481696"
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center justify-center font-heading font-semibold rounded-btn transition-all duration-200 px-7 py-3 text-lg bg-green-600 hover:bg-green-700 text-white gap-2 shadow-md hover:shadow-lg active:scale-95"

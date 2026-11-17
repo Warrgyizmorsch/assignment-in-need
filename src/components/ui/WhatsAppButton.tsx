@@ -67,7 +67,7 @@ export function WhatsAppButton() {
       onMouseLeave={() => setIsHovered(false)}
     >
       <a
-        href="https://wa.me/447826233106?text=Hi%2C%20I%20want%20to%20claim%20EXTRA%20FLAT%2010%25%20OFF"
+        href="https://wa.me/447917481696?text=Hi%2C%20I%20want%20to%20claim%20EXTRA%20FLAT%2010%25%20OFF"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Order on WhatsApp - EXTRA FLAT 10% OFF"
