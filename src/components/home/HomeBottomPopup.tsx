@@ -1,13 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import QRCode from "react-qr-code";
 import { X, Phone, Mail } from "lucide-react";
 
 export default function HomeBottomPopup() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const qrTargetUrl = "https://www.assignmentinneed.co.uk/app";
+
+  // Reset dismissed state on route change so it works across all pages
+  useEffect(() => {
+    setIsDismissed(false);
+    setIsVisible(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (isDismissed) return;

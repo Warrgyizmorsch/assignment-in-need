@@ -11,6 +11,7 @@ import { HalloweenWidget } from "@/components/ui/HalloweenWidget";
 import { QuoteModal } from "@/components/ui/QuoteModal";
 // import { PromoModal } from "@/components/ui/PromoModal"; // Temporarily disabled by user request
 import { SamplePromoModal } from "@/components/ui/SamplePromoModal";
+import HomeBottomPopup from "@/components/home/HomeBottomPopup";
 import "./globals.css";
 import "@/components/layout/navbar.css";
 
@@ -185,6 +186,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <main className="flex-grow">{children}</main>
         <Footer />
         <WhatsAppButton />
+        <HomeBottomPopup />
         <HalloweenWidget />
         <ReferWidget />
         <TawkToChat />
