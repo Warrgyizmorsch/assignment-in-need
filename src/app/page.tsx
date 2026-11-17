@@ -47,6 +47,7 @@ import { WritersAndTrust } from "@/components/home/WritersAndTrust";
 import CountryServicesSection from "@/components/home/CountryServicesSection";
 import HomeStudentReviews from "@/components/home/HomeStudentReviews";
 import VideoTestimonials from "@/components/home/VideoTestimonials";
+import HomeBottomPopup from "@/components/home/HomeBottomPopup";
 
 export default function Home() {
   const [faqsList, setFaqsList] = React.useState<any[]>(FAQS);
@@ -140,6 +141,7 @@ export default function Home() {
       <WritersAndTrust />
       <ReviewsAndFaq />
       <CtaBanner />
+      <HomeBottomPopup />
 
     </div>
   );

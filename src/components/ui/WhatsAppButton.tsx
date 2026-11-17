@@ -1,10 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export function WhatsAppButton() {
+  const [isHiddenByBanner, setIsHiddenByBanner] = useState(false);
+
+  useEffect(() => {
+    const handleToggle = (e: any) => {
+      setIsHiddenByBanner(Boolean(e.detail?.isOpen));
+    };
+
+    window.addEventListener("ain-bottom-popup-toggle", handleToggle);
+    return () => {
+      window.removeEventListener("ain-bottom-popup-toggle", handleToggle);
+    };
+  }, []);
+
   return (
-    <div className="fixed bottom-32 left-0 z-50">
+    <div
+      className={`fixed bottom-32 left-0 z-50 transition-all duration-300 ease-in-out ${
+        isHiddenByBanner ? "opacity-0 pointer-events-none -translate-x-full" : "opacity-100"
+      }`}
+    >
       <a
         href="https://wa.me/447826233106"
         target="_blank"
@@ -30,4 +47,3 @@ export function WhatsAppButton() {
     </div>
   );
 }
-
