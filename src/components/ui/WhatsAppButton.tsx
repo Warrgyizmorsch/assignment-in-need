@@ -3,23 +3,23 @@
 import React, { useState, useEffect } from "react";
 
 export function WhatsAppButton() {
-  const [isAutoExpanded, setIsAutoExpanded] = useState(false);
+  const [isAutoPopped, setIsAutoPopped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    // Initial trigger after 4 seconds
+    // Initial popup after 5 seconds
     const initialTimer = setTimeout(() => {
-      setIsAutoExpanded(true);
-      setTimeout(() => setIsAutoExpanded(false), 3500);
-    }, 4000);
+      setIsAutoPopped(true);
+      setTimeout(() => setIsAutoPopped(false), 4000);
+    }, 5000);
 
-    // Auto-expand popup every 7 to 9 seconds (approx 8s interval)
-    // Pops open for 3.5 seconds, then folds back
+    // Auto-pop the "Order on WhatsApp EXTRA FLAT 10% OFF" popup every 7 to 9 seconds (8s interval)
+    // Stays visible for 4 seconds, then smoothly closes
     const interval = setInterval(() => {
-      setIsAutoExpanded(true);
+      setIsAutoPopped(true);
       setTimeout(() => {
-        setIsAutoExpanded(false);
-      }, 3500);
+        setIsAutoPopped(false);
+      }, 4000);
     }, 8000);
 
     return () => {
@@ -28,7 +28,7 @@ export function WhatsAppButton() {
     };
   }, []);
 
-  const isExpanded = isAutoExpanded || isHovered;
+  const isOpen = isAutoPopped || isHovered;
 
   return (
     <div
@@ -41,27 +41,27 @@ export function WhatsAppButton() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Order on WhatsApp - EXTRA FLAT 10% OFF"
-        className={`flex items-center bg-gradient-to-r from-[#20ba59] to-[#25D366] text-white rounded-r-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] border border-green-300/40 transform transition-all duration-500 ease-in-out h-[52px] focus:outline-none ${
-          isExpanded
+        className={`flex items-center bg-gradient-to-r from-[#20ba59] to-[#25D366] text-white rounded-r-full shadow-[0_4px_25px_rgba(37,211,102,0.5)] border border-green-300/40 transform transition-all duration-500 ease-out h-[52px] focus:outline-none ${
+          isOpen
             ? "translate-x-0 shadow-2xl scale-105"
             : "-translate-x-[calc(100%-54px)]"
         }`}
       >
-        {/* Expanded Content with 10% OFF Offer Text */}
+        {/* Expanded Content: Matches Image 1 reference exactly */}
         <div
           className={`flex flex-col items-start leading-tight pl-4 pr-3 transition-opacity duration-300 ${
-            isExpanded ? "opacity-100" : "opacity-0 pointer-events-none"
+            isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         >
           <span className="text-[11px] font-medium text-white/95 whitespace-nowrap">
             Order on WhatsApp
           </span>
-          <span className="text-xs font-black text-amber-300 tracking-wider whitespace-nowrap drop-shadow-sm">
+          <span className="text-xs font-black text-yellow-300 tracking-wider whitespace-nowrap drop-shadow-sm">
             EXTRA FLAT 10% OFF
           </span>
         </div>
 
-        {/* WhatsApp Icon Circle on Right Edge */}
+        {/* Circular WhatsApp Icon on right edge */}
         <div className="w-[54px] h-[52px] flex items-center justify-center shrink-0 border-l border-white/20">
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md">
             <svg

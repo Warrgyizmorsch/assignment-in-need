@@ -1,23 +1,27 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
 import { X, Phone, Mail } from "lucide-react";
 
 export default function HomeBottomPopup() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isTemporarilyClosed, setIsTemporarilyClosed] = useState(false);
-  const reOpenTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // 1. Initial 6-second trigger on homepage
-    const initialTimer = setTimeout(() => {
-      setIsVisible(true);
-    }, 6000);
+    // If user already closed it once in this session, never show it again
+    if (
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("ain_bottom_banner_closed") === "true"
+    ) {
+      return;
+    }
 
-    // 2. Scroll trigger: as soon as user scrolls down on homepage
+    // Show on scroll down on homepage
     const handleScroll = () => {
-      if (window.scrollY > 200 && !isTemporarilyClosed) {
+      if (
+        window.scrollY > 220 &&
+        sessionStorage.getItem("ain_bottom_banner_closed") !== "true"
+      ) {
         setIsVisible(true);
       }
     };
@@ -25,22 +29,16 @@ export default function HomeBottomPopup() {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      clearTimeout(initialTimer);
       window.removeEventListener("scroll", handleScroll);
-      if (reOpenTimerRef.current) clearTimeout(reOpenTimerRef.current);
     };
-  }, [isTemporarilyClosed]);
+  }, []);
 
   const handleClose = () => {
     setIsVisible(false);
-    setIsTemporarilyClosed(true);
-
-    // Re-open after 16-18 seconds if user dismissed it
-    if (reOpenTimerRef.current) clearTimeout(reOpenTimerRef.current);
-    reOpenTimerRef.current = setTimeout(() => {
-      setIsTemporarilyClosed(false);
-      setIsVisible(true);
-    }, 18000);
+    // Permanently remember dismissal for this session - NO RE-OPENING
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("ain_bottom_banner_closed", "true");
+    }
   };
 
   if (!isVisible) return null;
@@ -53,7 +51,7 @@ export default function HomeBottomPopup() {
     >
       {/* Compact width (max-w-4xl) to ensure ample clearance from side WhatsApp and right-hand chat */}
       <div className="max-w-4xl mx-auto pointer-events-auto relative rounded-2xl bg-gradient-to-r from-[#14052e] via-[#240b54] to-[#14052e] text-white border border-purple-500/30 shadow-[0_-8px_30px_rgba(20,5,46,0.6)] backdrop-blur-xl p-2.5 sm:p-3 md:py-2.5 md:px-4">
-        {/* Close Button */}
+        {/* Close Button - ONCE CLOSED, DOES NOT RE-OPEN */}
         <button
           onClick={handleClose}
           aria-label="Close notification"
