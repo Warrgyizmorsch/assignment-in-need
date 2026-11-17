@@ -19,7 +19,7 @@ export default function HomeBottomPopup() {
     // Show on scroll down on homepage
     const handleScroll = () => {
       if (
-        window.scrollY > 180 &&
+        window.scrollY > 160 &&
         sessionStorage.getItem("ain_bottom_banner_closed") !== "true"
       ) {
         setIsVisible(true);
@@ -33,11 +33,27 @@ export default function HomeBottomPopup() {
     };
   }, []);
 
+  // Broadcast banner active status so WhatsApp button knows to stay quiet/hidden while banner is shown
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("ain-bottom-popup-active", {
+          detail: { active: isVisible },
+        })
+      );
+    }
+  }, [isVisible]);
+
   const handleClose = () => {
     setIsVisible(false);
-    // Permanently remember dismissal for this session
+    // Permanently remember dismissal for this session - NO RE-OPENING
     if (typeof window !== "undefined") {
       sessionStorage.setItem("ain_bottom_banner_closed", "true");
+      window.dispatchEvent(
+        new CustomEvent("ain-bottom-popup-active", {
+          detail: { active: false },
+        })
+      );
     }
   };
 
@@ -47,21 +63,23 @@ export default function HomeBottomPopup() {
     <div
       role="dialog"
       aria-label="Academic Support & App Download"
-      // Positioned above the Tawk.to chat widget (bottom-24 on desktop, bottom-20 on mobile) with high z-index
-      className="fixed bottom-20 md:bottom-24 left-0 right-0 z-[99999] px-3 sm:px-6 pointer-events-none transition-all duration-500 ease-out animate-in slide-in-from-bottom-8"
+      // Positioned at the bottom with subtle gap (bottom-2) and maximum browser z-index (2147483647) to overlap over any widget
+      style={{ zIndex: 2147483647 }}
+      className="fixed bottom-2 md:bottom-2.5 left-0 right-0 px-2 sm:px-4 pointer-events-none transition-all duration-500 ease-out animate-in slide-in-from-bottom-6"
     >
-      <div className="max-w-5xl mx-auto pointer-events-auto relative rounded-2xl bg-gradient-to-r from-[#14052e] via-[#260b57] to-[#14052e] text-white border border-purple-400/40 shadow-[0_10px_40px_rgba(10,2,26,0.75)] backdrop-blur-xl p-3 sm:p-4 md:py-3.5 md:px-5">
-        {/* Close Button - Always visible and elevated */}
+      {/* Increased height (py-3.5 md:py-4.5) and generous width (max-w-5xl) for comfortable, premium look */}
+      <div className="max-w-5xl mx-auto pointer-events-auto relative rounded-2xl bg-gradient-to-r from-[#14052e] via-[#260b57] to-[#14052e] text-white border border-purple-400/40 shadow-[0_10px_45px_rgba(10,2,26,0.85)] backdrop-blur-2xl py-3.5 px-3 sm:py-4 sm:px-5 md:py-4 md:px-6">
+        {/* Close Button - elevated on top right */}
         <button
           onClick={handleClose}
           aria-label="Close notification"
-          className="absolute -top-3 -right-2 md:top-2 md:right-2.5 w-7 h-7 rounded-full bg-white text-gray-800 hover:bg-gray-100 flex items-center justify-center shadow-xl transition-transform hover:scale-110 focus:outline-none z-30 border border-gray-200"
+          className="absolute -top-3 -right-2 md:top-2.5 md:right-3 w-7 h-7 rounded-full bg-white text-gray-800 hover:bg-gray-100 flex items-center justify-center shadow-2xl transition-transform hover:scale-110 focus:outline-none z-30 border border-gray-200 cursor-pointer"
         >
-          <X className="w-4 h-4" />
+          <X className="w-4 h-4 font-bold" />
         </button>
 
         <div className="flex flex-col lg:flex-row items-center justify-between gap-3 md:gap-4">
-          {/* Left: Text & Pitch (Enhanced Size) */}
+          {/* Left: Text & Pitch (Taller, bolder and easy to read) */}
           <div className="text-center lg:text-left flex-1 min-w-0 pr-6 lg:pr-2">
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-1">
               <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping shrink-0" />
@@ -74,14 +92,14 @@ export default function HomeBottomPopup() {
             </p>
           </div>
 
-          {/* Center: Action Buttons (WhatsApp, Call, Email - Bigger and prominent) */}
-          <div className="flex items-center flex-wrap justify-center gap-2 shrink-0">
+          {/* Center: Action Buttons (WhatsApp, Call, Email - Bigger, taller, and clear) */}
+          <div className="flex items-center flex-wrap justify-center gap-2 sm:gap-2.5 shrink-0">
             {/* WhatsApp */}
             <a
               href="https://wa.me/447826233106?text=Hi%2C%20I%20need%20academic%20assignment%20help"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l.399.638-1.025 3.743 3.837-1.004.532.338zm10.744-6.333c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.768.966-.941 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347z" />
@@ -92,7 +110,7 @@ export default function HomeBottomPopup() {
             {/* Call */}
             <a
               href="tel:+447826233106"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
             >
               <Phone className="w-4 h-4" />
               <span>Call</span>
@@ -101,7 +119,7 @@ export default function HomeBottomPopup() {
             {/* Email */}
             <a
               href="mailto:order@assignmentinneed.co.uk"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#ff6b00] hover:bg-[#e56000] text-white font-bold text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-[#ff6b00] hover:bg-[#e56000] text-white font-bold text-xs sm:text-sm shadow-md transition-transform hover:scale-105"
             >
               <Mail className="w-4 h-4" />
               <span>Email</span>
@@ -120,7 +138,7 @@ export default function HomeBottomPopup() {
             >
               <QRCode
                 value="https://www.assignmentinneed.co.uk/app"
-                size={50}
+                size={54}
                 level="M"
                 fgColor="#14052e"
               />

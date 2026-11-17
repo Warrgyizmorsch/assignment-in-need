@@ -3,18 +3,37 @@
 import React, { useState, useEffect } from "react";
 
 export function WhatsAppButton() {
+  const [isBannerActive, setIsBannerActive] = useState(false);
   const [isAutoPopped, setIsAutoPopped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Listen to bottom popup active status
   useEffect(() => {
-    // Initial popup after 5 seconds
+    const handleBannerActive = (e: any) => {
+      setIsBannerActive(Boolean(e.detail?.active));
+    };
+
+    window.addEventListener("ain-bottom-popup-active", handleBannerActive);
+    return () => {
+      window.removeEventListener("ain-bottom-popup-active", handleBannerActive);
+    };
+  }, []);
+
+  // WhatsApp auto-popup runs ONLY when the bottom banner is NOT active!
+  // "ye popup jab tak rhe tb tk whatsaap ka icon na aye... ager jese hi ye popup close ho jaye tab vo chal jaye"
+  useEffect(() => {
+    if (isBannerActive) {
+      setIsAutoPopped(false);
+      return;
+    }
+
+    // Initial popup 3.5 seconds after banner is closed / absent
     const initialTimer = setTimeout(() => {
       setIsAutoPopped(true);
       setTimeout(() => setIsAutoPopped(false), 4000);
-    }, 5000);
+    }, 3500);
 
-    // Auto-pop the "Order on WhatsApp EXTRA FLAT 10% OFF" popup every 7 to 9 seconds (8s interval)
-    // Stays visible for 4 seconds, then smoothly closes
+    // Auto-pop the "Order on WhatsApp EXTRA FLAT 10% OFF" every 7 to 9 seconds (8s interval)
     const interval = setInterval(() => {
       setIsAutoPopped(true);
       setTimeout(() => {
@@ -26,13 +45,17 @@ export function WhatsAppButton() {
       clearTimeout(initialTimer);
       clearInterval(interval);
     };
-  }, []);
+  }, [isBannerActive]);
 
-  const isOpen = isAutoPopped || isHovered;
+  const isOpen = (isAutoPopped || isHovered) && !isBannerActive;
 
   return (
     <div
-      className="fixed bottom-32 left-0 z-50 transition-all duration-300 ease-in-out"
+      className={`fixed bottom-32 left-0 z-50 transition-all duration-500 ease-in-out ${
+        isBannerActive
+          ? "opacity-0 pointer-events-none -translate-x-full"
+          : "opacity-100"
+      }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -47,7 +70,7 @@ export function WhatsAppButton() {
             : "-translate-x-[calc(100%-54px)]"
         }`}
       >
-        {/* Expanded Content: Matches Image 1 reference exactly */}
+        {/* Expanded Content: Matches Image 1 reference */}
         <div
           className={`flex flex-col items-start leading-tight pl-4 pr-3 transition-opacity duration-300 ${
             isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
