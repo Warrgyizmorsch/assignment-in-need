@@ -124,14 +124,14 @@ export default function HomeBottomPopup() {
           <div className="flex items-center gap-3 shrink-0">
             {/* QR Code Scanner (visible on desktop/tablet) */}
             <a
-              href="https://play.google.com/store/apps/details?id=com.assignmetinneed.ain"
+              href="/app"
               target="_blank"
               rel="noopener noreferrer"
-              title="Scan to download App"
+              title="Scan to download App (iOS & Android)"
               className="hidden sm:flex flex-col items-center bg-white p-1.5 rounded-xl shadow-md border border-white/30 hover:scale-105 transition-transform"
             >
               <QRCode
-                value="https://play.google.com/store/apps/details?id=com.assignmetinneed.ain"
+                value="https://www.assignmentinneed.co.uk/app"
                 size={56}
                 level="M"
                 fgColor="#14052e"
@@ -184,3 +184,4 @@ export default function HomeBottomPopup() {
     </div>
   );
 }
+
