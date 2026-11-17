@@ -197,14 +197,13 @@ function ServiceTile({
   index: number;
   isFeature?: boolean;
 }) {
-  const [imgSrc, setImgSrc] = useState(service.image);
+  const fallbackImg = SERVICE_STYLES[index % SERVICE_STYLES.length].image;
+  const [imgSrc, setImgSrc] = useState(service.image || fallbackImg);
 
   // Sync state when props change
   useEffect(() => {
-    setImgSrc(service.image);
-  }, [service.image]);
-
-  
+    setImgSrc(service.image || fallbackImg);
+  }, [service.image, fallbackImg]);
 
   const imageSize = isFeature
     ? "absolute bottom-[-15%] right-[-15%] w-[100%] h-auto max-h-[70%]"
@@ -247,10 +246,13 @@ function ServiceTile({
         alt={service.title}
         width={isFeature ? 280 : 180}
         height={isFeature ? 240 : 130}
+        unoptimized
         style={{ width: "auto", height: "auto" }}
         className={`${imageSize} object-contain pointer-events-none transition-transform duration-300 group-hover:scale-105`}
         onError={() => {
-          setImgSrc(SERVICE_STYLES[index % SERVICE_STYLES.length].image);
+          if (imgSrc !== fallbackImg) {
+            setImgSrc(fallbackImg);
+          }
         }}
       />
     </Link>

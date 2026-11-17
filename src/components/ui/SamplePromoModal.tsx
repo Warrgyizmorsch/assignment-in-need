@@ -43,7 +43,23 @@ export function SamplePromoModal() {
   // Reset closed state whenever path changes
   useEffect(() => {
     isClosedOnThisPageRef.current = false;
+    if (typeof window !== "undefined") {
+      (window as any).__ainSamplePromoOpen = false;
+      (window as any).__ainSamplePromoClosed = false;
+    }
   }, [pathname]);
+
+  // Sync open state with global window for bottom popup coordination
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).__ainSamplePromoOpen = isOpen;
+      window.dispatchEvent(
+        new CustomEvent("ain-sample-promo-state", {
+          detail: { isOpen },
+        })
+      );
+    }
+  }, [isOpen]);
 
   // Click outside dropdown
   useEffect(() => {
@@ -93,8 +109,8 @@ export function SamplePromoModal() {
       showModal();
     };
 
-    // Fallback timer: 3 seconds
-    const fallbackTimer = setTimeout(showModal, 3000);
+    // Fallback timer: 1.2 seconds so promo modal opens first
+    const fallbackTimer = setTimeout(showModal, 1200);
 
     const cleanup = () => {
       clearTimeout(fallbackTimer);
@@ -143,6 +159,15 @@ export function SamplePromoModal() {
       if (response.ok && data.success) {
         isClosedOnThisPageRef.current = true;
         setIsOpen(false);
+        if (typeof window !== "undefined") {
+          (window as any).__ainSamplePromoOpen = false;
+          (window as any).__ainSamplePromoClosed = true;
+          window.dispatchEvent(
+            new CustomEvent("ain-sample-promo-closed", {
+              detail: { closed: true },
+            })
+          );
+        }
         toast.success("Congratulations! We will contact you shortly with your 500 free words!");
       } else {
         toast.error(data.message || "Failed to submit. Please try again.");
@@ -158,6 +183,15 @@ export function SamplePromoModal() {
   const handleClose = () => {
     isClosedOnThisPageRef.current = true;
     setIsOpen(false);
+    if (typeof window !== "undefined") {
+      (window as any).__ainSamplePromoOpen = false;
+      (window as any).__ainSamplePromoClosed = true;
+      window.dispatchEvent(
+        new CustomEvent("ain-sample-promo-closed", {
+          detail: { closed: true },
+        })
+      );
+    }
   };
 
   if (!isOpen) return null;

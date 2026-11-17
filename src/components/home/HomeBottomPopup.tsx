@@ -10,25 +10,43 @@ export default function HomeBottomPopup() {
   const qrTargetUrl = "https://www.assignmentinneed.co.uk/app";
 
   useEffect(() => {
-    // 1. Initial 1.5-second trigger on page visit/load
-    const timer = setTimeout(() => {
-      if (!isDismissed) {
-        setIsVisible(true);
-      }
-    }, 1500);
+    if (isDismissed) return;
 
-    // 2. Show immediately on scroll down on homepage
-    const handleScroll = () => {
-      if (!isDismissed && window.scrollY > 80) {
+    const checkAndShow = () => {
+      if (typeof window === "undefined") return;
+      // Never show while 500-word promo modal is open
+      if ((window as any).__ainSamplePromoOpen) return;
+
+      // Show only when page is scrolled down slightly
+      if (window.scrollY > 100) {
         setIsVisible(true);
       }
     };
 
+    const handleScroll = () => {
+      checkAndShow();
+    };
+
+    // When 500-word promo modal closes, show bottom popup if page is scrolled
+    const handlePromoClose = () => {
+      checkAndShow();
+    };
+
+    // If 500-word promo modal becomes open, hide bottom popup immediately
+    const handlePromoState = (e: any) => {
+      if (e.detail?.isOpen) {
+        setIsVisible(false);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("ain-sample-promo-closed", handlePromoClose);
+    window.addEventListener("ain-sample-promo-state", handlePromoState);
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("ain-sample-promo-closed", handlePromoClose);
+      window.removeEventListener("ain-sample-promo-state", handlePromoState);
     };
   }, [isDismissed]);
 
