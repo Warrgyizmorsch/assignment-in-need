@@ -102,6 +102,7 @@ export const Footer = () => {
               height={62}
               style={{ width: "auto", height: "auto" }}
               className="max-h-[62px] object-contain"
+              unoptimized
             />
           </Link>
           <div className="mt-6 max-w-[320px] border-t border-white/5 pt-4 pb-4">

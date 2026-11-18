@@ -1752,6 +1752,7 @@ export const Navbar = () => {
               height={55}
               style={{ width: "auto" }}
               priority
+              unoptimized
             />
           </Link>
 
