@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import NotFound from "@/app/not-found";
 import { mapExpertToWriter } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { buildPageSchema } from "@/lib/data";
@@ -296,7 +296,7 @@ export default function CityDetailPage({
   }
 
   if (!pageData) {
-    notFound();
+    return <NotFound />;
   }
 
   const expertsToRender = expertsList.length > 0
