@@ -45,6 +45,7 @@ if (backendHostname) {
 }
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["libphonenumber-js", "react-phone-number-input"],
   compress: true,
   poweredByHeader: false,
   images: {
