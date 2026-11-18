@@ -738,6 +738,7 @@ export default function ServiceLanding({
                     src="/new-subject-sectionimg/herosubject.png"
                     alt={`${title} student`}
                     fill
+                    unoptimized
                     className="object-contain object-bottom"
                     priority
                   />
@@ -819,6 +820,7 @@ export default function ServiceLanding({
                 src="/new-subject-sectionimg/herosubject.png"
                 alt={`${title} student`}
                 fill
+                unoptimized
                 sizes="420px"
                 className="object-contain object-top"
                 priority
@@ -1056,7 +1058,7 @@ export default function ServiceLanding({
             </div>
 
             <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] lg:w-[170px] lg:h-[170px] shrink-0 relative lg:absolute lg:right-6 lg:top-1/2 lg:-translate-y-1/2 flex items-center justify-center z-10 mx-auto mt-4 lg:mt-0">
-              <Image src="/images/gift.png" alt="Gift Box" fill sizes="(min-width: 1024px) 170px, 140px" className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]" />
+              <Image src="/images/gift.png" alt="Gift Box" fill unoptimized sizes="(min-width: 1024px) 170px, 140px" className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]" />
             </div>
           </div>
         </div>

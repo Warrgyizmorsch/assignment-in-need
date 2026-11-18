@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -263,7 +264,7 @@ export default function CityDetailPage({
 
 
 
-  if (loading || !pageData) {
+  if (loading) {
     return (
       <div
         className="min-h-[620px] bg-white"
@@ -292,6 +293,10 @@ export default function CityDetailPage({
         <span className="sr-only">Loading city page…</span>
       </div>
     );
+  }
+
+  if (!pageData) {
+    notFound();
   }
 
   const expertsToRender = expertsList.length > 0
@@ -457,6 +462,7 @@ export default function CityDetailPage({
                 src="/new-subject-sectionimg/herosubject.png"
                 alt={`${cityName} student`}
                 fill
+                unoptimized
                 sizes="420px"
                 className="object-contain object-top"
                 priority
@@ -661,6 +667,7 @@ export default function CityDetailPage({
                 src="/images/gift.png"
                 alt="Gift Box"
                 fill
+                unoptimized
                 sizes="(min-width: 1024px) 170px, 140px"
                 className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
               />

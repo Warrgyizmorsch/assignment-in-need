@@ -1120,6 +1120,7 @@ export default function SubjectLanding({
                 src="/new-subject-sectionimg/herosubject.png"
                 alt={`${subject.name} student`}
                 fill
+                unoptimized
                 sizes="420px"
                 className="object-contain object-top"
                 priority
@@ -1332,6 +1333,7 @@ export default function SubjectLanding({
                   src="/images/gift.png"
                   alt="Gift Box"
                   fill
+                  unoptimized
                   sizes="120px"
                   className="object-contain drop-shadow-[0_8px_12px_rgba(0,0,0,0.15)]"
                 />
