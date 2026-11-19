@@ -304,7 +304,7 @@ const SUBJECT_CATEGORY_DEFINITIONS = [
   },
 ];
 
-const mapSubjectPagesToMenu = (items: any[]): NavLinkItem[] => {
+const mapSubjectPagesToMenu = (items: any[], rawCategories?: any[]): NavLinkItem[] => {
   if (!Array.isArray(items) || items.length === 0) return [];
 
   // If CRM returns subjects with direct hierarchy/children, respect that directly
@@ -336,8 +336,32 @@ const mapSubjectPagesToMenu = (items: any[]): NavLinkItem[] => {
   }
 
   // Dynamic automatic categorization for all CRM subject pages
-  const categoryBuckets = new Map<string, NavLinkItem[]>();
-  SUBJECT_CATEGORY_DEFINITIONS.forEach((cat) => categoryBuckets.set(cat.name, []));
+  const categoryBuckets = new Map<string, { slug: string; items: NavLinkItem[] }>();
+
+  // Pre-seed known standard categories so their order remains clean
+  SUBJECT_CATEGORY_DEFINITIONS.forEach((cat) => {
+    categoryBuckets.set(cat.name, { slug: cat.slug, items: [] });
+  });
+
+  // Seed any custom categories returned by CRM rawCategories (excluding 'General')
+  if (Array.isArray(rawCategories)) {
+    rawCategories.forEach((catObj) => {
+      const catName = (catObj.name || catObj.title || "").trim();
+      const catSlug = (catObj.slug || "").trim();
+      if (catName && catName.toLowerCase() !== "general") {
+        const existingKey = Array.from(categoryBuckets.keys()).find(
+          (k) => k.toLowerCase() === catName.toLowerCase()
+        );
+        if (!existingKey) {
+          const finalSlug = catSlug
+            ? (catSlug.endsWith("-assignment-help") ? catSlug : `${catSlug}-assignment-help`)
+            : `${catName.toLowerCase().replace(/\s+/g, "-")}-assignment-help`;
+          categoryBuckets.set(catName, { slug: finalSlug, items: [] });
+        }
+      }
+    });
+  }
+
   const unassignedItems: NavLinkItem[] = [];
 
   for (const item of items) {
@@ -347,12 +371,32 @@ const mapSubjectPagesToMenu = (items: any[]): NavLinkItem[] => {
     const path = `/subjects/${rawSlug}`;
 
     const navItem: NavLinkItem = { name: title, path };
-    const searchable = `${rawSlug} ${title}`.toLowerCase().replace(/-/g, " ");
 
+    const crmCategory = (item.category || "").trim();
+    const crmCategorySlug = (item.category_slug || "").trim();
+
+    // Priority 1: Direct CRM Category (if assigned in CRM and not 'General')
+    if (crmCategory && crmCategory.toLowerCase() !== "general") {
+      const foundKey = Array.from(categoryBuckets.keys()).find(
+        (k) => k.toLowerCase() === crmCategory.toLowerCase()
+      );
+      const bucketKey: string = foundKey || crmCategory;
+      if (!foundKey) {
+        const finalSlug = crmCategorySlug
+          ? (crmCategorySlug.endsWith("-assignment-help") ? crmCategorySlug : `${crmCategorySlug}-assignment-help`)
+          : `${crmCategory.toLowerCase().replace(/\s+/g, "-")}-assignment-help`;
+        categoryBuckets.set(bucketKey, { slug: finalSlug, items: [] });
+      }
+      categoryBuckets.get(bucketKey)!.items.push(navItem);
+      continue;
+    }
+
+    // Priority 2: Fallback keyword matching for pages that still have default 'General' category in CRM
+    const searchable = `${rawSlug} ${title}`.toLowerCase().replace(/-/g, " ");
     let matched = false;
     for (const cat of SUBJECT_CATEGORY_DEFINITIONS) {
       if (cat.keywords.some((k) => searchable.includes(k.replace(/-/g, " ")))) {
-        categoryBuckets.get(cat.name)!.push(navItem);
+        categoryBuckets.get(cat.name)!.items.push(navItem);
         matched = true;
         break;
       }
@@ -365,22 +409,31 @@ const mapSubjectPagesToMenu = (items: any[]): NavLinkItem[] => {
 
   const result: NavLinkItem[] = [];
 
-  SUBJECT_CATEGORY_DEFINITIONS.forEach((cat) => {
-    const children = categoryBuckets.get(cat.name) || [];
-    if (children.length > 0) {
+  // Build final menu categories that have items
+  for (const [catName, bucket] of categoryBuckets.entries()) {
+    if (bucket.items.length > 0) {
+      // Remove duplicate items within the same category if any
+      const uniqueItems = Array.from(
+        new Map(bucket.items.map((i) => [i.path.toLowerCase(), i])).values()
+      ).sort((a, b) => a.name.localeCompare(b.name));
+
       result.push({
-        name: cat.name,
-        path: `/subjects/${cat.slug}`,
-        children: children.sort((a, b) => a.name.localeCompare(b.name)),
+        name: catName,
+        path: `/subjects/${bucket.slug}`,
+        children: uniqueItems,
       });
     }
-  });
+  }
 
   if (unassignedItems.length > 0) {
+    const uniqueUnassigned = Array.from(
+      new Map(unassignedItems.map((i) => [i.path.toLowerCase(), i])).values()
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
     result.push({
       name: "Other Subjects",
       path: "/subjects",
-      children: unassignedItems.sort((a, b) => a.name.localeCompare(b.name)),
+      children: uniqueUnassigned,
     });
   }
 
@@ -1400,7 +1453,7 @@ export const Navbar = () => {
             : [];
 
         if (items.length > 0) {
-          const categorized = mapSubjectPagesToMenu(items);
+          const categorized = mapSubjectPagesToMenu(items, payload?.categories);
           cachedSubjectsMenu = categorized;
           setSubjects(categorized);
         }

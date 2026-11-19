@@ -65,8 +65,16 @@ export default async function SubjectPage({ params }: Props) {
     const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "https://ain.warrgyizmorsch.com";
     const cleanSlug = slug.replace(/-assignment-writing-help$/, "").replace(/-assignment-help$/, "").replace(/-assignment$/, "").replace(/-help$/, "");
 
-    // Try fetching by slug variants in parallel
-    const categoryParamsToTry = Array.from(new Set([slug, cleanSlug]));
+    const crmCategorySlug = initialData?.page?.category_slug;
+    const categoryParamsToTry = Array.from(
+      new Set(
+        [
+          crmCategorySlug && crmCategorySlug.toLowerCase() !== "general" ? crmCategorySlug : null,
+          slug,
+          cleanSlug,
+        ].filter(Boolean) as string[]
+      )
+    );
     const fetchPromises = categoryParamsToTry.map(catParam =>
       fetch(`${BACKEND_URL}/api/samples?category=${encodeURIComponent(catParam)}&page=1&limit=100`, {
         headers: { Accept: "application/json" },
